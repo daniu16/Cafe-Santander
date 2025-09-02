@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cambio de Paletas</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      transition: background 0.5s, color 0.5s;
+    }
+    header {
+      padding: 1rem;
+      text-align: center;
+    }
+    nav a {
+      margin: 0 10px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      font-weight: bold;
+    }
+    .content {
+      text-align: center;
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a onclick="cambiarPaleta('clara')">🌞 Paleta Clara</a>
+      <a onclick="cambiarPaleta('oscura')">🌙 Paleta Oscura</a>
+      <a onclick="cambiarPaleta('pastel')">🎨 Paleta Pastel</a>
+      <a onclick="cambiarPaleta('neon')">⚡ Paleta Neón</a>
+    </nav>
+  </header>
+  <div class="content">
+    <h1>Bienvenido a mi página</h1>
+    <p>Haz clic en los enlaces para cambiar la paleta de colores.</p>
+  </div>
+
+  <script>
+    function cambiarPaleta(paleta) {
+      if (paleta === "clara") {
+        document.body.style.background = "#f5f5f5";
+        document.body.style.color = "#222";
+      } 
+      else if (paleta === "oscura") {
+        document.body.style.background = "#222";
+        document.body.style.color = "#f5f5f5";
+      } 
+      else if (paleta === "pastel") {
+        document.body.style.background = "#ffe4e1"; // rosado pastel
+        document.body.style.color = "#333";
+      } 
+      else if (paleta === "neon") {
+        document.body.style.background = "#0f0f0f";
+        document.body.style.color = "#39ff14"; // verde neón
+      }
+    }
+  </script>
+</body>
+</html>

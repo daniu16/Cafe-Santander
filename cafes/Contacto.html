@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Catálogo de café</title>
+
+<style>
+:root {
+  --bg:#fff;        /* Fondo blanco */
+  --accent:#e7a33d; /* Color acento dorado */
+  --text:#222;      /* Texto principal */
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+}
+
+/* ==============================
+   ENCABEZADO
+============================== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 60px;
+  border-bottom: 2px solid var(--accent);
+  background: #fff;
+}
+
+/* LOGO */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text);
+}
+.logo img {
+  width: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+
+/* ==============================
+   MENÚ DE NAVEGACIÓN
+============================== */
+nav {
+  display: flex;
+  justify-content: center;  
+  align-items: center;
+  gap: 60px;              /* separación entre enlaces */
+  font-size: 18px;
+}
+
+/* Estilos para los enlaces */
+nav a {
+  text-decoration: none;
+  color: var(--text);
+  padding: 6px 12px;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+}
+
+/* Hover con fondo suave */
+nav a:hover {
+  color: var(--accent);
+  background-color: #f9f9f9;
+}
+
+/* ==============================
+   BOTÓN LOGIN
+============================== */
+.login-btn {
+  background: none;
+  border: 2px solid var(--accent);
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.3s;
+}
+.login-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+</style>
+</head>
+
+<body>
+  <header>
+    <!-- LOGO -->
+    <div class="logo">
+      <img src="https://st4.depositphotos.com/16781356/40357/v/1600/depositphotos_403577868-stock-illustration-coffee-logo-design-vector-illustration.jpg" alt="logo">
+      TuLogo
+    </div>
+
+    <!-- MENÚ -->
+    <nav>
+      <a href="Inicio.html">Inicio</a>
+      <a href="Acerca.html">Acerca</a>
+      <a href="Servicios.html">Servicios</a>
+      <a href="Contacto.html">Contacto</a>
+    </nav>
+
+    <!-- BOTÓN LOGIN -->
+    <a href="#" class="login-btn">Acceder</a>
+  </header>
+</body>
+</html>

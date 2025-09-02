@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Catálogo de café</title>
+
+<style>
+:root {
+  --bg:#fff;
+  --accent:#e7a33d;
+  --text:#222;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+}
+
+/* Header */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 60px;
+  border-bottom: 2px solid var(--accent);
+  background: #fff;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text);
+}
+.logo img {
+  width: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+
+nav {
+  display: flex;
+  justify-content: center;  
+  align-items: center;
+  gap: 60px;
+  font-size: 18px;
+}
+nav a {
+  text-decoration: none;
+  color: var(--text);
+  padding: 6px 12px;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+}
+nav a:hover {
+  color: var(--accent);
+  background-color: #f9f9f9;
+}
+
+.login-btn {
+  background: none;
+  border: 2px solid var(--accent);
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.3s;
+}
+.login-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Hero */
+.hero {
+  height: 180px;
+  background-image: url('cafe1.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: #fff;
+  text-align: center;
+  border-bottom: 2px solid var(--accent);
+  transition: background-image 1s ease-in-out; /* transición suave */
+}
+
+.hero-content {
+  position: relative;
+  max-width:60%;
+  padding: 15px 20px;
+  background-color: rgba(231, 163, 61, 0.5); /* menos intenso */
+  border-radius: 8px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 25px;
+}
+
+.hero button {
+  background-color: #FFD700;
+  color: #222;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.hero button:hover {
+  transform: scale(1.05);
+}
+</style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">
+      <img src="https://st4.depositphotos.com/16781356/40357/v/1600/depositphotos_403577868-stock-illustration-coffee-logo-design-vector-illustration.jpg" alt="logo">
+      TuLogo
+    </div>
+
+    <nav>
+      <a href="Inicio.html">Inicio</a>
+      <a href="Acerca.html">Acerca</a>
+      <a href="Servicios.html">Servicios</a>
+      <a href="Contacto.html">Contacto</a>
+    </nav>
+
+    <a href="#" class="login-btn">Acceder</a>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <h1>Café fresco de nuestra granja a tu taza</h1>
+      <p>Descubre los aromas y sabores únicos de nuestro café 100% natural</p>
+      <button>Explorar Productos</button>
+    </div>
+  </section>
+
+  <script>
+    const hero = document.getElementById('hero');
+    const images = ['cafe1.jpg', 'cafe2.jpg', 'cafe3.jpg']; // tus imágenes
+    let index = 0;
+
+    setInterval(() => {
+      index = (index + 1) % images.length;
+      hero.style.backgroundImage = `url('${images[index]}')`;
+    }, 3000); // cambia cada 5 segundos
+  </script>
+</body>
+</html>

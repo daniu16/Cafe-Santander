@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rueda 9 Sectores Interactiva</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  h1 { margin-bottom: 20px; text-align: center; }
+
+  .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .wheel-container {
+    flex: 1 1 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .info-panel {
+    flex: 1 1 250px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    min-width: 250px;
+  }
+
+  .info-panel h2 { margin-top: 0; font-size: 18px; }
+  .info-panel p { font-size: 14px; color: #555; }
+
+  .sector {
+    stroke: #fff;
+    stroke-width: 2;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    transform-origin: 50% 50%;
+  }
+
+  .sector:hover {
+    transform: scale(1.1);
+  }
+
+  @media(max-width: 700px){
+    .wrap { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Rueda Interactiva de 9 Sectores</h1>
+
+<div class="wrap">
+  <div class="wheel-container">
+    <svg viewBox="0 0 500 500" id="wheel">
+      <circle cx="250" cy="250" r="200" fill="#eee" />
+    </svg>
+  </div>
+  <div class="info-panel" id="infoPanel">
+    <h2>Información del sector</h2>
+    <p>Haz clic en un sector para ver la descripción.</p>
+  </div>
+</div>
+
+<script>
+const svg = document.getElementById("wheel");
+const infoPanel = document.getElementById("infoPanel");
+
+// Datos de los 9 sectores
+const sectores = [
+  { name: "Frutal", color:"#e74c3c", desc:"Sabores de frutas: manzana, pera, piña, frutos rojos." },
+  { name: "Floral", color:"#f1c40f", desc:"Aromas a flores: jazmín, rosa, lavanda." },
+  { name: "Especiado", color:"#2ecc71", desc:"Notas de canela, clavo, nuez moscada, pimienta." },
+  { name: "Tostado", color:"#1abc9c", desc:"Sabores de cacao, caramelo, pan tostado." },
+  { name: "Herbal", color:"#3498db", desc:"Notas de pasto, hoja, hierbas frescas." },
+  { name: "Cítrico", color:"#9b59b6", desc:"Aromas de limón, naranja, pomelo." },
+  { name: "Chocolate", color:"#34495e", desc:"Chocolate amargo, cacao puro, cacao tostado." },
+  { name: "Alcohólico", color:"#95a5a6", desc:"Vino, sidra, fermentados frutales." },
+  { name: "Nueces", color:"#e67e22", desc:"Almendra, avellana, nuez, cacahuete." }
+];
+
+// Polar a cartesiano
+function polarToCartesian(cx, cy, r, angleDeg){
+  const angle = (angleDeg-90)*Math.PI/180;
+  return { x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) };
+}
+
+// Crear path de sector
+function createSector(cx, cy, r, startAngle, endAngle, fill, data){
+  const start = polarToCartesian(cx, cy, r, endAngle);
+  const end = polarToCartesian(cx, cy, r, startAngle);
+  const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+
+  const d = ["M", cx, cy,
+             "L", start.x, start.y,
+             "A", r, r, 0, largeArc, 0, end.x, end.y,
+             "Z"].join(" ");
+
+  const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+  path.setAttribute("d", d);
+  path.setAttribute("fill", fill);
+  path.classList.add("sector");
+  path.dataset.name = data.name;
+  path.dataset.desc = data.desc;
+
+  path.addEventListener("click", ()=>{
+    infoPanel.innerHTML = `<h2>${data.name}</h2><p>${data.desc}</p>`;
+  });
+
+  return path;
+}
+
+// Dibujar rueda
+function drawWheel(){
+  const total = sectores.length;
+  const anglePer = 360 / total;
+  let currentAngle = 0;
+
+  sectores.forEach(sec => {
+    const sectorPath = createSector(250, 250, 200, currentAngle, currentAngle + anglePer, sec.color, sec);
+    svg.appendChild(sectorPath);
+    currentAngle += anglePer;
+  });
+}
+
+drawWheel();
+</script>
+
+</body>
+</html>
