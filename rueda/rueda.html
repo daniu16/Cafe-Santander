@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruleta 9 Sectores (Agujero Central)</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  h1 { margin-bottom: 20px; text-align: center; }
+
+  .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .wheel-container {
+    flex: 1 1 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .info-panel {
+    flex: 1 1 250px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    min-width: 250px;
+  }
+
+  .info-panel h2 { margin-top: 0; font-size: 18px; }
+  .info-panel p { font-size: 14px; color: #555; }
+
+  .sector {
+    stroke: #fff;
+    stroke-width: 2;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    transform-origin: 50% 50%;
+  }
+
+  .sector:hover { transform: scale(1.03); }
+
+  #wheelGroup {
+    transition: transform 1s cubic-bezier(.68,-0.55,.27,1.55);
+    transform-origin: 250px 250px;
+  }
+
+  @media(max-width: 700px){
+    .wrap { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Ruleta Interactiva de 9 Sectores (Agujero Central)</h1>
+
+<div class="wrap">
+  <div class="wheel-container">
+    <svg viewBox="0 0 500 500" id="wheel">
+      <g id="wheelGroup">
+        <!-- ahora la ruleta es un anillo: los sectores dibujados usan un radio interior -->
+      </g>
+    </svg>
+  </div>
+  <div class="info-panel" id="infoPanel">
+    <h2>Información del sector</h2>
+    <p>Haz clic en un sector para ver la descripción y centrarlo a las 3 en punto.</p>
+  </div>
+</div>
+
+<script>
+const svg = document.getElementById("wheel");
+const wheelGroup = document.getElementById("wheelGroup");
+const infoPanel = document.getElementById("infoPanel");
+
+const sectores = [
+  { name: "DULCE", color:"#e74c3c", desc:"Sabores de frutas: manzana, pera, piña, frutos rojos." },
+  { name: "FLORAL", color:"#f1c40f", desc:"Aromas a flores: jazmín, rosa, lavanda." },
+  { name: "AFRUTADO", color:"#2ecc71", desc:"Notas de canela, clavo, nuez moscada, pimienta." },
+  { name: "ACIDO/FERMENTADO", color:"#1abc9c", desc:"Sabores de cacao, caramelo, pan tostado." },
+  { name: "VERDE/VEGETAL", color:"#3498db", desc:"Notas de pasto, hoja, hierbas frescas." },
+  { name: "OTROS", color:"#9b59b6", desc:"Aromas de limón, naranja, pomelo." },
+  { name: "TOSTADO", color:"#34495e", desc:"Chocolate amargo, cacao puro, cacao tostado." },
+  { name: "ESPECIAS", color:"#95a5a6", desc:"Vino, sidra, fermentados frutales." },
+  { name: "NUECES/CACAO", color:"#e67e22", desc:"Almendra, avellana, nuez, cacahuete." }
+];
+
+const cx = 250;
+const cy = 250;
+const outerR = 200;
+const innerR = 90;
+
+function polarToCartesian(cx, cy, r, angleDeg){
+  const angle = (angleDeg-90)*Math.PI/180;
+  return { x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) };
+}
+
+function addLabel(cx, cy, rInner, rOuter, startAngle, endAngle, label) {
+  const midAngle = (startAngle + endAngle) / 2;
+  const midR = (rInner + rOuter) / 2;
+  const pos = polarToCartesian(cx, cy, midR, midAngle);
+
+  const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  text.setAttribute("x", pos.x);
+  text.setAttribute("y", pos.y);
+  text.setAttribute("text-anchor", "middle");
+  text.setAttribute("dominant-baseline", "middle");
+  text.setAttribute("fill", "#fff");
+  text.setAttribute("font-size", "14");
+  text.setAttribute("font-weight", "bold");
+  text.textContent = label;
+
+  wheelGroup.appendChild(text);
+}
+
+function createSectorRing(cx, cy, rOuter, rInner, startAngle, endAngle, fill, data, idx){
+  const outerStart = polarToCartesian(cx, cy, rOuter, startAngle);
+  const outerEnd = polarToCartesian(cx, cy, rOuter, endAngle);
+  const innerStart = polarToCartesian(cx, cy, rInner, startAngle);
+  const innerEnd = polarToCartesian(cx, cy, rInner, endAngle);
+
+  const largeArcOuter = (endAngle - startAngle) <= 180 ? 0 : 1;
+  const largeArcInner = largeArcOuter;
+
+  const d = [
+    'M', outerStart.x, outerStart.y,
+    'A', rOuter, rOuter, 0, largeArcOuter, 1, outerEnd.x, outerEnd.y,
+    'L', innerEnd.x, innerEnd.y,
+    'A', rInner, rInner, 0, largeArcInner, 0, innerStart.x, innerStart.y,
+    'Z'
+  ].join(' ');
+
+  const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+  path.setAttribute("d", d);
+  path.setAttribute("fill", fill);
+  path.classList.add("sector");
+  path.dataset.name = data.name;
+  path.dataset.desc = data.desc;
+  path.dataset.index = idx;
+
+  path.addEventListener("click", ()=>{
+    infoPanel.innerHTML = `<h2>${data.name}</h2><p>${data.desc}</p>`;
+    rotateToSector(idx);
+  });
+
+  return path;
+}
+
+function drawWheel(){
+  const total = sectores.length;
+  const anglePer = 360 / total;
+  let currentAngle = 0;
+
+  sectores.forEach((sec, idx) => {
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + anglePer;
+
+    const sectorPath = createSectorRing(cx, cy, outerR, innerR, startAngle, endAngle, sec.color, sec, idx);
+    wheelGroup.appendChild(sectorPath);
+
+    addLabel(cx, cy, innerR, outerR, startAngle, endAngle, sec.name);
+
+    currentAngle += anglePer;
+  });
+}
+
+let currentRotation = 0;
+
+function rotateToSector(index){
+  const total = sectores.length;
+  const anglePer = 360 / total;
+  const sectorAngle = -90 + index*anglePer + anglePer/2;
+  const targetRotation = -sectorAngle;
+  const diff = ((targetRotation - currentRotation + 540) % 360) - 180;
+  currentRotation = currentRotation + diff;
+  wheelGroup.style.transform = `rotate(${currentRotation}deg)`;
+}
+
+drawWheel();
+</script>
+
+</body>
+</html>

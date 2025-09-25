@@ -1,0 +1,45 @@
+<div class="wheel">
+    <div class="sector" onclick="expandSector('Chocolate')">🍫 Chocolate</div>
+    <!-- Otros sectores -->
+</div>
+
+<div id="subwheel" class="hidden">
+    <div class="subsector" onclick="showDetails('Amargo')">Amargo</div>
+    <div class="subsector" onclick="showDetails('Puro')">Puro</div>
+    <div class="subsector" onclick="showDetails('Tostado')">Tostado</div>
+</div>
+
+<div id="info-panel"></div>
+
+<style>
+.wheel, #subwheel {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px;
+}
+.subsector {
+    transform: scale(0);
+    transition: transform 0.3s ease;
+}
+.subsector.visible {
+    transform: scale(1);
+}
+.hidden { display: none; }
+</style>
+
+<script>
+function expandSector(name) {
+    document.getElementById('subwheel').classList.remove('hidden');
+    document.querySelectorAll('.subsector').forEach(el => el.classList.add('visible'));
+}
+
+function showDetails(type) {
+    const data = {
+        Amargo: '70% cacao, sin azúcar, notas frutales',
+        Puro: '100% cacao, uso culinario, textura seca',
+        Tostado: 'Cacao tostado, aroma intenso, repostería'
+    };
+    document.getElementById('info-panel').innerText = `${type}: ${data[type]}`;
+}
+</script>

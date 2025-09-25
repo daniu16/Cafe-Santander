@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ruleta + Panel Lateral (corregido)</title>
+<style>
+  :root{ --bg:#f6f6f6; --card:#fff; --muted:#666; }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .main {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .wheel-area {
+    flex: 1 1 680px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .panel {
+    width: 320px;
+    background: var(--card);
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    padding: 18px;
+  }
+
+  .panel h2 { margin: 0 0 8px 0; font-size: 20px; }
+  .panel p.desc { color: var(--muted); margin: 0 0 12px 0; font-size: 14px; min-height: 42px; }
+
+  .suboptions, .subsuboptions {
+    margin-top: 8px;
+  }
+
+  .suboptions button, .subsuboptions button {
+    margin: 6px 6px 6px 0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: linear-gradient(#fff,#fafafa);
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  .suboptions h4, .subsuboptions h4 { margin: 8px 0 6px 0; font-size: 14px; }
+
+  svg { max-width: 100%; height: auto; overflow: visible; }
+
+  .sector { stroke: #fff; stroke-width: 2; cursor: pointer; transition: transform .12s ease; }
+  .sector:hover { transform: scale(1.03); }
+
+  /* CORRECCIÓN: rotar relativo al cuadro del elemento SVG */
+  #wheelGroup {
+    transition: transform 0.9s cubic-bezier(.2,.9,.3,1);
+    transform-box: fill-box;        /* IMPORTANT */
+    transform-origin: 50% 50%;     /* center of the group's bounding box */
+  }
+
+  @media(max-width:1000px){
+    .main { flex-direction: column; align-items: center; }
+    .panel{ width: 90%; margin-top: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="main">
+  <div class="wheel-area" style="position:relative;">
+    <svg viewBox="0 0 500 500" id="wheel" aria-hidden="true" width="500" height="500">
+      <g id="wheelGroup"></g>
+    </svg>
+  </div>
+
+  <aside class="panel" id="infoPanel">
+    <h2 id="title">Selecciona un sector</h2>
+    <p class="desc" id="description">Haz clic en un sector de la ruleta para ver su descripción breve y opciones siguientes.</p>
+
+    <div class="suboptions" id="suboptions"></div>
+    <div class="subsuboptions" id="subsuboptions"></div>
+  </aside>
+</div>
+
+<script>
+const sectores = [
+  { name: "DULCE", color:"#e74c3c", desc:"Sabores frutales y azucarados: manzana, pera, piña, frutos rojos." },
+  { name: "FLORAL", color:"#f1c40f", desc:"Aromas florales como jazmín, rosa y lavanda." },
+  { name: "AFRUTADO", color:"#2ecc71", desc:"Frutas secas y especiadas: canela, clavo, nuez moscada." },
+  { name: "ACIDO/FERMENTADO", color:"#1abc9c", desc:"Notas ácidas o fermentadas, como vinagre, sidra o frutas en fermentación." },
+  { name: "VERDE/VEGETAL", color:"#3498db", desc:"Notas herbales: pasto, hoja, té verde y vegetales." },
+  { name: "OTROS", color:"#9b59b6", desc:"Aromas cítricos y otras notas variadas." },
+  { name: "TOSTADO", color:"#34495e", desc:"Sabores a tostado: cacao, pan tostado, caramelo quemado." },
+  { name: "ESPECIAS", color:"#95a5a6", desc:"Especias como pimienta, nuez moscada, clavo y canela." },
+  { name: "NUECES/CACAO", color:"#e67e22", desc:"Nueces y cacao: almendra, avellana, nuez y chocolate." }
+];
+
+const subOptionsMap = {
+  "DULCE": ["Miel","Azúcar","Frutas maduras"],
+  "FLORAL": ["Jazmín","Rosa","Lavanda"],
+  "AFRUTADO": ["Frutas rojas","Cítricos","Frutas secas"],
+  "ACIDO/FERMENTADO": ["Sidra","Vinagre","Yogurt"],
+  "VERDE/VEGETAL": ["Hierba","Hoja","Té verde"],
+  "OTROS": ["Cítrico","Limón","Naranja"],
+  "TOSTADO": ["Cacao","Pan","Caramelo"],
+  "ESPECIAS": ["Pimienta","Clavo","Canela"],
+  "NUECES/CACAO": ["Almendra","Avellana","Chocolate amargo"]
+};
+
+const subSubMap = {
+  "Miel": ["Miel de flores","Miel de bosque"],
+  "Azúcar": ["Azúcar moreno","Azúcar blanco"],
+  "Frutas maduras": ["Plátano","Mango"],
+  "Jazmín": ["Jazmín fresco","Jazmín seco"],
+  "Rosa": ["Rosa fresca","Rosa seca"],
+  "Lavanda": ["Lavanda floral","Lavanda seca"],
+  "Frutas rojas": ["Frambuesa","Cereza"],
+  "Cítricos": ["Naranja","Pomelo"],
+  "Frutas secas": ["Ciruela","Pasas"],
+  "Sidra": ["Sidra verde","Sidra madura"],
+  "Vinagre": ["Vinagre balsámico","Vinagre de vino"],
+  "Yogurt": ["Yogurt natural","Yogurt agrio"],
+  "Hierba": ["Pasto recién cortado","Pasto seco"],
+  "Hoja": ["Hoja verde","Hoja seca"],
+  "Té verde": ["Matcha","Sencha"],
+  "Cítrico": ["Lima","Toronja"],
+  "Limón": ["Limón fresco","Lima ácida"],
+  "Naranja": ["Naranja dulce","Naranja amarga"],
+  "Cacao": ["Cacao puro","Cacao procesado"],
+  "Pan": ["Pan tostado","Pan integral"],
+  "Caramelo": ["Caramelo claro","Caramelo oscuro"],
+  "Pimienta": ["Pimienta negra","Pimienta blanca"],
+  "Clavo": ["Clavo entero","Clavo molido"],
+  "Canela": ["Canela cassia","Canela de Ceilán"],
+  "Almendra": ["Almendra tostada","Almendra cruda"],
+  "Avellana": ["Avellana tostada","Avellana cruda"],
+  "Chocolate amargo": ["70% cacao","85% cacao"]
+};
+
+const cx = 250, cy = 250, outerR = 200, innerR = 90;
+const wheelGroup = document.getElementById('wheelGroup');
+let currentRotation = 0;
+
+function polarToCartesian(cx, cy, r, angleDeg){
+  const angle = (angleDeg-90) * Math.PI/180;
+  return { x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) };
+}
+
+function createSectorRing(cx, cy, rOuter, rInner, startAngle, endAngle, fill, data, idx){
+  const outerStart = polarToCartesian(cx, cy, rOuter, startAngle);
+  const outerEnd   = polarToCartesian(cx, cy, rOuter, endAngle);
+  const innerStart = polarToCartesian(cx, cy, rInner, startAngle);
+  const innerEnd   = polarToCartesian(cx, cy, rInner, endAngle);
+  const largeArc = (endAngle - startAngle) <= 180 ? 0 : 1;
+
+  const d = [
+    'M', outerStart.x, outerStart.y,
+    'A', rOuter, rOuter, 0, largeArc, 1, outerEnd.x, outerEnd.y,
+    'L', innerEnd.x, innerEnd.y,
+    'A', rInner, rInner, 0, largeArc, 0, innerStart.x, innerStart.y,
+    'Z'
+  ].join(' ');
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d', d);
+  path.setAttribute('fill', fill);
+  path.classList.add('sector');
+  path.dataset.name = data.name;
+  path.dataset.desc = data.desc;
+  path.dataset.index = idx;
+
+  path.addEventListener('click', ()=> onSelectSector(parseInt(path.dataset.index,10)));
+  return path;
+}
+
+function addLabel(cx, cy, rInner, rOuter, startAngle, endAngle, label){
+  const midAngle = (startAngle + endAngle) / 2;
+  const midR = (rInner + rOuter) / 2;
+  const pos = polarToCartesian(cx, cy, midR, midAngle);
+
+  const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+  text.setAttribute('x', pos.x);
+  text.setAttribute('y', pos.y);
+  text.setAttribute('text-anchor','middle');
+  text.setAttribute('dominant-baseline','middle');
+  text.setAttribute('fill','#fff');
+  text.setAttribute('font-size','12');
+  text.setAttribute('font-weight','700');
+  text.textContent = label;
+  wheelGroup.appendChild(text);
+}
+
+function drawWheel(){
+  const total = sectores.length;
+  const anglePer = 360 / total;
+  let currentAngle = 0;
+  wheelGroup.innerHTML = '';
+
+  sectores.forEach((sec, idx) => {
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + anglePer;
+    const path = createSectorRing(cx, cy, outerR, innerR, startAngle, endAngle, sec.color, sec, idx);
+    wheelGroup.appendChild(path);
+    addLabel(cx, cy, innerR, outerR, startAngle, endAngle, sec.name);
+    currentAngle += anglePer;
+  });
+}
+drawWheel();
+
+/* Panel elements */
+const titleEl = document.getElementById('title');
+const descEl  = document.getElementById('description');
+const subEl   = document.getElementById('suboptions');
+const subsubEl= document.getElementById('subsuboptions');
+
+function clearSubSub(){ subsubEl.innerHTML = ''; }
+function clearSub(){ subEl.innerHTML = ''; clearSubSub(); }
+
+function onSelectSector(index){
+  const sec = sectores[index];
+  titleEl.innerText = sec.name;
+  descEl.innerText = sec.desc || '';
+
+  clearSub();
+  const subs = subOptionsMap[sec.name] || [];
+  if(subs.length){
+    const h4 = document.createElement('h4'); h4.innerText = 'Opciones'; subEl.appendChild(h4);
+    subs.forEach(s => {
+      const btn = document.createElement('button');
+      btn.innerText = s;
+      btn.addEventListener('click', ()=> onSelectSub(s));
+      subEl.appendChild(btn);
+    });
+  } else {
+    subEl.innerHTML = '<p style="color:var(--muted)">No hay opciones adicionales.</p>';
+  }
+
+  rotateToSector(index);
+}
+
+function onSelectSub(sub){
+  subsubEl.innerHTML = '';
+  const header = document.createElement('h4'); header.innerText = 'Detalles';
+  subsubEl.appendChild(header);
+
+  const items = subSubMap[sub] || [];
+  if(items.length){
+    items.forEach(it => {
+      const b = document.createElement('button');
+      b.innerText = it;
+      b.addEventListener('click', ()=> {
+        descEl.innerText = `${titleEl.innerText} › ${sub} › ${it}`;
+      });
+      subsubEl.appendChild(b);
+    });
+  } else {
+    const p = document.createElement('p'); p.innerText = 'No hay más detalles.'; p.style.color = 'var(--muted)';
+    subsubEl.appendChild(p);
+  }
+}
+
+function rotateToSector(index){
+  const total = sectores.length;
+  const anglePer = 360/total;
+  const sectorAngle = -90 + index*anglePer + anglePer/2;
+  const targetRotation = -sectorAngle;
+
+  // normalizamos diferencia para girar por el camino más corto
+  const diff = ((targetRotation - currentRotation + 540) % 360) - 180;
+  currentRotation += diff;
+
+  // aplicamos rotación en grados (CSS) — gracias a transform-box esto rotará alrededor del centro correcto
+  wheelGroup.style.transform = `rotate(${currentRotation}deg)`;
+}
+</script>
+</body>
+</html>

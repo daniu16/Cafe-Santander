@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú Contextual Rueda</title>
+    <style>
+        .wheel {
+            margin: 50px;
+        }
+        .sector {
+            display: inline-block;
+            padding: 20px;
+            background: #f3e5ab;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        .tooltip {
+            position: absolute;
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .hidden { display: none; }
+        .tooltip div {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .tooltip div:hover {
+            background: #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="wheel">
+        <div class="sector" onmouseenter="showMenu(event, 'Chocolate')" onmouseleave="hideMenu()">🍫 Chocolate</div>
+    </div>
+    <div id="tooltip" class="tooltip hidden"></div>
+    <script>
+        function showMenu(event, sector) {
+            const subs = ['Amargo', 'Puro', 'Tostado'];
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = subs.map(s =>
+                `<div onclick="showDetails('${s}')">${s}</div>`
+            ).join('');
+            tooltip.classList.remove('hidden');
+            // Position tooltip near the mouse
+            tooltip.style.top = (event.clientY + 10) + 'px';
+            tooltip.style.left = (event.clientX + 10) + 'px';
+        }
+        function hideMenu() {
+            document.getElementById('tooltip').classList.add('hidden');
+        }
+        function showDetails(sub) {
+            alert('Seleccionaste: ' + sub);
+            hideMenu();
+        }
+        // Optional: Hide tooltip if mouse leaves tooltip itself
+        document.getElementById('tooltip').addEventListener('mouseleave', hideMenu);
+    </script>
+</body>
+</html>
