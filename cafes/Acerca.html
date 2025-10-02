@@ -3,19 +3,32 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catálogo de café</title>
-
+<title>Acerca de - CaféSantander</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
   --bg:#fff;        /* Fondo blanco */
   --accent:#e7a33d; /* Color acento dorado */
+  --accent-dark:#c58425;
   --text:#222;      /* Texto principal */
+  --light-bg:#f9f5f0;
+  --dark-text:#3a2611;
+  --transition: all 0.3s ease;
+  --shadow: 0 4px 12px rgba(0,0,0,0.1);
+  --radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
 }
 
 /* ==============================
@@ -28,6 +41,10 @@ header {
   padding: 15px 60px;
   border-bottom: 2px solid var(--accent);
   background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 /* LOGO */
@@ -35,7 +52,7 @@ header {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   color: var(--text);
 }
@@ -63,12 +80,38 @@ nav a {
   padding: 6px 12px;
   transition: all 0.3s ease;
   border-radius: 6px;
+  font-weight: 500;
+  position: relative;
 }
 
 /* Hover con fondo suave */
 nav a:hover {
   color: var(--accent);
-  background-color: #f9f9f9;
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+nav a:hover::after {
+  width: 80%;
+}
+
+nav a.active {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+nav a.active::after {
+  width: 80%;
 }
 
 /* ==============================
@@ -77,7 +120,7 @@ nav a:hover {
 .login-btn {
   background: none;
   border: 2px solid var(--accent);
-  padding: 6px 16px;
+  padding: 8px 20px;
   border-radius: 6px;
   font-weight: bold;
   text-decoration: none;
@@ -87,28 +130,796 @@ nav a:hover {
 .login-btn:hover {
   background: var(--accent);
   color: #fff;
+  transform: translateY(-2px);
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+/* ==============================
+   HERO SECTION
+============================== */
+.about-hero {
+  height: 60vh;
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1461023058943-07fcbe16d735?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  max-width: 600px;
+  margin: 0 auto;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* ==============================
+   CONTENIDO PRINCIPAL
+============================== */
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+  color: var(--dark-text);
+  font-size: 2.5rem;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--accent);
+}
+
+/* ==============================
+   NUESTRA HISTORIA
+============================== */
+.our-story {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  margin-bottom: 80px;
+}
+
+.story-image {
+  flex: 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.story-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: var(--transition);
+}
+
+.story-image:hover img {
+  transform: scale(1.03);
+}
+
+.story-content {
+  flex: 1;
+}
+
+.story-content h2 {
+  margin-bottom: 20px;
+  color: var(--dark-text);
+}
+
+.story-content p {
+  margin-bottom: 20px;
+  color: #555;
+}
+
+/* ==============================
+   NUESTROS VALORES
+============================== */
+.our-values {
+  background: var(--light-bg);
+  padding: 80px 20px;
+  margin-bottom: 80px;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.value-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: var(--radius);
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.value-card:hover {
+  transform: translateY(-10px);
+}
+
+.value-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: white;
+  font-size: 2rem;
+}
+
+.value-card h3 {
+  margin-bottom: 15px;
+  color: var(--dark-text);
+}
+
+/* ==============================
+   NUESTRO EQUIPO
+============================== */
+.our-team {
+  margin-bottom: 80px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.team-member {
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  text-align: center;
+}
+
+.team-member:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+}
+
+.member-image {
+  height: 250px;
+  overflow: hidden;
+}
+
+.member-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.team-member:hover .member-image img {
+  transform: scale(1.05);
+}
+
+.member-info {
+  padding: 25px 20px;
+}
+
+.member-info h3 {
+  margin-bottom: 5px;
+  color: var(--dark-text);
+}
+
+.member-role {
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+.member-bio {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.member-social {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.member-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  background: var(--light-bg);
+  border-radius: 50%;
+  color: var(--text);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.member-social a:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* ==============================
+   LOGROS Y ESTADÍSTICAS
+============================== */
+.achievements {
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 80px 20px;
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.stat-item {
+  padding: 20px;
+}
+
+.stat-number {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* ==============================
+   COMPROMISO CON LA SOSTENIBILIDAD
+============================== */
+.sustainability {
+  background: var(--light-bg);
+  padding: 80px 20px;
+  margin-bottom: 80px;
+}
+
+.sustainability-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.sustainability-content p {
+  margin-bottom: 30px;
+  color: #555;
+  font-size: 1.1rem;
+}
+
+.sustainability-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 50px;
+}
+
+.sustainability-feature {
+  background: white;
+  padding: 30px 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.sustainability-feature:hover {
+  transform: translateY(-5px);
+}
+
+.sustainability-feature i {
+  font-size: 2.5rem;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.sustainability-feature h3 {
+  margin-bottom: 15px;
+  color: var(--dark-text);
+}
+
+/* ==============================
+   FOOTER
+============================== */
+footer {
+  background: var(--dark-text);
+  color: white;
+  padding: 60px 30px 30px;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-column h3 {
+  margin-bottom: 20px;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.footer-column ul {
+  list-style: none;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+}
+
+.footer-column ul li a {
+  color: #ccc;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.footer-column ul li a:hover {
+  color: var(--accent);
+  padding-left: 5px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+@media (max-width: 1024px) {
+  .our-story {
+    flex-direction: column;
+  }
+  
+  .story-image, .story-content {
+    flex: none;
+    width: 100%;
+  }
+  
+  .about-hero {
+    height: 50vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 15px 20px;
+  }
+  
+  nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    gap: 15px;
+  }
+  
+  nav.active {
+    display: flex;
+  }
+  
+  .menu-toggle {
+    display: block;
+  }
+  
+  .about-hero {
+    height: 40vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero {
+    height: 35vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .about-container {
+    padding: 50px 15px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-number {
+    font-size: 2.5rem;
+  }
 }
 </style>
 </head>
 
 <body>
   <header>
-    <!-- LOGO -->
     <div class="logo">
-      <img src="https://st4.depositphotos.com/16781356/40357/v/1600/depositphotos_403577868-stock-illustration-coffee-logo-design-vector-illustration.jpg" alt="logo">
-      TuLogo
+      <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="logo">
+      CaféSantander
     </div>
 
-    <!-- MENÚ -->
-    <nav>
+    <nav id="main-nav">
       <a href="Inicio.html">Inicio</a>
-      <a href="Acerca.html">Acerca</a>
+      <a href="Acerca.html" class="active">Acerca</a>
       <a href="Servicios.html">Servicios</a>
       <a href="Contacto.html">Contacto</a>
     </nav>
 
-    <!-- BOTÓN LOGIN -->
     <a href="#" class="login-btn">Acceder</a>
+    <button class="menu-toggle" id="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
   </header>
+
+  <!-- Hero Section -->
+  <section class="about-hero">
+    <div class="hero-content">
+      <h1>Nuestra Historia</h1>
+      <p>Tres generaciones dedicadas al cultivo del mejor café de Santander</p>
+    </div>
+  </section>
+
+  <!-- Contenido Principal -->
+  <div class="about-container">
+    <!-- Nuestra Historia -->
+    <section class="our-story">
+      <div class="story-image">
+        <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Historia de CaféSantander">
+      </div>
+      <div class="story-content">
+        <h2 class="section-title">Desde 1985</h2>
+        <p>Todo comenzó en las montañas de Santander, donde Don José Santander, nuestro fundador, cultivaba café con pasión y dedicación. Lo que empezó como una pequeña finca familiar se ha convertido en un legado que perdura por tres generaciones.</p>
+        <p>Hoy, continuamos con las mismas tradiciones y valores que nos inculcó Don José: respeto por la tierra, compromiso con la calidad y pasión por el café excepcional.</p>
+        <p>Cada taza de CaféSantander contiene no solo el sabor único de nuestras montañas, sino también la historia de una familia que ha dedicado su vida a perfeccionar el arte del cultivo del café.</p>
+      </div>
+    </section>
+
+    <!-- Nuestros Valores -->
+    <section class="our-values">
+      <h2 class="section-title">Nuestros Valores</h2>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-seedling"></i>
+          </div>
+          <h3>Sostenibilidad</h3>
+          <p>Practicamos agricultura sostenible que respeta el medio ambiente y beneficia a nuestras comunidades locales.</p>
+        </div>
+        
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-award"></i>
+          </div>
+          <h3>Calidad</h3>
+          <p>Nos comprometemos con los más altos estándares de calidad en cada etapa de nuestro proceso.</p>
+        </div>
+        
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-heart"></i>
+          </div>
+          <h3>Pasión</h3>
+          <p>Amamos lo que hacemos y esa pasión se refleja en cada grano de café que producimos.</p>
+        </div>
+        
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-hands-helping"></i>
+          </div>
+          <h3>Comunidad</h3>
+          <p>Trabajamos en estrecha colaboración con nuestras comunidades para crear un impacto positivo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Nuestro Equipo -->
+    <section class="our-team">
+      <h2 class="section-title">Conoce Nuestro Equipo</h2>
+      <div class="team-grid">
+        <div class="team-member">
+          <div class="member-image">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Carlos Santander">
+          </div>
+          <div class="member-info">
+            <h3>Carlos Santander</h3>
+            <div class="member-role">Director General</div>
+            <p class="member-bio">Nieto del fundador, continúa el legado familiar con innovación y respeto por la tradición.</p>
+            <div class="member-social">
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="team-member">
+          <div class="member-image">
+            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="María Rodríguez">
+          </div>
+          <div class="member-info">
+            <h3>María Rodríguez</h3>
+            <div class="member-role">Directora de Calidad</div>
+            <p class="member-bio">Especialista en catación con más de 15 años de experiencia en la industria del café.</p>
+            <div class="member-social">
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="team-member">
+          <div class="member-image">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Roberto Gómez">
+          </div>
+          <div class="member-info">
+            <h3>Roberto Gómez</h3>
+            <div class="member-role">Jefe de Cultivo</div>
+            <p class="member-bio">Supervisa nuestras fincas con técnicas sostenibles y conocimiento ancestral.</p>
+            <div class="member-social">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="team-member">
+          <div class="member-image">
+            <img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ana López">
+          </div>
+          <div class="member-info">
+            <h3>Ana López</h3>
+            <div class="member-role">Directora de Sostenibilidad</div>
+            <p class="member-bio">Lidera nuestros programas de responsabilidad social y ambiental.</p>
+            <div class="member-social">
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Logros y Estadísticas -->
+    <section class="achievements">
+      <h2 class="section-title">Nuestros Logros</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">38</div>
+          <div class="stat-label">Años de Experiencia</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Familias Beneficiadas</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">25</div>
+          <div class="stat-label">Premios de Calidad</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">15</div>
+          <div class="stat-label">Países que Exportamos</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Compromiso con la Sostenibilidad -->
+    <section class="sustainability">
+      <div class="sustainability-content">
+        <h2 class="section-title">Compromiso con la Sostenibilidad</h2>
+        <p>En CaféSantander creemos que un buen café no solo debe saber bien, sino que también debe hacer el bien. Por eso, hemos implementado prácticas que garantizan un impacto positivo en nuestro entorno y comunidades.</p>
+        
+        <div class="sustainability-features">
+          <div class="sustainability-feature">
+            <i class="fas fa-recycle"></i>
+            <h3>Agricultura Regenerativa</h3>
+            <p>Utilizamos técnicas que mejoran la salud del suelo y promueven la biodiversidad.</p>
+          </div>
+          
+          <div class="sustainability-feature">
+            <i class="fas fa-hand-holding-heart"></i>
+            <h3>Comercio Justo</h3>
+            <p>Garantizamos precios justos para nuestros productores y condiciones laborales dignas.</p>
+          </div>
+          
+          <div class="sustainability-feature">
+            <i class="fas fa-tint"></i>
+            <h3>Gestión del Agua</h3>
+            <p>Implementamos sistemas de riego eficientes y tratamos nuestras aguas residuales.</p>
+          </div>
+          
+          <div class="sustainability-feature">
+            <i class="fas fa-leaf"></i>
+            <h3>Energía Limpia</h3>
+            <p>Utilizamos energía solar en nuestras instalaciones de procesamiento.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>CaféSantander</h3>
+        <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Enlaces Rápidos</h3>
+        <ul>
+          <li><a href="Inicio.html">Inicio</a></li>
+          <li><a href="Acerca.html">Acerca</a></li>
+          <li><a href="Servicios.html">Servicios</a></li>
+          <li><a href="Contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Políticas</h3>
+        <ul>
+          <li><a href="#">Términos y Condiciones</a></li>
+          <li><a href="#">Política de Privacidad</a></li>
+          <li><a href="#">Política de Envíos</a></li>
+          <li><a href="#">Devoluciones</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Contacto</h3>
+        <ul>
+          <li><i class="fas fa-map-marker-alt"></i> Santander, Colombia</li>
+          <li><i class="fas fa-phone"></i> +57 321 456 7890</li>
+          <li><i class="fas fa-envelope"></i> info@cafesantander.com</li>
+          <li><i class="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Menú móvil
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainNav = document.getElementById('main-nav');
+
+    menuToggle.addEventListener('click', () => {
+      mainNav.classList.toggle('active');
+    });
+
+    // Animación de números para las estadísticas
+    function animateNumbers() {
+      const statNumbers = document.querySelectorAll('.stat-number');
+      
+      statNumbers.forEach(stat => {
+        const target = parseInt(stat.textContent);
+        let current = 0;
+        const increment = target / 50;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          stat.textContent = Math.floor(current);
+        }, 30);
+      });
+    }
+
+    // Observador de intersección para animar números cuando son visibles
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateNumbers();
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    // Observar la sección de logros
+    const achievementsSection = document.querySelector('.achievements');
+    if (achievementsSection) {
+      observer.observe(achievementsSection);
+    }
+
+    // Animación suave al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      const elements = document.querySelectorAll('.value-card, .team-member, .sustainability-feature');
+      
+      elements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        
+        setTimeout(() => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, 100 * index);
+      });
+    });
+  </script>
 </body>
 </html>

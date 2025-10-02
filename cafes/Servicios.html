@@ -3,19 +3,34 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catálogo de café</title>
+<title>Catálogo de café - Servicios</title>
 
 <style>
 :root {
   --bg:#fff;        /* Fondo blanco */
   --accent:#e7a33d; /* Color acento dorado */
   --text:#222;      /* Texto principal */
+  --light-bg: #f9f5f0;
+  --card: #fff;
+  --muted: #666;
+  --transition-fast: 0.2s;
+  --transition-medium: 0.4s;
+  --transition-slow: 0.9s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: var(--bg);
+  /* Suaviza las animaciones en toda la página */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ==============================
@@ -28,6 +43,10 @@ header {
   padding: 15px 60px;
   border-bottom: 2px solid var(--accent);
   background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 /* LOGO */
@@ -63,12 +82,29 @@ nav a {
   padding: 6px 12px;
   transition: all 0.3s ease;
   border-radius: 6px;
+  font-weight: 500;
+  position: relative;
 }
 
 /* Hover con fondo suave */
 nav a:hover {
   color: var(--accent);
-  background-color: #f9f9f9;
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+nav a:hover::after {
+  width: 80%;
 }
 
 /* ==============================
@@ -77,7 +113,7 @@ nav a:hover {
 .login-btn {
   background: none;
   border: 2px solid var(--accent);
-  padding: 6px 16px;
+  padding: 8px 20px;
   border-radius: 6px;
   font-weight: bold;
   text-decoration: none;
@@ -87,160 +123,792 @@ nav a:hover {
 .login-btn:hover {
   background: var(--accent);
   color: #fff;
+  transform: translateY(-2px);
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text);
 }
 
 /* ==============================
-   sobre la rueda
+   CONTENIDO PRINCIPAL
 ============================== */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
+.page-title {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: var(--light-bg);
+}
 
-  .wrap {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: right;
-    gap: 20px;
+.page-title h1 {
+  font-size: 2.5rem;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.page-title p {
+  font-size: 1.2rem;
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ==============================
+   SECCIÓN DE LA RULETA
+============================== */
+.ruleta-section {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  /* Animación de entrada para el contenido principal */
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.wheel-area {
+  flex: 1 1 680px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Efecto de profundidad */
+  perspective: 1000px;
+}
+
+.panel {
+  width: 320px;
+  background: var(--card);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  padding: 18px;
+  /* Transición suave para cambios de altura */
+  transition: height var(--transition-medium) ease;
+  /* Animación de entrada para el panel */
+  animation: slideInRight 0.8s ease-out 0.2s both;
+}
+
+.panel h2 { 
+  margin: 0 0 8px 0; 
+  font-size: 20px; 
+  /* Transición para cambios de contenido */
+  transition: color var(--transition-fast) ease;
+}
+
+.panel p.desc { 
+  color: var(--muted); 
+  margin: 0 0 12px 0; 
+  font-size: 14px; 
+  min-height: 42px; 
+  /* Transición para cambios de contenido */
+  transition: color var(--transition-fast) ease;
+}
+
+.suboptions, .subsuboptions {
+  margin-top: 8px;
+  /* Animación de entrada escalonada para opciones */
+  animation: fadeIn 0.5s ease-out;
+}
+
+.suboptions button, .subsuboptions button {
+  margin: 6px 6px 6px 0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: linear-gradient(#fff,#fafafa);
+  cursor: pointer;
+  font-size: 13px;
+  /* Transiciones para efectos de hover y focus */
+  transition: all var(--transition-fast) ease;
+  /* Evita que el texto se seleccione accidentalmente */
+  user-select: none;
+}
+
+/* Mejoras en la interacción con botones */
+.suboptions button:hover, .subsuboptions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-color: rgba(0,0,0,0.15);
+}
+
+.suboptions button:active, .subsuboptions button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.suboptions h4, .subsuboptions h4 { 
+  margin: 8px 0 6px 0; 
+  font-size: 14px; 
+  /* Animación de entrada para títulos */
+  animation: fadeIn 0.5s ease-out 0.1s both;
+}
+
+svg { 
+  max-width: 100%; 
+  height: auto; 
+  overflow: visible; 
+  /* Filtro sutil para mejorar la apariencia */
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+/* Mejoras en la animación de los sectores */
+.sector { 
+  stroke: #fff; 
+  stroke-width: 2; 
+  cursor: pointer; 
+  /* Transición más suave y natural */
+  transition: transform var(--transition-fast) cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              filter var(--transition-fast) ease;
+  /* Mejora el rendimiento de las transformaciones */
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* Efecto de elevación al pasar el cursor */
+.sector:hover { 
+  transform: scale(1.05) translateZ(10px);
+  filter: brightness(1.1) drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+}
+
+/* Efecto de "clic" en el sector */
+.sector:active {
+  transform: scale(0.98) translateZ(5px);
+  transition-duration: 0.1s;
+}
+
+/* Clase para animación de rebote al seleccionar */
+.sector-bounce {
+  animation: bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Estilos para las etiquetas de texto */
+.sector-label {
+  fill: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+  pointer-events: none;
+  user-select: none;
+  /* Sombra de texto para mejor legibilidad */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  /* Transición suave para la rotación */
+  transition: transform var(--transition-slow) cubic-bezier(.2,.9,.3,1);
+}
+
+/* CORRECCIÓN: rotar relativo al cuadro del elemento SVG */
+#wheelGroup {
+  transition: transform var(--transition-slow) cubic-bezier(.2,.9,.3,1);
+  transform-box: fill-box;        /* IMPORTANTE: define el cuadro de referencia para transformaciones */
+  transform-origin: 50% 50%;     /* centro del cuadro delimitador del grupo */
+  /* Animación de entrada para la ruleta */
+  animation: rotateIn 1s ease-out 0.4s both;
+}
+
+/* ==============================
+   FOOTER
+============================== */
+footer {
+  background: #2c2c2c;
+  color: white;
+  padding: 40px 20px 20px;
+  margin-top: auto;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-column h3 {
+  margin-bottom: 20px;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.footer-column ul {
+  list-style: none;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+}
+
+.footer-column ul li a {
+  color: #ccc;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.footer-column ul li a:hover {
+  color: var(--accent);
+  padding-left: 5px;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.social-links a:hover {
+  background: var(--accent);
+  transform: translateY(-3px);
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+/* Animaciones personalizadas */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes textFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+@media(max-width:1000px){
+  .ruleta-section { 
+    flex-direction: column; 
+    align-items: center; 
+  }
+  .panel{ 
+    width: 90%; 
+    margin-top: 12px; 
+    /* Animación diferente para móviles */
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+  
+  nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
     width: 100%;
-    max-width: 900px;
-  }
-
-  .wheel-container {
-    flex: 1 1 400px;
-    display: flex;
-    justify-content: right;
-    align-items: right;
-  }
-
-  svg {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .info-panel {
-    flex: 1 1 250px;
-    background: #fff;
+    background: white;
+    flex-direction: column;
     padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    min-width: 250px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    gap: 15px;
   }
-
-  .info-panel h2 { margin-top: 0; font-size: 18px; }
-  .info-panel p { font-size: 14px; color: #555; }
-
-  .sector {
-    stroke: #fff;
-    stroke-width: 2;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    transform-origin: 50% 50%;
+  
+  nav.active {
+    display: flex;
   }
-
-  .sector:hover {
-    transform: scale(1.1);
+  
+  .menu-toggle {
+    display: block;
   }
-
-  @media(max-width: 700px){
-    .wrap { flex-direction: column; align-items: center; }
+  
+  header {
+    padding: 15px 20px;
   }
+}
+
+@media (max-width: 768px) {
+  .page-title h1 {
+    font-size: 2rem;
+  }
+  
+  .page-title p {
+    font-size: 1rem;
+  }
+}
 </style>
 </head>
-
 <body>
+
+<div class="main-container">
+  <!-- ENCABEZADO -->
   <header>
-    <!-- LOGO -->
     <div class="logo">
-      <img src="https://st4.depositphotos.com/16781356/40357/v/1600/depositphotos_403577868-stock-illustration-coffee-logo-design-vector-illustration.jpg" alt="logo">
-      TuLogo
+      <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="logo">
+      CaféSantander
     </div>
 
-    <!-- MENÚ -->
-    <nav>
+    <nav id="main-nav">
       <a href="Inicio.html">Inicio</a>
       <a href="Acerca.html">Acerca</a>
-      <a href="Servicios.html">Servicios</a>
+      <a href="Servicios.html" style="color: var(--accent);">Servicios</a>
       <a href="Contacto.html">Contacto</a>
     </nav>
 
-    <!-- BOTÓN LOGIN -->
     <a href="#" class="login-btn">Acceder</a>
+    <button class="menu-toggle" id="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
   </header>
 
+  <!-- TÍTULO DE PÁGINA -->
+  <section class="page-title">
+    <h1>Nuestros Servicios</h1>
+    <p>Descubre los diferentes perfiles de sabor de nuestro café mediante nuestra ruleta interactiva</p>
+  </section>
 
-    <div class="wrap">
-    <div class="wheel-container">
-        <svg viewBox="0 0 500 500" id="wheel">
-        <circle cx="250" cy="250" r="200" fill="#eee" />
-        </svg>
+  <!-- SECCIÓN DE LA RULETA -->
+  <section class="ruleta-section">
+    <div class="wheel-area" style="position:relative;">
+      <svg viewBox="0 0 500 500" id="wheel" aria-hidden="true" width="500" height="500">
+        <g id="wheelGroup"></g>
+      </svg>
     </div>
-    <div class="info-panel" id="infoPanel">
-        <h2>Información del sector</h2>
-        <p>Haz clic en un sector para ver la descripción.</p>
+
+    <aside class="panel" id="infoPanel">
+      <h2 id="title">Selecciona un sector</h2>
+      <p class="desc" id="description">Haz clic en un sector de la ruleta para ver su descripción breve y opciones siguientes.</p>
+
+      <div class="suboptions" id="suboptions"></div>
+      <div class="subsuboptions" id="subsuboptions"></div>
+    </aside>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>CaféSantander</h3>
+        <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Enlaces Rápidos</h3>
+        <ul>
+          <li><a href="Inicio.html">Inicio</a></li>
+          <li><a href="Acerca.html">Acerca</a></li>
+          <li><a href="Servicios.html">Servicios</a></li>
+          <li><a href="Contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Contacto</h3>
+        <ul>
+          <li><i class="fas fa-map-marker-alt"></i> Santander, Colombia</li>
+          <li><i class="fas fa-phone"></i> +57 321 456 7890</li>
+          <li><i class="fas fa-envelope"></i> info@cafesantander.com</li>
+        </ul>
+      </div>
     </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
     </div>
+  </footer>
+</div>
 
-    <script>
-    const svg = document.getElementById("wheel");
-    const infoPanel = document.getElementById("infoPanel");
+<script>
+// Datos de la ruleta
+const sectores = [
+  { name: "DULCE", color:"#e74c3c", desc:"Sabores frutales y azucarados: manzana, pera, piña, frutos rojos." },
+  { name: "FLORAL", color:"#f1c40f", desc:"Aromas florales como jazmín, rosa y lavanda." },
+  { name: "AFRUTADO", color:"#2ecc71", desc:"Frutas secas y especiadas: canela, clavo, nuez moscada." },
+  { name: "ACIDO/FERMENTADO", color:"#1abc9c", desc:"Notas ácidas o fermentadas, como vinagre, sidra o frutas en fermentación." },
+  { name: "VERDE/VEGETAL", color:"#3498db", desc:"Notas herbales: pasto, hoja, té verde y vegetales." },
+  { name: "OTROS", color:"#9b59b6", desc:"Aromas cítricos y otras notas variadas." },
+  { name: "TOSTADO", color:"#34495e", desc:"Sabores a tostado: cacao, pan tostado, caramelo quemado." },
+  { name: "ESPECIAS", color:"#95a5a6", desc:"Especias como pimienta, nuez moscada, clavo y canela." },
+  { name: "NUECES/CACAO", color:"#e67e22", desc:"Nueces y cacao: almendra, avellana, nuez y chocolate." }
+];
 
-    // Datos de los 9 sectores
-    const sectores = [
-    { name: "Frutal", color:"#e74c3c", desc:"Sabores de frutas: manzana, pera, piña, frutos rojos." },
-    { name: "Floral", color:"#f1c40f", desc:"Aromas a flores: jazmín, rosa, lavanda." },
-    { name: "Especiado", color:"#2ecc71", desc:"Notas de canela, clavo, nuez moscada, pimienta." },
-    { name: "Tostado", color:"#1abc9c", desc:"Sabores de cacao, caramelo, pan tostado." },
-    { name: "Herbal", color:"#3498db", desc:"Notas de pasto, hoja, hierbas frescas." },
-    { name: "Cítrico", color:"#9b59b6", desc:"Aromas de limón, naranja, pomelo." },
-    { name: "Chocolate", color:"#34495e", desc:"Chocolate amargo, cacao puro, cacao tostado." },
-    { name: "Alcohólico", color:"#95a5a6", desc:"Vino, sidra, fermentados frutales." },
-    { name: "Nueces", color:"#e67e22", desc:"Almendra, avellana, nuez, cacahuete." }
-    ];
+// Mapeo de opciones secundarias
+const subOptionsMap = {
+  "DULCE": ["Miel","Azúcar","Frutas maduras"],
+  "FLORAL": ["Jazmín","Rosa","Lavanda"],
+  "AFRUTADO": ["Frutas rojas","Cítricos","Frutas secas"],
+  "ACIDO/FERMENTADO": ["Sidra","Vinagre","Yogurt"],
+  "VERDE/VEGETAL": ["Hierba","Hoja","Té verde"],
+  "OTROS": ["Cítrico","Limón","Naranja"],
+  "TOSTADO": ["Cacao","Pan","Caramelo"],
+  "ESPECIAS": ["Pimienta","Clavo","Canela"],
+  "NUECES/CACAO": ["Almendra","Avellana","Chocolate amargo"]
+};
 
-    // Polar a cartesiano
-    function polarToCartesian(cx, cy, r, angleDeg){
-    const angle = (angleDeg-90)*Math.PI/180;
-    return { x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) };
-    }
+// Mapeo de opciones terciarias
+const subSubMap = {
+  "Miel": ["Miel de flores","Miel de bosque"],
+  "Azúcar": ["Azúcar moreno","Azúcar blanco"],
+  "Frutas maduras": ["Plátano","Mango"],
+  "Jazmín": ["Jazmín fresco","Jazmín seco"],
+  "Rosa": ["Rosa fresca","Rosa seca"],
+  "Lavanda": ["Lavanda floral","Lavanda seca"],
+  "Frutas rojas": ["Frambuesa","Cereza"],
+  "Cítricos": ["Naranja","Pomelo"],
+  "Frutas secas": ["Ciruela","Pasas"],
+  "Sidra": ["Sidra verde","Sidra madura"],
+  "Vinagre": ["Vinagre balsámico","Vinagre de vino"],
+  "Yogurt": ["Yogurt natural","Yogurt agrio"],
+  "Hierba": ["Pasto recién cortado","Pasto seco"],
+  "Hoja": ["Hoja verde","Hoja seca"],
+  "Té verde": ["Matcha","Sencha"],
+  "Cítrico": ["Lima","Toronja"],
+  "Limón": ["Limón fresco","Lima ácida"],
+  "Naranja": ["Naranja dulce","Naranja amarga"],
+  "Cacao": ["Cacao puro","Cacao procesado"],
+  "Pan": ["Pan tostado","Pan integral"],
+  "Caramelo": ["Caramelo claro","Caramelo oscuro"],
+  "Pimienta": ["Pimienta negra","Pimienta blanca"],
+  "Clavo": ["Clavo entero","Clavo molido"],
+  "Canela": ["Canela cassia","Canela de Ceilán"],
+  "Almendra": ["Almendra tostada","Almendra cruda"],
+  "Avellana": ["Avellana tostada","Avellana cruda"],
+  "Chocolate amargo": ["70% cacao","85% cacao"]
+};
 
-    // Crear path de sector
-    function createSector(cx, cy, r, startAngle, endAngle, fill, data){
-    const start = polarToCartesian(cx, cy, r, endAngle);
-    const end = polarToCartesian(cx, cy, r, startAngle);
-    const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+// Constantes para la geometría de la ruleta
+const cx = 250, cy = 250, outerR = 200, innerR = 90;
+const wheelGroup = document.getElementById('wheelGroup');
+let currentRotation = 0;
+let lastSelectedSector = null;
 
-    const d = ["M", cx, cy,
-                "L", start.x, start.y,
-                "A", r, r, 0, largeArc, 0, end.x, end.y,
-                "Z"].join(" ");
+// Convierte coordenadas polares a cartesianas
+function polarToCartesian(cx, cy, r, angleDeg){
+  const angle = (angleDeg-90) * Math.PI/180;
+  return { x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) };
+}
 
-    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-    path.setAttribute("d", d);
-    path.setAttribute("fill", fill);
-    path.classList.add("sector");
-    path.dataset.name = data.name;
-    path.dataset.desc = data.desc;
+// Crea un sector de la ruleta
+function createSectorRing(cx, cy, rOuter, rInner, startAngle, endAngle, fill, data, idx){
+  const outerStart = polarToCartesian(cx, cy, rOuter, startAngle);
+  const outerEnd   = polarToCartesian(cx, cy, rOuter, endAngle);
+  const innerStart = polarToCartesian(cx, cy, rInner, startAngle);
+  const innerEnd   = polarToCartesian(cx, cy, rInner, endAngle);
+  const largeArc = (endAngle - startAngle) <= 180 ? 0 : 1;
 
-    path.addEventListener("click", ()=>{
-        infoPanel.innerHTML = `<h2>${data.name}</h2><p>${data.desc}</p>`;
+  // Construye el path SVG para el sector
+  const d = [
+    'M', outerStart.x, outerStart.y,
+    'A', rOuter, rOuter, 0, largeArc, 1, outerEnd.x, outerEnd.y,
+    'L', innerEnd.x, innerEnd.y,
+    'A', rInner, rInner, 0, largeArc, 0, innerStart.x, innerStart.y,
+    'Z'
+  ].join(' ');
+
+  // Crea el elemento path
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d', d);
+  path.setAttribute('fill', fill);
+  path.classList.add('sector');
+  path.dataset.name = data.name;
+  path.dataset.desc = data.desc;
+  path.dataset.index = idx;
+
+  // Añade el evento de clic
+  path.addEventListener('click', ()=> onSelectSector(parseInt(path.dataset.index,10)));
+  return path;
+}
+
+// Añade etiquetas a los sectores
+function addLabel(cx, cy, rInner, rOuter, startAngle, endAngle, label, idx){
+  const midAngle = (startAngle + endAngle) / 2;
+  // Posiciona la etiqueta más cerca del borde exterior para mejor legibilidad
+  const labelR = (rInner + rOuter) / 2 + 15;
+  const pos = polarToCartesian(cx, cy, labelR, midAngle);
+  
+  // Determina la rotación del texto para que siga la curva del sector
+  let textRotation = midAngle;
+  if (textRotation > 90 && textRotation < 270) {
+    textRotation += 180; // Voltea el texto para que sea legible
+  }
+
+  const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+  text.setAttribute('x', pos.x);
+  text.setAttribute('y', pos.y);
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('dominant-baseline', 'middle');
+  text.setAttribute('class', 'sector-label');
+  text.setAttribute('data-index', idx);
+  
+  // Aplica rotación al texto
+  text.setAttribute('transform', `rotate(${textRotation}, ${pos.x}, ${pos.y})`);
+  
+  // Divide el texto si es muy largo
+  if (label.length > 10) {
+    const parts = splitLabel(label);
+    text.innerHTML = ''; // Limpia el contenido
+    
+    parts.forEach((part, i) => {
+      const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+      tspan.setAttribute('x', pos.x);
+      tspan.setAttribute('dy', i === 0 ? '0' : '1.2em');
+      tspan.textContent = part;
+      text.appendChild(tspan);
     });
+  } else {
+    text.textContent = label;
+  }
+  
+  // Añade animación de entrada escalonada
+  text.style.animation = `textFadeIn 0.6s ease-out ${0.5 + idx * 0.1}s both`;
+  
+  wheelGroup.appendChild(text);
+}
 
-    return path;
-    }
-
-    // Dibujar rueda
-    function drawWheel(){
-    const total = sectores.length;
-    const anglePer = 360 / total;
-    let currentAngle = 0;
-
-    sectores.forEach(sec => {
-        const sectorPath = createSector(250, 250, 200, currentAngle, currentAngle + anglePer, sec.color, sec);
-        svg.appendChild(sectorPath);
-        currentAngle += anglePer;
+// Divide etiquetas largas en varias líneas
+function splitLabel(label) {
+  const maxLength = 8;
+  if (label.length <= maxLength) return [label];
+  
+  // Busca un punto natural para dividir
+  const parts = label.split('/');
+  if (parts.length > 1) return parts;
+  
+  // Divide por espacios si es posible
+  const words = label.split(' ');
+  if (words.length > 1) {
+    const result = [];
+    let currentLine = '';
+    
+    words.forEach(word => {
+      if ((currentLine + word).length <= maxLength) {
+        currentLine += (currentLine ? ' ' : '') + word;
+      } else {
+        if (currentLine) result.push(currentLine);
+        currentLine = word;
+      }
     });
-    }
+    
+    if (currentLine) result.push(currentLine);
+    return result;
+  }
+  
+  // Divide la palabra si es muy larga
+  const mid = Math.ceil(label.length / 2);
+  return [label.substring(0, mid), label.substring(mid)];
+}
 
-    drawWheel();
-    </script>
+// Dibuja la ruleta completa
+function drawWheel(){
+  const total = sectores.length;
+  const anglePer = 360 / total;
+  let currentAngle = 0;
+  wheelGroup.innerHTML = '';
+
+  sectores.forEach((sec, idx) => {
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + anglePer;
+    const path = createSectorRing(cx, cy, outerR, innerR, startAngle, endAngle, sec.color, sec, idx);
+    wheelGroup.appendChild(path);
+    addLabel(cx, cy, innerR, outerR, startAngle, endAngle, sec.name, idx);
+    currentAngle += anglePer;
+  });
+}
+
+// Inicializa la ruleta
+drawWheel();
+
+/* Elementos del panel */
+const titleEl = document.getElementById('title');
+const descEl  = document.getElementById('description');
+const subEl   = document.getElementById('suboptions');
+const subsubEl= document.getElementById('subsuboptions');
+
+// Limpia las opciones terciarias
+function clearSubSub(){ 
+  subsubEl.innerHTML = ''; 
+}
+
+// Limpia las opciones secundarias
+function clearSub(){ 
+  subEl.innerHTML = ''; 
+  clearSubSub(); 
+}
+
+// Maneja la selección de un sector
+function onSelectSector(index){
+  const sec = sectores[index];
+  
+  // Añade efecto de rebote al sector seleccionado
+  if (lastSelectedSector !== null) {
+    const previousSector = document.querySelector(`.sector[data-index="${lastSelectedSector}"]`);
+    if (previousSector) {
+      previousSector.classList.remove('sector-bounce');
+    }
+  }
+  
+  const currentSector = document.querySelector(`.sector[data-index="${index}"]`);
+  if (currentSector) {
+    currentSector.classList.add('sector-bounce');
+    // Remueve la clase después de que termine la animación
+    setTimeout(() => {
+      currentSector.classList.remove('sector-bounce');
+    }, 500);
+  }
+  
+  lastSelectedSector = index;
+  
+  // Actualiza el contenido del panel
+  titleEl.innerText = sec.name;
+  descEl.innerText = sec.desc || '';
+
+  clearSub();
+  const subs = subOptionsMap[sec.name] || [];
+  if(subs.length){
+    const h4 = document.createElement('h4'); 
+    h4.innerText = 'Opciones'; 
+    subEl.appendChild(h4);
+    
+    subs.forEach(s => {
+      const btn = document.createElement('button');
+      btn.innerText = s;
+      btn.addEventListener('click', ()=> onSelectSub(s));
+      subEl.appendChild(btn);
+    });
+  } else {
+    subEl.innerHTML = '<p style="color:var(--muted)">No hay opciones adicionales.</p>';
+  }
+
+  rotateToSector(index);
+}
+
+// Maneja la selección de una opción secundaria
+function onSelectSub(sub){
+  subsubEl.innerHTML = '';
+  const header = document.createElement('h4'); 
+  header.innerText = 'Detalles';
+  subsubEl.appendChild(header);
+
+  const items = subSubMap[sub] || [];
+  if(items.length){
+    items.forEach(it => {
+      const b = document.createElement('button');
+      b.innerText = it;
+      b.addEventListener('click', ()=> {
+        descEl.innerText = `${titleEl.innerText} › ${sub} › ${it}`;
+      });
+      subsubEl.appendChild(b);
+    });
+  } else {
+    const p = document.createElement('p'); 
+    p.innerText = 'No hay más detalles.'; 
+    p.style.color = 'var(--muted)';
+    subsubEl.appendChild(p);
+  }
+}
+
+// Rota la ruleta para mostrar el sector seleccionado
+function rotateToSector(index){
+  const total = sectores.length;
+  const anglePer = 360/total;
+  const sectorAngle = -90 + index*anglePer + anglePer/2;
+  const targetRotation = -sectorAngle;
+
+  // Normaliza la diferencia para girar por el camino más corto
+  const diff = ((targetRotation - currentRotation + 540) % 360) - 180;
+  currentRotation += diff;
+
+  // Aplica rotación en grados (CSS)
+  wheelGroup.style.transform = `rotate(${currentRotation}deg)`;
+}
+
+// Menú móvil
+const menuToggle = document.getElementById('menu-toggle');
+const mainNav = document.getElementById('main-nav');
+
+menuToggle.addEventListener('click', () => {
+  mainNav.classList.toggle('active');
+});
+
+// Cerrar menú al hacer clic en un enlace
+document.querySelectorAll('nav a').forEach(link => {
+  link.addEventListener('click', () => {
+    mainNav.classList.remove('active');
+  });
+});
+</script>
 
 </body>
 </html>

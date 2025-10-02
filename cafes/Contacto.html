@@ -3,19 +3,32 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catálogo de café</title>
-
+<title>Contacto - CaféSantander</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
   --bg:#fff;        /* Fondo blanco */
   --accent:#e7a33d; /* Color acento dorado */
+  --accent-dark:#c58425;
   --text:#222;      /* Texto principal */
+  --light-bg:#f9f5f0;
+  --dark-text:#3a2611;
+  --transition: all 0.3s ease;
+  --shadow: 0 4px 12px rgba(0,0,0,0.1);
+  --radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
 }
 
 /* ==============================
@@ -28,6 +41,10 @@ header {
   padding: 15px 60px;
   border-bottom: 2px solid var(--accent);
   background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 /* LOGO */
@@ -35,7 +52,7 @@ header {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   color: var(--text);
 }
@@ -63,12 +80,38 @@ nav a {
   padding: 6px 12px;
   transition: all 0.3s ease;
   border-radius: 6px;
+  font-weight: 500;
+  position: relative;
 }
 
 /* Hover con fondo suave */
 nav a:hover {
   color: var(--accent);
-  background-color: #f9f9f9;
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+nav a:hover::after {
+  width: 80%;
+}
+
+nav a.active {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+nav a.active::after {
+  width: 80%;
 }
 
 /* ==============================
@@ -77,7 +120,7 @@ nav a:hover {
 .login-btn {
   background: none;
   border: 2px solid var(--accent);
-  padding: 6px 16px;
+  padding: 8px 20px;
   border-radius: 6px;
   font-weight: bold;
   text-decoration: none;
@@ -87,28 +130,753 @@ nav a:hover {
 .login-btn:hover {
   background: var(--accent);
   color: #fff;
+  transform: translateY(-2px);
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+/* ==============================
+   HERO SECTION
+============================== */
+.contact-hero {
+  height: 50vh;
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  max-width: 600px;
+  margin: 0 auto;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* ==============================
+   CONTENIDO PRINCIPAL
+============================== */
+.contact-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+  color: var(--dark-text);
+  font-size: 2.5rem;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--accent);
+}
+
+/* ==============================
+   SECCIÓN DE CONTACTO
+============================== */
+.contact-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  margin-bottom: 80px;
+}
+
+/* Información de contacto */
+.contact-info {
+  background: var(--light-bg);
+  padding: 40px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.contact-info h3 {
+  margin-bottom: 30px;
+  color: var(--dark-text);
+  font-size: 1.8rem;
+}
+
+.contact-details {
+  margin-bottom: 40px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+
+.contact-icon {
+  width: 50px;
+  height: 50px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  color: white;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.contact-text h4 {
+  margin-bottom: 5px;
+  color: var(--dark-text);
+}
+
+.contact-text p {
+  color: #666;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  background: var(--accent);
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+  transition: var(--transition);
+  font-size: 1.2rem;
+}
+
+.social-links a:hover {
+  background: var(--accent-dark);
+  transform: translateY(-3px);
+}
+
+/* Formulario de contacto */
+.contact-form {
+  background: white;
+  padding: 40px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.contact-form h3 {
+  margin-bottom: 30px;
+  color: var(--dark-text);
+  font-size: 1.8rem;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--dark-text);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(231, 163, 61, 0.2);
+}
+
+.form-group textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.submit-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.submit-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+/* ==============================
+   MAPA Y UBICACIÓN
+============================== */
+.map-section {
+  margin-bottom: 80px;
+}
+
+.map-container {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  height: 400px;
+}
+
+.map-placeholder {
+  height: 100%;
+  background: var(--light-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.map-placeholder i {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+
+/* ==============================
+   PREGUNTAS FRECUENTES
+============================== */
+.faq-section {
+  background: var(--light-bg);
+  padding: 80px 20px;
+}
+
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  background: white;
+  margin-bottom: 15px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.faq-question {
+  padding: 20px 25px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.faq-question:hover {
+  background: #f9f9f9;
+}
+
+.faq-question i {
+  color: var(--accent);
+  transition: var(--transition);
+}
+
+.faq-answer {
+  padding: 0 25px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.faq-answer p {
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+}
+
+.faq-item.active .faq-question i {
+  transform: rotate(180deg);
+}
+
+/* ==============================
+   FOOTER
+============================== */
+footer {
+  background: var(--dark-text);
+  color: white;
+  padding: 60px 30px 30px;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-column h3 {
+  margin-bottom: 20px;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.footer-column ul {
+  list-style: none;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+}
+
+.footer-column ul li a {
+  color: #ccc;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.footer-column ul li a:hover {
+  color: var(--accent);
+  padding-left: 5px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+@media (max-width: 1024px) {
+  .contact-section {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .contact-hero {
+    height: 40vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 2.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 15px 20px;
+  }
+  
+  nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    gap: 15px;
+  }
+  
+  nav.active {
+    display: flex;
+  }
+  
+  .menu-toggle {
+    display: block;
+  }
+  
+  .contact-hero {
+    height: 35vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+  
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+  
+  .contact-info,
+  .contact-form {
+    padding: 25px;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-hero {
+    height: 30vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+  
+  .contact-container {
+    padding: 50px 15px;
+  }
+  
+  .contact-info,
+  .contact-form {
+    padding: 20px;
+  }
+  
+  .contact-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .contact-icon {
+    margin-bottom: 10px;
+  }
 }
 </style>
 </head>
 
 <body>
   <header>
-    <!-- LOGO -->
     <div class="logo">
-      <img src="https://st4.depositphotos.com/16781356/40357/v/1600/depositphotos_403577868-stock-illustration-coffee-logo-design-vector-illustration.jpg" alt="logo">
-      TuLogo
+      <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="logo">
+      CaféSantander
     </div>
 
-    <!-- MENÚ -->
-    <nav>
+    <nav id="main-nav">
       <a href="Inicio.html">Inicio</a>
       <a href="Acerca.html">Acerca</a>
       <a href="Servicios.html">Servicios</a>
-      <a href="Contacto.html">Contacto</a>
+      <a href="Contacto.html" class="active">Contacto</a>
     </nav>
 
-    <!-- BOTÓN LOGIN -->
     <a href="#" class="login-btn">Acceder</a>
+    <button class="menu-toggle" id="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
   </header>
+
+  <!-- Hero Section -->
+  <section class="contact-hero">
+    <div class="hero-content">
+      <h1>Contáctanos</h1>
+      <p>Estamos aquí para responder todas tus preguntas sobre nuestro café y servicios</p>
+    </div>
+  </section>
+
+  <!-- Contenido Principal -->
+  <div class="contact-container">
+    <!-- Sección de Contacto -->
+    <section class="contact-section">
+      <!-- Información de Contacto -->
+      <div class="contact-info">
+        <h3>Información de Contacto</h3>
+        
+        <div class="contact-details">
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="contact-text">
+              <h4>Nuestra Ubicación</h4>
+              <p>Santander, Colombia<br>Finca La Esperanza, Vereda El Cafetal</p>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-phone"></i>
+            </div>
+            <div class="contact-text">
+              <h4>Teléfono</h4>
+              <p>+57 321 456 7890<br>Lun-Vie: 8:00am - 6:00pm</p>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="contact-text">
+              <h4>Email</h4>
+              <p>info@cafesantander.com<br>ventas@cafesantander.com</p>
+            </div>
+          </div>
+        </div>
+        
+        <h4>Síguenos en redes sociales</h4>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+      
+      <!-- Formulario de Contacto -->
+      <div class="contact-form">
+        <h3>Envíanos un Mensaje</h3>
+        <form id="contactForm">
+          <div class="form-group">
+            <label for="name">Nombre Completo *</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Correo Electrónico *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Teléfono</label>
+            <input type="tel" id="phone" name="phone">
+          </div>
+          
+          <div class="form-group">
+            <label for="subject">Asunto *</label>
+            <select id="subject" name="subject" required>
+              <option value="">Selecciona un asunto</option>
+              <option value="general">Consulta General</option>
+              <option value="productos">Información de Productos</option>
+              <option value="pedidos">Pedidos y Envíos</option>
+              <option value="socios">Socios y Distribuidores</option>
+              <option value="otros">Otros</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="message">Mensaje *</label>
+            <textarea id="message" name="message" placeholder="Escribe tu mensaje aquí..." required></textarea>
+          </div>
+          
+          <button type="submit" class="submit-btn">Enviar Mensaje</button>
+        </form>
+      </div>
+    </section>
+    
+    <!-- Mapa y Ubicación -->
+    <section class="map-section">
+      <h2 class="section-title">Nuestra Ubicación</h2>
+      <div class="map-container">
+        <div class="map-placeholder">
+          <i class="fas fa-map-marked-alt"></i>
+          <h3>Santander, Colombia</h3>
+          <p>Finca La Esperanza, Vereda El Cafetal</p>
+          <p style="margin-top: 10px; font-size: 0.9rem;">(Mapa interactivo se cargaría aquí)</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Preguntas Frecuentes -->
+    <section class="faq-section">
+      <h2 class="section-title">Preguntas Frecuentes</h2>
+      <div class="faq-container">
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>¿Cuál es el tiempo de entrega de los pedidos?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>El tiempo de entrega varía según la ubicación. En áreas urbanas principales, los pedidos se entregan en 2-3 días hábiles. Para zonas rurales, puede tomar hasta 5 días hábiles. Ofrecemos seguimiento en tiempo real para todos los pedidos.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>¿Ofrecen envío internacional?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Sí, realizamos envíos internacionales a la mayoría de países. Los tiempos de entrega y costos varían según el destino. Contáctanos para obtener una cotización específica para tu país.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>¿Puedo visitar su finca de café?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>¡Por supuesto! Ofrecemos tours guiados por nuestra finca donde podrás conocer nuestro proceso de cultivo y producción. Los tours deben reservarse con al menos 48 horas de anticipación. Contáctanos para coordinar tu visita.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>¿Tienen opciones de café descafeinado?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Sí, ofrecemos varias opciones de café descafeinado procesado con métodos naturales que preservan el sabor y aroma del café. Consulta nuestra sección de productos para ver las variedades disponibles.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>¿Ofrecen descuentos por compras al por mayor?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Sí, ofrecemos precios especiales para cafeterías, restaurantes y distribuidores. Los descuentos varían según el volumen de compra. Contáctanos para discutir tus necesidades específicas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>CaféSantander</h3>
+        <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Enlaces Rápidos</h3>
+        <ul>
+          <li><a href="Inicio.html">Inicio</a></li>
+          <li><a href="Acerca.html">Acerca</a></li>
+          <li><a href="Servicios.html">Servicios</a></li>
+          <li><a href="Contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Políticas</h3>
+        <ul>
+          <li><a href="#">Términos y Condiciones</a></li>
+          <li><a href="#">Política de Privacidad</a></li>
+          <li><a href="#">Política de Envíos</a></li>
+          <li><a href="#">Devoluciones</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Contacto</h3>
+        <ul>
+          <li><i class="fas fa-map-marker-alt"></i> Santander, Colombia</li>
+          <li><i class="fas fa-phone"></i> +57 321 456 7890</li>
+          <li><i class="fas fa-envelope"></i> info@cafesantander.com</li>
+          <li><i class="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Menú móvil
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainNav = document.getElementById('main-nav');
+
+    menuToggle.addEventListener('click', () => {
+      mainNav.classList.toggle('active');
+    });
+
+    // FAQ interactivo
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      
+      question.addEventListener('click', () => {
+        // Cerrar otros items abiertos
+        faqItems.forEach(otherItem => {
+          if (otherItem !== item && otherItem.classList.contains('active')) {
+            otherItem.classList.remove('active');
+            otherItem.querySelector('.faq-answer').style.maxHeight = null;
+          }
+        });
+        
+        // Alternar el item actual
+        item.classList.toggle('active');
+        const answer = item.querySelector('.faq-answer');
+        
+        if (item.classList.contains('active')) {
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+        } else {
+          answer.style.maxHeight = null;
+        }
+      });
+    });
+
+    // Formulario de contacto
+    const contactForm = document.getElementById('contactForm');
+    
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Aquí iría la lógica para enviar el formulario
+      // Por ahora, solo mostramos un mensaje de éxito
+      alert('¡Gracias por tu mensaje! Te contactaremos pronto.');
+      contactForm.reset();
+    });
+
+    // Animación suave al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      const elements = document.querySelectorAll('.contact-info, .contact-form, .map-section, .faq-item');
+      
+      elements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        
+        setTimeout(() => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, 100 * index);
+      });
+    });
+  </script>
 </body>
 </html>
