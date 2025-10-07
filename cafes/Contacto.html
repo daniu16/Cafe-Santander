@@ -579,13 +579,61 @@ footer {
     margin-bottom: 10px;
   }
 }
+
+/* ==============================
+   SECCIÓN DE MAPA
+============================== */
+.map-section {
+  margin: 60px auto;
+  max-width: 1000px;
+}
+
+.map-option {
+  margin-bottom: 50px;
+  padding: 30px;
+  background: var(--light-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.map-container {
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.location-info {
+  text-align: center;
+  padding: 20px;
+  background: var(--light-bg);
+  border-radius: var(--radius);
+  margin-top: 20px;
+}
+
+.location-info i {
+  font-size: 2.5rem;
+  color: var(--accent);
+  margin-bottom: 15px;
+}
+
+.location-info h3 {
+  margin-bottom: 10px;
+  color: var(--dark-text);
+}
+
+.location-info p {
+  color: #666;
+  margin-bottom: 5px;
+}
 </style>
 </head>
 
 <body>
   <header>
     <div class="logo">
-      <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="logo">
+      <img src="imagenes/logoCafe.png" alt="logo">
       CaféSantander
     </div>
 
@@ -700,15 +748,26 @@ footer {
       </div>
     </section>
     
-    <!-- Mapa y Ubicación -->
+    <!-- Seleccion de mapa -->
     <section class="map-section">
-      <h2 class="section-title">Nuestra Ubicación</h2>
-      <div class="map-container">
-        <div class="map-placeholder">
+      <h2 class="section-title" style="text-align:center;">Nuestra Ubicación</h2>
+
+      <!-- OpenStreetMap -->
+      <div class="map-option">
+        <h3 style="text-align: center;">Encuéntranos</h3>
+        <div class="map-container">
+          <iframe 
+            src="https://www.openstreetmap.org/export/embed.html?bbox=-73.07174%2C6.60889%2C-73.05174%2C6.62889&layer=mapnik&marker=6.61889%2C-73.06174"
+            width="100%" 
+            height="400" 
+            style="border: none; border-radius: 8px;"
+            title="Ubicación de CaféSantander en OpenStreetMap">
+          </iframe>
+        </div>
+        <div class="location-info">
           <i class="fas fa-map-marked-alt"></i>
           <h3>Santander, Colombia</h3>
-          <p>Finca La Esperanza, Vereda El Cafetal</p>
-          <p style="margin-top: 10px; font-size: 0.9rem;">(Mapa interactivo se cargaría aquí)</p>
+          <p>Finca el Cucharal, Vereda El Carmen</p>
         </div>
       </div>
     </section>

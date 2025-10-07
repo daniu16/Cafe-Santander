@@ -115,6 +115,7 @@ header {
   z-index: 999;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
+
 .section-nav a {
   text-decoration: none;
   color: var(--text);
@@ -126,11 +127,13 @@ header {
   background: rgba(255,255,255,0.7);
   border: 1px solid rgba(0,0,0,0.08);
 }
+
 .section-nav a:hover {
   background: var(--accent);
   color: white;
   transform: translateY(-2px);
 }
+
 .section-nav a.active {
   background: var(--accent);
   color: white;
@@ -349,6 +352,26 @@ section {
 
 .add-to-cart:hover {
   background: var(--accent-dark);
+}
+
+/* Mensaje de productos */
+.product-message {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--accent);
+  color: white;
+  margin: 40px 0;
+}
+
+.product-message h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.product-message p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 /* Sobre nosotros */
@@ -593,58 +616,6 @@ section {
   color: var(--accent-dark);
 }
 
-/* Newsletter */
-.newsletter {
-  text-align: center;
-  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
-  background-size: cover;
-  background-position: center;
-  color: white;
-}
-
-.newsletter-content {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.newsletter h2 {
-  margin-bottom: 20px;
-}
-
-.newsletter p {
-  margin-bottom: 30px;
-  font-size: 1.1rem;
-}
-
-.newsletter-form {
-  display: flex;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.newsletter-form input {
-  flex: 1;
-  padding: 15px;
-  border: none;
-  border-radius: var(--radius) 0 0 var(--radius);
-  font-size: 1rem;
-}
-
-.newsletter-form button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 0 25px;
-  border-radius: 0 var(--radius) var(--radius) 0;
-  cursor: pointer;
-  font-weight: bold;
-  transition: var(--transition);
-}
-
-.newsletter-form button:hover {
-  background: var(--accent-dark);
-}
-
 /* Footer */
 footer {
   background: var(--dark-text);
@@ -779,21 +750,6 @@ footer {
     flex: 1 1 100%;
   }
   
-  .newsletter-form {
-    flex-direction: column;
-  }
-  
-  .newsletter-form input,
-  .newsletter-form button {
-    border-radius: var(--radius);
-    width: 100%;
-  }
-  
-  .newsletter-form button {
-    margin-top: 10px;
-    padding: 15px;
-  }
-  
   section {
     scroll-margin-top: 80px;
   }
@@ -811,6 +767,14 @@ footer {
   section {
     padding: 60px 15px;
   }
+  
+  .product-message h2 {
+    font-size: 1.5rem;
+  }
+  
+  .product-message p {
+    font-size: 1rem;
+  }
 }
 </style>
 </head>
@@ -818,7 +782,7 @@ footer {
 <body>
   <header>
     <div class="logo">
-      <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="logo">
+      <img src="imagenes/logoCafe.png" alt="logo">
       CaféSantander
     </div>
 
@@ -837,7 +801,7 @@ footer {
   </header>
 
   <!-- Navegación por secciones (dentro de la página) -->
-  <nav class="section-nav">
+  <nav class="section-nav" id="section-nav">
     <a href="#productos">Productos</a>
     <a href="#nosotros">Nosotros</a>
     <a href="#proceso">Proceso</a>
@@ -867,7 +831,7 @@ footer {
           <h3>Café Arábica Premium</h3>
           <p>Café de altura con notas afrutadas y aroma intenso. Ideal para los paladares más exigentes.</p>
           <div class="product-price">
-            <span class="price">$12.99</span>
+            <span class="price">$42.000 COP</span>
             <button class="add-to-cart">Añadir al carrito</button>
           </div>
         </div>
@@ -881,7 +845,7 @@ footer {
           <h3>Café Robusta Selecto</h3>
           <p>Intenso y con cuerpo, perfecto para empezar el día con energía. Notas a chocolate y especias.</p>
           <div class="product-price">
-            <span class="price">$10.99</span>
+            <span class="price">$36.000 COP</span>
             <button class="add-to-cart">Añadir al carrito</button>
           </div>
         </div>
@@ -895,7 +859,7 @@ footer {
           <h3>Café Descafeinado Natural</h3>
           <p>Todo el sabor sin la cafeína. Proceso natural que preserva el aroma y sabor original.</p>
           <div class="product-price">
-            <span class="price">$14.99</span>
+            <span class="price">$49.000 COP</span>
             <button class="add-to-cart">Añadir al carrito</button>
           </div>
         </div>
@@ -909,13 +873,48 @@ footer {
           <h3>Mezcla Especial Santander</h3>
           <p>Nuestra mezcla exclusiva con granos seleccionados de las mejores fincas colombianas.</p>
           <div class="product-price">
-            <span class="price">$16.99</span>
+            <span class="price">$55.000 COP</span>
+            <button class="add-to-cart">Añadir al carrito</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Nuevos productos de repostería -->
+      <div class="product-card">
+        <div class="product-image">
+          <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Pastel de Chocolate">
+        </div>
+        <div class="product-info">
+          <h3>Pastel de Chocolate Artesanal</h3>
+          <p>Delicioso pastel de chocolate con cobertura de ganache y relleno cremoso. Perfecto para acompañar tu café.</p>
+          <div class="product-price">
+            <span class="price">$25.000 COP</span>
+            <button class="add-to-cart">Añadir al carrito</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="product-card">
+        <div class="product-image">
+          <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Croissants">
+        </div>
+        <div class="product-info">
+          <h3>Croissants de Mantequilla</h3>
+          <p>Croissants recién horneados, crujientes por fuera y suaves por dentro. El acompañamiento perfecto para tu café.</p>
+          <div class="product-price">
+            <span class="price">$18.000 COP</span>
             <button class="add-to-cart">Añadir al carrito</button>
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Mensaje de productos -->
+  <div class="product-message">
+    <h2>¿Estás cerca de nuestras oficinas?</h2>
+    <p>No te contengas, pide nuestros productos directamente. ¡Entrega rápida y fresca en tu zona!</p>
+  </div>
 
   <!-- Sobre Nosotros -->
   <section class="about-us" id="nosotros">
@@ -1085,18 +1084,6 @@ footer {
           <a href="#" class="read-more">Leer más</a>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- Newsletter -->
-  <section class="newsletter">
-    <div class="newsletter-content">
-      <h2 class="section-title">Suscríbete a Nuestro Newsletter</h2>
-      <p>Recibe ofertas exclusivas, consejos para preparar café y las últimas noticias sobre nuestros productos.</p>
-      <form class="newsletter-form">
-        <input type="email" placeholder="Tu correo electrónico" required>
-        <button type="submit">Suscribirse</button>
-      </form>
     </div>
   </section>
 
