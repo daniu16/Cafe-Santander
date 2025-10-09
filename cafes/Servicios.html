@@ -3,16 +3,24 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catálogo de café - Servicios</title>
-
+<title>Servicios - CaféSantander</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
 :root {
-  --bg:#fff;        /* Fondo blanco */
-  --accent:#e7a33d; /* Color acento dorado */
-  --text:#222;      /* Texto principal */
-  --light-bg: #f9f5f0;
-  --card: #fff;
-  --muted: #666;
+  --bg:#fff;
+  --accent:#e7a33d;
+  --accent-dark:#c58425;
+  --text:#222;
+  --light-bg:#f9f5f0;
+  --dark-text:#3a2611;
+  --muted:#666;
+  --card:#fff;
+  --shadow: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
+  --radius: 8px;
   --transition-fast: 0.2s;
   --transition-medium: 0.4s;
   --transition-slow: 0.9s;
@@ -25,10 +33,10 @@
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--bg);
-  /* Suaviza las animaciones en toda la página */
+  color: var(--text);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -49,14 +57,14 @@ header {
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-/* LOGO */
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   color: var(--text);
+  text-decoration: none;
 }
 .logo img {
   width: 60px;
@@ -64,19 +72,15 @@ header {
   border: 2px solid var(--accent);
 }
 
-/* ==============================
-   MENÚ DE NAVEGACIÓN
-============================== */
-nav {
+/* Navegación principal */
+.main-nav {
   display: flex;
   justify-content: center;  
   align-items: center;
-  gap: 60px;              /* separación entre enlaces */
+  gap: 40px;
   font-size: 18px;
 }
-
-/* Estilos para los enlaces */
-nav a {
+.main-nav a {
   text-decoration: none;
   color: var(--text);
   padding: 6px 12px;
@@ -85,13 +89,10 @@ nav a {
   font-weight: 500;
   position: relative;
 }
-
-/* Hover con fondo suave */
-nav a:hover {
+.main-nav a:hover {
   color: var(--accent);
 }
-
-nav a::after {
+.main-nav a::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -102,15 +103,25 @@ nav a::after {
   transition: all 0.3s ease;
   transform: translateX(-50%);
 }
-
-nav a:hover::after {
+.main-nav a:hover::after {
+  width: 80%;
+}
+.main-nav a.active {
+  color: var(--accent);
+  font-weight: bold;
+}
+.main-nav a.active::after {
   width: 80%;
 }
 
-/* ==============================
-   BOTÓN LOGIN
-============================== */
-.login-btn {
+/* Botones de autenticación */
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.login-btn, .register-btn {
   background: none;
   border: 2px solid var(--accent);
   padding: 8px 20px;
@@ -118,12 +129,48 @@ nav a:hover::after {
   font-weight: bold;
   text-decoration: none;
   color: var(--text);
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: 14px;
 }
-.login-btn:hover {
+
+.login-btn:hover, .register-btn:hover {
   background: var(--accent);
   color: #fff;
   transform: translateY(-2px);
+}
+
+.register-btn {
+  background: var(--accent);
+  color: white;
+}
+
+.register-btn:hover {
+  background: var(--accent-dark);
+}
+
+.cart-icon {
+  position: relative;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 1.2rem;
+  margin-left: 15px;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
 .menu-toggle {
@@ -133,6 +180,153 @@ nav a:hover::after {
   font-size: 24px;
   cursor: pointer;
   color: var(--text);
+}
+
+/* Modal de autenticación */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.auth-modal {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 400px;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .auth-modal {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  color: var(--dark-text);
+  font-size: 1.5rem;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+  color: var(--accent);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.auth-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: var(--dark-text);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(231, 163, 61, 0.2);
+}
+
+.submit-btn {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 /* ==============================
@@ -146,21 +340,39 @@ nav a:hover::after {
 
 .page-title {
   text-align: center;
-  padding: 40px 20px 20px;
+  padding: 60px 20px 30px;
   background: var(--light-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://images.unsplash.com/photo-1498804103079-a6351b050096?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+  opacity: 0.1;
+  z-index: 0;
 }
 
 .page-title h1 {
-  font-size: 2.5rem;
-  color: var(--text);
-  margin-bottom: 10px;
+  font-size: 3rem;
+  color: var(--dark-text);
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
 }
 
 .page-title p {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: var(--muted);
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 /* ==============================
@@ -168,12 +380,11 @@ nav a:hover::after {
 ============================== */
 .ruleta-section {
   display: flex;
-  gap: 20px;
+  gap: 40px;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
-  /* Animación de entrada para el contenido principal */
+  padding: 60px 20px;
   animation: fadeInUp 0.8s ease-out;
 }
 
@@ -182,63 +393,69 @@ nav a:hover::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* Efecto de profundidad */
   perspective: 1000px;
 }
 
 .panel {
-  width: 320px;
+  width: 350px;
   background: var(--card);
-  border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  padding: 18px;
-  /* Transición suave para cambios de altura */
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 25px;
   transition: height var(--transition-medium) ease;
-  /* Animación de entrada para el panel */
   animation: slideInRight 0.8s ease-out 0.2s both;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: var(--accent);
 }
 
 .panel h2 { 
-  margin: 0 0 8px 0; 
-  font-size: 20px; 
-  /* Transición para cambios de contenido */
+  margin: 0 0 12px 0; 
+  font-size: 24px; 
+  color: var(--dark-text);
   transition: color var(--transition-fast) ease;
 }
 
 .panel p.desc { 
   color: var(--muted); 
-  margin: 0 0 12px 0; 
-  font-size: 14px; 
-  min-height: 42px; 
-  /* Transición para cambios de contenido */
+  margin: 0 0 15px 0; 
+  font-size: 15px; 
+  min-height: 45px; 
+  line-height: 1.5;
   transition: color var(--transition-fast) ease;
 }
 
 .suboptions, .subsuboptions {
-  margin-top: 8px;
-  /* Animación de entrada escalonada para opciones */
+  margin-top: 15px;
   animation: fadeIn 0.5s ease-out;
 }
 
 .suboptions button, .subsuboptions button {
-  margin: 6px 6px 6px 0;
-  padding: 6px 10px;
+  margin: 8px 8px 8px 0;
+  padding: 8px 14px;
   border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.1);
   background: linear-gradient(#fff,#fafafa);
   cursor: pointer;
-  font-size: 13px;
-  /* Transiciones para efectos de hover y focus */
+  font-size: 14px;
   transition: all var(--transition-fast) ease;
-  /* Evita que el texto se seleccione accidentalmente */
   user-select: none;
 }
 
-/* Mejoras en la interacción con botones */
 .suboptions button:hover, .subsuboptions button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  border-color: rgba(0,0,0,0.15);
+  border-color: var(--accent);
+  color: var(--accent-dark);
 }
 
 .suboptions button:active, .subsuboptions button:active {
@@ -247,9 +464,9 @@ nav a:hover::after {
 }
 
 .suboptions h4, .subsuboptions h4 { 
-  margin: 8px 0 6px 0; 
-  font-size: 14px; 
-  /* Animación de entrada para títulos */
+  margin: 12px 0 8px 0; 
+  font-size: 16px; 
+  color: var(--dark-text);
   animation: fadeIn 0.5s ease-out 0.1s both;
 }
 
@@ -257,41 +474,33 @@ svg {
   max-width: 100%; 
   height: auto; 
   overflow: visible; 
-  /* Filtro sutil para mejorar la apariencia */
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
 }
 
-/* Mejoras en la animación de los sectores */
 .sector { 
   stroke: #fff; 
   stroke-width: 2; 
   cursor: pointer; 
-  /* Transición más suave y natural */
   transition: transform var(--transition-fast) cubic-bezier(0.25, 0.46, 0.45, 0.94),
               filter var(--transition-fast) ease;
-  /* Mejora el rendimiento de las transformaciones */
   transform-origin: center;
   will-change: transform;
 }
 
-/* Efecto de elevación al pasar el cursor */
 .sector:hover { 
   transform: scale(1.05) translateZ(10px);
   filter: brightness(1.1) drop-shadow(0 4px 8px rgba(0,0,0,0.15));
 }
 
-/* Efecto de "clic" en el sector */
 .sector:active {
   transform: scale(0.98) translateZ(5px);
   transition-duration: 0.1s;
 }
 
-/* Clase para animación de rebote al seleccionar */
 .sector-bounce {
   animation: bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Estilos para las etiquetas de texto */
 .sector-label {
   fill: #fff;
   font-size: 13px;
@@ -299,29 +508,354 @@ svg {
   text-anchor: middle;
   pointer-events: none;
   user-select: none;
-  /* Sombra de texto para mejor legibilidad */
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  /* Transición suave para la rotación */
   transition: transform var(--transition-slow) cubic-bezier(.2,.9,.3,1);
 }
 
-/* CORRECCIÓN: rotar relativo al cuadro del elemento SVG */
 #wheelGroup {
   transition: transform var(--transition-slow) cubic-bezier(.2,.9,.3,1);
-  transform-box: fill-box;        /* IMPORTANTE: define el cuadro de referencia para transformaciones */
-  transform-origin: 50% 50%;     /* centro del cuadro delimitador del grupo */
-  /* Animación de entrada para la ruleta */
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
   animation: rotateIn 1s ease-out 0.4s both;
+}
+
+/* ==============================
+   SECCIÓN DE PRODUCTO FINAL
+============================== */
+.final-product {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.final-product h4 {
+  margin-bottom: 15px;
+  color: var(--dark-text);
+  font-size: 18px;
+}
+
+.product-display {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--light-bg);
+  border-radius: var(--radius);
+}
+
+.product-image {
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  border: 2px solid var(--accent);
+}
+
+.product-details {
+  flex: 1;
+}
+
+.product-details strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--dark-text);
+  font-size: 16px;
+}
+
+.product-details .description {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.product-details .price {
+  color: var(--accent-dark);
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.add-to-cart-final {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition-medium);
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-to-cart-final:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+/* ==============================
+   SERVICIOS DE ENTREGA
+============================== */
+.delivery-services {
+  padding: 80px 30px;
+  background: var(--light-bg);
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+  color: var(--dark-text);
+  font-size: 2.5rem;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--accent);
+}
+
+.delivery-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.delivery-card {
+  background: var(--bg);
+  padding: 35px 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: var(--transition-medium);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.delivery-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent);
+}
+
+.delivery-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: var(--accent);
+}
+
+.delivery-icon {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.delivery-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: var(--dark-text);
+}
+
+.delivery-card p {
+  color: var(--muted);
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.delivery-price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--accent-dark);
+  margin: 20px 0;
+  padding: 10px;
+  background: var(--light-bg);
+  border-radius: var(--radius);
+}
+
+.delivery-card ul {
+  list-style: none;
+  text-align: left;
+  margin: 25px 0;
+  padding: 0;
+}
+
+.delivery-card ul li {
+  margin-bottom: 12px;
+  padding-left: 30px;
+  position: relative;
+  color: var(--text);
+}
+
+.delivery-card ul li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.info-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition-medium);
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.info-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+/* ==============================
+   SERVICIOS PARA EMPRESAS
+============================== */
+.business-services {
+  padding: 80px 30px;
+  background: var(--bg);
+}
+
+.business-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.business-card {
+  background: var(--bg);
+  padding: 35px 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: var(--transition-medium);
+  position: relative;
+  overflow: hidden;
+}
+
+.business-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: var(--accent);
+}
+
+.business-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-hover);
+}
+
+.business-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: var(--dark-text);
+}
+
+.business-card p {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.business-card ul {
+  list-style: none;
+  text-align: left;
+  margin: 20px 0;
+}
+
+.business-card ul li {
+  margin-bottom: 10px;
+  padding-left: 25px;
+  position: relative;
+}
+
+.business-card ul li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* ==============================
+   CALL TO ACTION
+============================== */
+.cta-services {
+  padding: 80px 30px;
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+              url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+  color: white;
+  text-align: center;
+}
+
+.cta-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cta-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.cta-content p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.cta-button {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  padding: 15px 40px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: var(--transition-medium);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.cta-button:hover {
+  background: var(--accent-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
 /* ==============================
    FOOTER
 ============================== */
 footer {
-  background: #2c2c2c;
+  background: var(--dark-text);
   color: white;
-  padding: 40px 20px 20px;
-  margin-top: auto;
+  padding: 60px 30px 30px;
 }
 
 .footer-content {
@@ -383,14 +917,16 @@ footer {
 
 .footer-bottom {
   text-align: center;
-  margin-top: 40px;
+  margin-top: 50px;
   padding-top: 20px;
   border-top: 1px solid rgba(255,255,255,0.1);
   color: #aaa;
   font-size: 0.9rem;
 }
 
-/* Animaciones personalizadas */
+/* ==============================
+   ANIMACIONES
+============================== */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -453,6 +989,29 @@ footer {
   }
 }
 
+/* Toast notifications */
+.toast {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background: var(--success);
+  color: white;
+  padding: 15px 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast.error {
+  background: var(--error);
+}
+
 /* ==============================
    RESPONSIVE
 ============================== */
@@ -463,12 +1022,11 @@ footer {
   }
   .panel{ 
     width: 90%; 
-    margin-top: 12px; 
-    /* Animación diferente para móviles */
+    margin-top: 20px; 
     animation: fadeInUp 0.8s ease-out 0.2s both;
   }
   
-  nav {
+  .main-nav {
     display: none;
     position: absolute;
     top: 100%;
@@ -481,7 +1039,7 @@ footer {
     gap: 15px;
   }
   
-  nav.active {
+  .main-nav.active {
     display: flex;
   }
   
@@ -496,419 +1054,843 @@ footer {
 
 @media (max-width: 768px) {
   .page-title h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
   
   .page-title p {
+    font-size: 1.1rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .cta-content h2 {
+    font-size: 2rem;
+  }
+  
+  .cta-content p {
     font-size: 1rem;
+  }
+  
+  .delivery-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    padding: 40px 15px 20px;
+  }
+  
+  .page-title h1 {
+    font-size: 1.8rem;
+  }
+  
+  .ruleta-section {
+    padding: 40px 15px;
+  }
+  
+  .delivery-services, .business-services {
+    padding: 60px 15px;
+  }
+  
+  .delivery-card, .business-card {
+    padding: 25px 20px;
   }
 }
 </style>
 </head>
 <body>
 
-<div class="main-container">
-  <!-- ENCABEZADO -->
-  <header>
-    <div class="logo">
-      <img src="imagenes/logoCafe.png" alt="logo">
-      CaféSantander
-    </div>
+<div id="root"></div>
 
-    <nav id="main-nav">
-      <a href="Inicio.html">Inicio</a>
-      <a href="Acerca.html">Acerca</a>
-      <a href="Servicios.html" style="color: var(--accent);">Servicios</a>
-      <a href="Contacto.html">Contacto</a>
-    </nav>
+<script type="text/babel">
+// Estado global de la aplicación
+const AppState = {
+  cart: [],
+  user: null
+};
 
-    <a href="#" class="login-btn">Acceder</a>
-    <button class="menu-toggle" id="menu-toggle">
-      <i class="fas fa-bars"></i>
-    </button>
-  </header>
+// Componente de Header
+function Header() {
+  const [isNavActive, setIsNavActive] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [activeAuthTab, setActiveAuthTab] = React.useState('login');
 
-  <!-- TÍTULO DE PÁGINA -->
-  <section class="page-title">
-    <h1>Nuestros Servicios</h1>
-    <p>Descubre los diferentes perfiles de sabor de nuestro café mediante nuestra ruleta interactiva</p>
-  </section>
+  const toggleNav = () => {
+    setIsNavActive(!isNavActive);
+  };
 
-  <!-- SECCIÓN DE LA RULETA -->
-  <section class="ruleta-section">
-    <div class="wheel-area" style="position:relative;">
-      <svg viewBox="0 0 500 500" id="wheel" aria-hidden="true" width="500" height="500">
-        <g id="wheelGroup"></g>
-      </svg>
-    </div>
+  const openAuthModal = (tab = 'login') => {
+    setActiveAuthTab(tab);
+    setIsModalOpen(true);
+  };
 
-    <aside class="panel" id="infoPanel">
-      <h2 id="title">Selecciona un sector</h2>
-      <p class="desc" id="description">Haz clic en un sector de la ruleta para ver su descripción breve y opciones siguientes.</p>
+  const closeAuthModal = () => {
+    setIsModalOpen(false);
+  };
 
-      <div class="suboptions" id="suboptions"></div>
-      <div class="subsuboptions" id="subsuboptions"></div>
-    </aside>
-  </section>
+  const handleAuthSubmit = (e) => {
+    e.preventDefault();
+    showToast('¡Bienvenido a CaféSantander!', 'success');
+    closeAuthModal();
+  };
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-content">
-      <div class="footer-column">
-        <h3>CaféSantander</h3>
-        <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
-        <div class="social-links">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
+  const cartCount = AppState.cart.reduce((total, item) => total + item.quantity, 0);
+
+  return (
+    <>
+      <header>
+        <a href="Inicio.html" className="logo">
+          <img src="imagenes/logoCafe.png" alt="logo" />
+          CaféSantander
+        </a>
+
+        <nav className={`main-nav ${isNavActive ? 'active' : ''}`} id="main-nav">
+          <a href="Inicio.html">Inicio</a>
+          <a href="Acerca.html">Acerca</a>
+          <a href="Servicios.html" className="active">Servicios</a>
+          <a href="Contacto.html">Contacto</a>
+          <a href="Carrito.html">Nuestros Productos</a>
+        </nav>
+
+        <div className="auth-buttons">
+          <button className="login-btn" onClick={() => openAuthModal('login')}>
+            Acceder
+          </button>
+          <button className="register-btn" onClick={() => openAuthModal('register')}>
+            Registrarse
+          </button>
+          <a href="Carrito.html" className="cart-icon">
+            <i className="fas fa-shopping-cart"></i>
+            {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+          </a>
+        </div>
+        
+        <button className="menu-toggle" id="menu-toggle" onClick={toggleNav}>
+          <i className="fas fa-bars"></i>
+        </button>
+      </header>
+
+      {/* Modal de Autenticación */}
+      <div className={`modal-overlay ${isModalOpen ? 'active' : ''}`}>
+        <div className="auth-modal">
+          <div className="modal-header">
+            <h2>{activeAuthTab === 'login' ? 'Iniciar Sesión' : 'Registrarse'}</h2>
+            <button className="close-modal" onClick={closeAuthModal}>
+              <i className="fas fa-times"></i>
+            </button>
+          </div>
+          <div className="modal-body">
+            <div className="auth-tabs">
+              <button 
+                className={`auth-tab ${activeAuthTab === 'login' ? 'active' : ''}`}
+                onClick={() => setActiveAuthTab('login')}
+              >
+                Iniciar Sesión
+              </button>
+              <button 
+                className={`auth-tab ${activeAuthTab === 'register' ? 'active' : ''}`}
+                onClick={() => setActiveAuthTab('register')}
+              >
+                Registrarse
+              </button>
+            </div>
+
+            <form className={`auth-form ${activeAuthTab === 'login' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+              <div className="form-group">
+                <label htmlFor="login-email">Correo Electrónico</label>
+                <input type="email" id="login-email" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="login-password">Contraseña</label>
+                <input type="password" id="login-password" required />
+              </div>
+              <button type="submit" className="submit-btn">Iniciar Sesión</button>
+              <div className="form-footer">
+                ¿No tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('register')}>Regístrate aquí</a>
+              </div>
+            </form>
+
+            <form className={`auth-form ${activeAuthTab === 'register' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+              <div className="form-group">
+                <label htmlFor="register-name">Nombre Completo</label>
+                <input type="text" id="register-name" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="register-email">Correo Electrónico</label>
+                <input type="email" id="register-email" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="register-password">Contraseña</label>
+                <input type="password" id="register-password" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="register-confirm">Confirmar Contraseña</label>
+                <input type="password" id="register-confirm" required />
+              </div>
+              <button type="submit" className="submit-btn">Registrarse</button>
+              <div className="form-footer">
+                ¿Ya tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('login')}>Inicia sesión aquí</a>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      
-      <div class="footer-column">
-        <h3>Enlaces Rápidos</h3>
-        <ul>
-          <li><a href="Inicio.html">Inicio</a></li>
-          <li><a href="Acerca.html">Acerca</a></li>
-          <li><a href="Servicios.html">Servicios</a></li>
-          <li><a href="Contacto.html">Contacto</a></li>
-        </ul>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Contacto</h3>
-        <ul>
-          <li><i class="fas fa-map-marker-alt"></i> Santander, Colombia</li>
-          <li><i class="fas fa-phone"></i> +57 321 456 7890</li>
-          <li><i class="fas fa-envelope"></i> info@cafesantander.com</li>
-        </ul>
-      </div>
-    </div>
-    
-    <div class="footer-bottom">
-      <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
-    </div>
-  </footer>
-</div>
-
-<script>
-// Datos de la ruleta
-const sectores = [
-  { name: "DULCE", color:"#e74c3c", desc:"Sabores frutales y azucarados: manzana, pera, piña, frutos rojos." },
-  { name: "FLORAL", color:"#f1c40f", desc:"Aromas florales como jazmín, rosa y lavanda." },
-  { name: "AFRUTADO", color:"#2ecc71", desc:"Frutas secas y especiadas: canela, clavo, nuez moscada." },
-  { name: "ACIDO/FERMENTADO", color:"#1abc9c", desc:"Notas ácidas o fermentadas, como vinagre, sidra o frutas en fermentación." },
-  { name: "VERDE/VEGETAL", color:"#3498db", desc:"Notas herbales: pasto, hoja, té verde y vegetales." },
-  { name: "OTROS", color:"#9b59b6", desc:"Aromas cítricos y otras notas variadas." },
-  { name: "TOSTADO", color:"#34495e", desc:"Sabores a tostado: cacao, pan tostado, caramelo quemado." },
-  { name: "ESPECIAS", color:"#95a5a6", desc:"Especias como pimienta, nuez moscada, clavo y canela." },
-  { name: "NUECES/CACAO", color:"#e67e22", desc:"Nueces y cacao: almendra, avellana, nuez y chocolate." }
-];
-
-// Mapeo de opciones secundarias
-const subOptionsMap = {
-  "DULCE": ["Miel","Azúcar","Frutas maduras"],
-  "FLORAL": ["Jazmín","Rosa","Lavanda"],
-  "AFRUTADO": ["Frutas rojas","Cítricos","Frutas secas"],
-  "ACIDO/FERMENTADO": ["Sidra","Vinagre","Yogurt"],
-  "VERDE/VEGETAL": ["Hierba","Hoja","Té verde"],
-  "OTROS": ["Cítrico","Limón","Naranja"],
-  "TOSTADO": ["Cacao","Pan","Caramelo"],
-  "ESPECIAS": ["Pimienta","Clavo","Canela"],
-  "NUECES/CACAO": ["Almendra","Avellana","Chocolate amargo"]
-};
-
-// Mapeo de opciones terciarias
-const subSubMap = {
-  "Miel": ["Miel de flores","Miel de bosque"],
-  "Azúcar": ["Azúcar moreno","Azúcar blanco"],
-  "Frutas maduras": ["Plátano","Mango"],
-  "Jazmín": ["Jazmín fresco","Jazmín seco"],
-  "Rosa": ["Rosa fresca","Rosa seca"],
-  "Lavanda": ["Lavanda floral","Lavanda seca"],
-  "Frutas rojas": ["Frambuesa","Cereza"],
-  "Cítricos": ["Naranja","Pomelo"],
-  "Frutas secas": ["Ciruela","Pasas"],
-  "Sidra": ["Sidra verde","Sidra madura"],
-  "Vinagre": ["Vinagre balsámico","Vinagre de vino"],
-  "Yogurt": ["Yogurt natural","Yogurt agrio"],
-  "Hierba": ["Pasto recién cortado","Pasto seco"],
-  "Hoja": ["Hoja verde","Hoja seca"],
-  "Té verde": ["Matcha","Sencha"],
-  "Cítrico": ["Lima","Toronja"],
-  "Limón": ["Limón fresco","Lima ácida"],
-  "Naranja": ["Naranja dulce","Naranja amarga"],
-  "Cacao": ["Cacao puro","Cacao procesado"],
-  "Pan": ["Pan tostado","Pan integral"],
-  "Caramelo": ["Caramelo claro","Caramelo oscuro"],
-  "Pimienta": ["Pimienta negra","Pimienta blanca"],
-  "Clavo": ["Clavo entero","Clavo molido"],
-  "Canela": ["Canela cassia","Canela de Ceilán"],
-  "Almendra": ["Almendra tostada","Almendra cruda"],
-  "Avellana": ["Avellana tostada","Avellana cruda"],
-  "Chocolate amargo": ["70% cacao","85% cacao"]
-};
-
-// Constantes para la geometría de la ruleta
-const cx = 250, cy = 250, outerR = 200, innerR = 90;
-const wheelGroup = document.getElementById('wheelGroup');
-let currentRotation = 0;
-let lastSelectedSector = null;
-
-// Convierte coordenadas polares a cartesianas
-function polarToCartesian(cx, cy, r, angleDeg){
-  const angle = (angleDeg-90) * Math.PI/180;
-  return { x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) };
+    </>
+  );
 }
 
-// Crea un sector de la ruleta
-function createSectorRing(cx, cy, rOuter, rInner, startAngle, endAngle, fill, data, idx){
-  const outerStart = polarToCartesian(cx, cy, rOuter, startAngle);
-  const outerEnd   = polarToCartesian(cx, cy, rOuter, endAngle);
-  const innerStart = polarToCartesian(cx, cy, rInner, startAngle);
-  const innerEnd   = polarToCartesian(cx, cy, rInner, endAngle);
-  const largeArc = (endAngle - startAngle) <= 180 ? 0 : 1;
+// Componente de la Rueda Catadora
+function CoffeeWheel() {
+  const [selectedCategory, setSelectedCategory] = React.useState(null);
+  const [selectedSubOption, setSelectedSubOption] = React.useState(null);
+  const [selectedFinalOption, setSelectedFinalOption] = React.useState(null);
+  const [finalProduct, setFinalProduct] = React.useState(null);
 
-  // Construye el path SVG para el sector
-  const d = [
-    'M', outerStart.x, outerStart.y,
-    'A', rOuter, rOuter, 0, largeArc, 1, outerEnd.x, outerEnd.y,
-    'L', innerEnd.x, innerEnd.y,
-    'A', rInner, rInner, 0, largeArc, 0, innerStart.x, innerStart.y,
-    'Z'
-  ].join(' ');
-
-  // Crea el elemento path
-  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-  path.setAttribute('d', d);
-  path.setAttribute('fill', fill);
-  path.classList.add('sector');
-  path.dataset.name = data.name;
-  path.dataset.desc = data.desc;
-  path.dataset.index = idx;
-
-  // Añade el evento de clic
-  path.addEventListener('click', ()=> onSelectSector(parseInt(path.dataset.index,10)));
-  return path;
-}
-
-// Añade etiquetas a los sectores
-function addLabel(cx, cy, rInner, rOuter, startAngle, endAngle, label, idx){
-  const midAngle = (startAngle + endAngle) / 2;
-  // Posiciona la etiqueta más cerca del borde exterior para mejor legibilidad
-  const labelR = (rInner + rOuter) / 2 + 15;
-  const pos = polarToCartesian(cx, cy, labelR, midAngle);
-  
-  // Determina la rotación del texto para que siga la curva del sector
-  let textRotation = midAngle;
-  if (textRotation > 90 && textRotation < 270) {
-    textRotation += 180; // Voltea el texto para que sea legible
-  }
-
-  const text = document.createElementNS('http://www.w3.org/2000/svg','text');
-  text.setAttribute('x', pos.x);
-  text.setAttribute('y', pos.y);
-  text.setAttribute('text-anchor', 'middle');
-  text.setAttribute('dominant-baseline', 'middle');
-  text.setAttribute('class', 'sector-label');
-  text.setAttribute('data-index', idx);
-  
-  // Aplica rotación al texto
-  text.setAttribute('transform', `rotate(${textRotation}, ${pos.x}, ${pos.y})`);
-  
-  // Divide el texto si es muy largo
-  if (label.length > 10) {
-    const parts = splitLabel(label);
-    text.innerHTML = ''; // Limpia el contenido
-    
-    parts.forEach((part, i) => {
-      const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-      tspan.setAttribute('x', pos.x);
-      tspan.setAttribute('dy', i === 0 ? '0' : '1.2em');
-      tspan.textContent = part;
-      text.appendChild(tspan);
-    });
-  } else {
-    text.textContent = label;
-  }
-  
-  // Añade animación de entrada escalonada
-  text.style.animation = `textFadeIn 0.6s ease-out ${0.5 + idx * 0.1}s both`;
-  
-  wheelGroup.appendChild(text);
-}
-
-// Divide etiquetas largas en varias líneas
-function splitLabel(label) {
-  const maxLength = 8;
-  if (label.length <= maxLength) return [label];
-  
-  // Busca un punto natural para dividir
-  const parts = label.split('/');
-  if (parts.length > 1) return parts;
-  
-  // Divide por espacios si es posible
-  const words = label.split(' ');
-  if (words.length > 1) {
-    const result = [];
-    let currentLine = '';
-    
-    words.forEach(word => {
-      if ((currentLine + word).length <= maxLength) {
-        currentLine += (currentLine ? ' ' : '') + word;
-      } else {
-        if (currentLine) result.push(currentLine);
-        currentLine = word;
+  // Datos de la rueda catadora
+  const wheelData = {
+    "DULCE": {
+      description: "Sabores frutales y azucarados: manzana, pera, piña, frutos rojos.",
+      subOptions: ["Miel", "Azúcar", "Frutas maduras"],
+      finalOptions: {
+        "Miel": ["Miel de flores", "Miel de bosque"],
+        "Azúcar": ["Azúcar moreno", "Azúcar blanco"],
+        "Frutas maduras": ["Plátano", "Mango"]
+      },
+      products: {
+        "Miel de flores": { 
+          name: "Café con Miel de Flores", 
+          description: "Café suave con notas dulces de miel floral natural",
+          price: 14500,
+          image: "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        },
+        "Miel de bosque": { 
+          name: "Café con Miel de Bosque", 
+          description: "Café intenso con notas de miel silvestre y bosque",
+          price: 15500,
+          image: "https://images.unsplash.com/photo-1568649929103-28ffbefaca1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
       }
-    });
-    
-    if (currentLine) result.push(currentLine);
-    return result;
-  }
-  
-  // Divide la palabra si es muy larga
-  const mid = Math.ceil(label.length / 2);
-  return [label.substring(0, mid), label.substring(mid)];
-}
-
-// Dibuja la ruleta completa
-function drawWheel(){
-  const total = sectores.length;
-  const anglePer = 360 / total;
-  let currentAngle = 0;
-  wheelGroup.innerHTML = '';
-
-  sectores.forEach((sec, idx) => {
-    const startAngle = currentAngle;
-    const endAngle = currentAngle + anglePer;
-    const path = createSectorRing(cx, cy, outerR, innerR, startAngle, endAngle, sec.color, sec, idx);
-    wheelGroup.appendChild(path);
-    addLabel(cx, cy, innerR, outerR, startAngle, endAngle, sec.name, idx);
-    currentAngle += anglePer;
-  });
-}
-
-// Inicializa la ruleta
-drawWheel();
-
-/* Elementos del panel */
-const titleEl = document.getElementById('title');
-const descEl  = document.getElementById('description');
-const subEl   = document.getElementById('suboptions');
-const subsubEl= document.getElementById('subsuboptions');
-
-// Limpia las opciones terciarias
-function clearSubSub(){ 
-  subsubEl.innerHTML = ''; 
-}
-
-// Limpia las opciones secundarias
-function clearSub(){ 
-  subEl.innerHTML = ''; 
-  clearSubSub(); 
-}
-
-// Maneja la selección de un sector
-function onSelectSector(index){
-  const sec = sectores[index];
-  
-  // Añade efecto de rebote al sector seleccionado
-  if (lastSelectedSector !== null) {
-    const previousSector = document.querySelector(`.sector[data-index="${lastSelectedSector}"]`);
-    if (previousSector) {
-      previousSector.classList.remove('sector-bounce');
+    },
+    "FLORAL": {
+      description: "Aromas florales como jazmín, rosa y lavanda.",
+      subOptions: ["Jazmín", "Rosa", "Lavanda"],
+      finalOptions: {
+        "Jazmín": ["Jazmín fresco", "Jazmín seco"],
+        "Rosa": ["Rosa fresca", "Rosa seca"],
+        "Lavanda": ["Lavanda floral", "Lavanda seca"]
+      },
+      products: {
+        "Jazmín fresco": { 
+          name: "Café con Jazmín Fresco", 
+          description: "Café aromático con delicadas notas de jazmín fresco",
+          price: 17500,
+          image: "https://images.unsplash.com/photo-1570194065650-2c9c2bc6a0ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
+      }
+    },
+    "AFRUTADO": {
+      description: "Frutas secas y especiadas: canela, clavo, nuez moscada.",
+      subOptions: ["Frutas rojas", "Cítricos", "Frutas secas"],
+      finalOptions: {
+        "Frutas rojas": ["Frambuesa", "Cereza"],
+        "Cítricos": ["Naranja", "Pomelo"],
+        "Frutas secas": ["Ciruela", "Pasas"]
+      },
+      products: {
+        "Frambuesa": { 
+          name: "Café con Frambuesa", 
+          description: "Café vibrante con notas ácidas de frambuesa fresca",
+          price: 16800,
+          image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
+      }
+    },
+    "ACIDO/FERMENTADO": {
+      description: "Notas ácidas o fermentadas, como vinagre, sidra o frutas en fermentación.",
+      subOptions: ["Sidra", "Vinagre", "Yogurt"],
+      finalOptions: {
+        "Sidra": ["Sidra verde", "Sidra madura"],
+        "Vinagre": ["Vinagre balsámico", "Vinagre de vino"],
+        "Yogurt": ["Yogurt natural", "Yogurt agrio"]
+      },
+      products: {
+        "Sidra verde": { 
+          name: "Café con Sidra Verde", 
+          description: "Café con notas ácidas y frescas de sidra verde",
+          price: 14200,
+          image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
+      }
+    },
+    "VERDE/VEGETAL": {
+      description: "Notas herbales: pasto, hoja, té verde y vegetales.",
+      subOptions: ["Hierba", "Hoja", "Té verde"],
+      finalOptions: {
+        "Hierba": ["Pasto recién cortado", "Pasto seco"],
+        "Hoja": ["Hoja verde", "Hoja seca"],
+        "Té verde": ["Matcha", "Sencha"]
+      },
+      products: {
+        "Pasto recién cortado": { 
+          name: "Café con Aroma a Pasto Fresco", 
+          description: "Café con notas herbales frescas y vibrantes",
+          price: 13800,
+          image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        },
+        "Matcha": { 
+          name: "Café con Matcha", 
+          description: "Café con notas herbales intensas de matcha",
+          price: 18500,
+          image: "https://images.unsplash.com/photo-1570194065650-2c9c2bc6a0ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
+      }
+    },
+    "OTROS": {
+      description: "Aromas cítricos y otras notas variadas.",
+      subOptions: ["Cítrico", "Limón", "Naranja"],
+      finalOptions: {
+        "Cítrico": ["Lima", "Toronja"],
+        "Limón": ["Limón fresco", "Lima ácida"],
+        "Naranja": ["Naranja dulce", "Naranja amarga"]
+      },
+      products: {
+        "Lima": { 
+          name: "Café con Lima", 
+          description: "Café con notas cítricas frescas de lima",
+          price: 14800,
+          image: "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
+      }
+    },
+    "TOSTADO": {
+      description: "Sabores a tostado: cacao, pan tostado, caramelo quemado.",
+      subOptions: ["Cacao", "Pan", "Caramelo"],
+      finalOptions: {
+        "Cacao": ["Cacao puro", "Cacao procesado"],
+        "Pan": ["Pan tostado", "Pan integral"],
+        "Caramelo": ["Caramelo claro", "Caramelo oscuro"]
+      },
+      products: {
+        "Cacao puro": { 
+          name: "Café con Cacao Puro", 
+          description: "Café intenso con notas de cacao puro y chocolate amargo",
+          price: 16200,
+          image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
+      }
+    },
+    "ESPECIAS": {
+      description: "Especias como pimienta, nuez moscada, clavo y canela.",
+      subOptions: ["Pimienta", "Clavo", "Canela"],
+      finalOptions: {
+        "Pimienta": ["Pimienta negra", "Pimienta blanca"],
+        "Clavo": ["Clavo entero", "Clavo molido"],
+        "Canela": ["Canela cassia", "Canela de Ceilán"]
+      },
+      products: {
+        "Pimienta negra": { 
+          name: "Café con Pimienta Negra", 
+          description: "Café especiado con notas picantes de pimienta negra",
+          price: 15500,
+          image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
+      }
+    },
+    "NUECES/CACAO": {
+      description: "Nueces y cacao: almendra, avellana, nuez y chocolate.",
+      subOptions: ["Almendra", "Avellana", "Chocolate amargo"],
+      finalOptions: {
+        "Almendra": ["Almendra tostada", "Almendra cruda"],
+        "Avellana": ["Avellana tostada", "Avellana cruda"],
+        "Chocolate amargo": ["70% cacao", "85% cacao"]
+      },
+      products: {
+        "Almendra tostada": { 
+          name: "Café con Almendra Tostada", 
+          description: "Café con notas cremosas de almendra tostada",
+          price: 15800,
+          image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
+      }
     }
-  }
-  
-  const currentSector = document.querySelector(`.sector[data-index="${index}"]`);
-  if (currentSector) {
-    currentSector.classList.add('sector-bounce');
-    // Remueve la clase después de que termine la animación
-    setTimeout(() => {
-      currentSector.classList.remove('sector-bounce');
-    }, 500);
-  }
-  
-  lastSelectedSector = index;
-  
-  // Actualiza el contenido del panel
-  titleEl.innerText = sec.name;
-  descEl.innerText = sec.desc || '';
+  };
 
-  clearSub();
-  const subs = subOptionsMap[sec.name] || [];
-  if(subs.length){
-    const h4 = document.createElement('h4'); 
-    h4.innerText = 'Opciones'; 
-    subEl.appendChild(h4);
+  // Datos para la ruleta SVG
+  const sectores = [
+    { name: "DULCE", color:"#e74c3c" },
+    { name: "FLORAL", color:"#f1c40f" },
+    { name: "AFRUTADO", color:"#2ecc71" },
+    { name: "ACIDO/FERMENTADO", color:"#1abc9c" },
+    { name: "VERDE/VEGETAL", color:"#3498db" },
+    { name: "OTROS", color:"#9b59b6" },
+    { name: "TOSTADO", color:"#34495e" },
+    { name: "ESPECIAS", color:"#95a5a6" },
+    { name: "NUECES/CACAO", color:"#e67e22" }
+  ];
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setSelectedSubOption(null);
+    setSelectedFinalOption(null);
+    setFinalProduct(null);
+  };
+
+  const handleSubOptionSelect = (subOption) => {
+    setSelectedSubOption(subOption);
+    setSelectedFinalOption(null);
+    setFinalProduct(null);
+  };
+
+  const handleFinalOptionSelect = (finalOption) => {
+    setSelectedFinalOption(finalOption);
     
-    subs.forEach(s => {
-      const btn = document.createElement('button');
-      btn.innerText = s;
-      btn.addEventListener('click', ()=> onSelectSub(s));
-      subEl.appendChild(btn);
-    });
-  } else {
-    subEl.innerHTML = '<p style="color:var(--muted)">No hay opciones adicionales.</p>';
-  }
+    // Buscar el producto correspondiente
+    const product = wheelData[selectedCategory].products[finalOption];
+    if (product) {
+      setFinalProduct(product);
+    }
+  };
 
-  rotateToSector(index);
-}
+  const addToCart = () => {
+    if (!finalProduct) {
+      showToast('Primero selecciona un producto', 'error');
+      return;
+    }
 
-// Maneja la selección de una opción secundaria
-function onSelectSub(sub){
-  subsubEl.innerHTML = '';
-  const header = document.createElement('h4'); 
-  header.innerText = 'Detalles';
-  subsubEl.appendChild(header);
-
-  const items = subSubMap[sub] || [];
-  if(items.length){
-    items.forEach(it => {
-      const b = document.createElement('button');
-      b.innerText = it;
-      b.addEventListener('click', ()=> {
-        descEl.innerText = `${titleEl.innerText} › ${sub} › ${it}`;
+    const existingItem = AppState.cart.find(item => item.id === finalProduct.id);
+    
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      AppState.cart.push({
+        ...finalProduct,
+        id: Date.now(),
+        quantity: 1
       });
-      subsubEl.appendChild(b);
-    });
-  } else {
-    const p = document.createElement('p'); 
-    p.innerText = 'No hay más detalles.'; 
-    p.style.color = 'var(--muted)';
-    subsubEl.appendChild(p);
-  }
+    }
+
+    showToast(`${finalProduct.name} añadido al carrito`, 'success');
+    
+    // Forzar re-render del header para actualizar contador
+    ReactDOM.render(<ServicesPage />, document.getElementById('root'));
+  };
+
+  const resetSelection = () => {
+    setSelectedCategory(null);
+    setSelectedSubOption(null);
+    setSelectedFinalOption(null);
+    setFinalProduct(null);
+  };
+
+  // Efecto para inicializar la ruleta SVG
+  React.useEffect(() => {
+    const drawWheel = () => {
+      const cx = 250, cy = 250, outerR = 200, innerR = 90;
+      const wheelGroup = document.getElementById('wheelGroup');
+      const total = sectores.length;
+      const anglePer = 360 / total;
+      let currentAngle = 0;
+      
+      if (!wheelGroup) return;
+      
+      wheelGroup.innerHTML = '';
+
+      const polarToCartesian = (cx, cy, r, angleDeg) => {
+        const angle = (angleDeg-90) * Math.PI/180;
+        return { x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) };
+      };
+
+      const createSectorRing = (cx, cy, rOuter, rInner, startAngle, endAngle, fill, data, idx) => {
+        const outerStart = polarToCartesian(cx, cy, rOuter, startAngle);
+        const outerEnd = polarToCartesian(cx, cy, rOuter, endAngle);
+        const innerStart = polarToCartesian(cx, cy, rInner, startAngle);
+        const innerEnd = polarToCartesian(cx, cy, rInner, endAngle);
+        const largeArc = (endAngle - startAngle) <= 180 ? 0 : 1;
+
+        const d = [
+          'M', outerStart.x, outerStart.y,
+          'A', rOuter, rOuter, 0, largeArc, 1, outerEnd.x, outerEnd.y,
+          'L', innerEnd.x, innerEnd.y,
+          'A', rInner, rInner, 0, largeArc, 0, innerStart.x, innerStart.y,
+          'Z'
+        ].join(' ');
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill', fill);
+        path.classList.add('sector');
+        path.dataset.name = data.name;
+        path.dataset.index = idx;
+
+        path.addEventListener('click', () => handleCategorySelect(data.name));
+        return path;
+      };
+
+      const addLabel = (cx, cy, rInner, rOuter, startAngle, endAngle, label, idx) => {
+        const midAngle = (startAngle + endAngle) / 2;
+        const labelR = (rInner + rOuter) / 2 + 15;
+        const pos = polarToCartesian(cx, cy, labelR, midAngle);
+        
+        let textRotation = midAngle;
+        if (textRotation > 90 && textRotation < 270) {
+          textRotation += 180;
+        }
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+        text.setAttribute('x', pos.x);
+        text.setAttribute('y', pos.y);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('class', 'sector-label');
+        text.setAttribute('data-index', idx);
+        
+        text.setAttribute('transform', `rotate(${textRotation}, ${pos.x}, ${pos.y})`);
+        
+        const splitLabel = (label) => {
+          const maxLength = 8;
+          if (label.length <= maxLength) return [label];
+          
+          const parts = label.split('/');
+          if (parts.length > 1) return parts;
+          
+          const words = label.split(' ');
+          if (words.length > 1) {
+            const result = [];
+            let currentLine = '';
+            
+            words.forEach(word => {
+              if ((currentLine + word).length <= maxLength) {
+                currentLine += (currentLine ? ' ' : '') + word;
+              } else {
+                if (currentLine) result.push(currentLine);
+                currentLine = word;
+              }
+            });
+            
+            if (currentLine) result.push(currentLine);
+            return result;
+          }
+          
+          const mid = Math.ceil(label.length / 2);
+          return [label.substring(0, mid), label.substring(mid)];
+        };
+
+        const parts = splitLabel(label);
+        text.innerHTML = '';
+        
+        parts.forEach((part, i) => {
+          const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+          tspan.setAttribute('x', pos.x);
+          tspan.setAttribute('dy', i === 0 ? '0' : '1.2em');
+          tspan.textContent = part;
+          text.appendChild(tspan);
+        });
+        
+        text.style.animation = `textFadeIn 0.6s ease-out ${0.5 + idx * 0.1}s both`;
+        
+        wheelGroup.appendChild(text);
+      };
+
+      sectores.forEach((sec, idx) => {
+        const startAngle = currentAngle;
+        const endAngle = currentAngle + anglePer;
+        const path = createSectorRing(cx, cy, outerR, innerR, startAngle, endAngle, sec.color, sec, idx);
+        wheelGroup.appendChild(path);
+        addLabel(cx, cy, innerR, outerR, startAngle, endAngle, sec.name, idx);
+        currentAngle += anglePer;
+      });
+    };
+
+    drawWheel();
+  }, []);
+
+  return (
+    <section className="ruleta-section">
+      <div className="wheel-area" style={{position:'relative'}}>
+        <svg viewBox="0 0 500 500" id="wheel" aria-hidden="true" width="500" height="500">
+          <g id="wheelGroup"></g>
+        </svg>
+      </div>
+
+      <aside className="panel" id="infoPanel">
+        {!selectedCategory ? (
+          <>
+            <h2>Selecciona un sector</h2>
+            <p className="desc">Haz clic en un sector de la ruleta para ver su descripción breve y opciones siguientes.</p>
+          </>
+        ) : !selectedSubOption ? (
+          <>
+            <h2>{selectedCategory}</h2>
+            <p className="desc">{wheelData[selectedCategory].description}</p>
+            <div className="suboptions">
+              <h4>Opciones</h4>
+              {wheelData[selectedCategory].subOptions.map(option => (
+                <button
+                  key={option}
+                  onClick={() => handleSubOptionSelect(option)}
+                >
+                  {option}
+                </button>
+              ))}
+              <button onClick={resetSelection} style={{marginTop: '10px'}}>
+                <i className="fas fa-arrow-left"></i> Volver
+              </button>
+            </div>
+          </>
+        ) : !selectedFinalOption ? (
+          <>
+            <h2>{selectedSubOption}</h2>
+            <p className="desc">Selecciona una opción específica</p>
+            <div className="suboptions">
+              <h4>Detalles</h4>
+              {wheelData[selectedCategory].finalOptions[selectedSubOption].map(option => (
+                <button
+                  key={option}
+                  onClick={() => handleFinalOptionSelect(option)}
+                >
+                  {option}
+                </button>
+              ))}
+              <button onClick={() => handleCategorySelect(selectedCategory)} style={{marginTop: '10px'}}>
+                <i className="fas fa-arrow-left"></i> Volver a {selectedCategory}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2>{selectedFinalOption}</h2>
+            <p className="desc">¡Perfecto! Has seleccionado tu preferencia de sabor.</p>
+            
+            {finalProduct && (
+              <div className="final-product">
+                <h4>Producto Recomendado</h4>
+                <div className="product-display">
+                  <img src={finalProduct.image} alt={finalProduct.name} className="product-image" />
+                  <div className="product-details">
+                    <strong>{finalProduct.name}</strong>
+                    <div className="description">{finalProduct.description}</div>
+                    <div className="price">${finalProduct.price.toLocaleString()} COP</div>
+                  </div>
+                  <button className="add-to-cart-final" onClick={addToCart}>
+                    <i className="fas fa-shopping-cart"></i> Añadir al Carrito
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            <div className="suboptions">
+              <button onClick={() => handleSubOptionSelect(selectedSubOption)} style={{marginTop: '10px'}}>
+                <i className="fas fa-arrow-left"></i> Volver a {selectedSubOption}
+              </button>
+              <button onClick={resetSelection} style={{marginTop: '10px', marginLeft: '10px'}}>
+                <i className="fas fa-redo"></i> Empezar de nuevo
+              </button>
+            </div>
+          </>
+        )}
+      </aside>
+    </section>
+  );
 }
 
-// Rota la ruleta para mostrar el sector seleccionado
-function rotateToSector(index){
-  const total = sectores.length;
-  const anglePer = 360/total;
-  const sectorAngle = -90 + index*anglePer + anglePer/2;
-  const targetRotation = -sectorAngle;
+// Componente principal de Servicios
+function ServicesPage() {
+  return (
+    <div className="main-container">
+      <Header />
+      
+      {/* TÍTULO DE PÁGINA */}
+      <section className="page-title">
+        <h1>Nuestros Servicios</h1>
+        <p>Descubre los diferentes perfiles de sabor de nuestro café mediante nuestra ruleta interactiva y nuestros servicios exclusivos</p>
+      </section>
 
-  // Normaliza la diferencia para girar por el camino más corto
-  const diff = ((targetRotation - currentRotation + 540) % 360) - 180;
-  currentRotation += diff;
+      {/* SECCIÓN DE LA RULETA CATADORA */}
+      <CoffeeWheel />
 
-  // Aplica rotación en grados (CSS)
-  wheelGroup.style.transform = `rotate(${currentRotation}deg)`;
+      {/* SERVICIOS DE ENTREGA */}
+      <section className="delivery-services">
+        <h2 className="section-title">Servicios de Entrega</h2>
+        <div className="delivery-options">
+          <div className="delivery-card">
+            <div className="delivery-icon">🚴</div>
+            <h3>Entrega Express</h3>
+            <p>Recibe tu café en menos de 2 horas</p>
+            <div className="delivery-price">$5.000 COP</div>
+            <ul>
+              <li>Zona metropolitana</li>
+              <li>Pedidos antes de 6 PM</li>
+              <li>Seguimiento en tiempo real</li>
+              <li>Notificaciones por SMS</li>
+              <li>Pago contra entrega</li>
+            </ul>
+            <button className="info-btn">Solicitar Entrega</button>
+          </div>
+          
+          <div className="delivery-card">
+            <div className="delivery-icon">📦</div>
+            <h3>Envío Nacional</h3>
+            <p>Entrega a todo Colombia</p>
+            <div className="delivery-price">$12.000 COP</div>
+            <ul>
+              <li>3-5 días hábiles</li>
+              <li>Embalaje especial para café</li>
+              <li>Seguro incluido</li>
+              <li>Tracking online</li>
+              <li>Entrega certificada</li>
+            </ul>
+            <button className="info-btn">Solicitar Envío</button>
+          </div>
+          
+          <div className="delivery-card">
+            <div className="delivery-icon">🏢</div>
+            <h3>Programa Corporativo</h3>
+            <p>Entrega programada para empresas</p>
+            <div className="delivery-price">Gratis</div>
+            <ul>
+              <li>Pedidos recurrentes automáticos</li>
+              <li>Facturación mensual consolidada</li>
+              <li>Descuentos por volumen (15-30%)</li>
+              <li>Horarios flexibles de entrega</li>
+              <li>Asesor personalizado</li>
+            </ul>
+            <button className="info-btn">Solicitar Info</button>
+          </div>
+        </div>
+      </section>
+
+      {/* SERVICIOS PARA EMPRESAS */}
+      <section className="business-services">
+        <h2 className="section-title">Servicios para Empresas</h2>
+        <div className="business-cards">
+          <div className="business-card">
+            <h3>🏢 Café de Oficina</h3>
+            <p>Suministro regular para tu empresa con la mejor calidad</p>
+            <ul>
+              <li>Entrega semanal/mensual programada</li>
+              <li>Descuentos por volumen (hasta 30%)</li>
+              <li>Máquinas de café incluidas</li>
+              <li>Capacitación para el personal</li>
+            </ul>
+            <button className="info-btn">Solicitar Información</button>
+          </div>
+          
+          <div className="business-card">
+            <h3>🎉 Eventos Especiales</h3>
+            <p>Barra de café profesional para tus eventos corporativos</p>
+            <ul>
+              <li>Barista profesional incluido</li>
+              <li>Múltiples métodos de preparación</li>
+              <li>Personalización completa del servicio</li>
+              <li>Menú de bebidas especiales</li>
+            </ul>
+            <button className="info-btn">Solicitar Información</button>
+          </div>
+          
+          <div className="business-card">
+            <h3>🎁 Regalos Corporativos</h3>
+            <p>Soluciones personalizadas para regalos empresariales</p>
+            <ul>
+              <li>Packaging personalizado con tu marca</li>
+              <li>Kits de regalo a medida</li>
+              <li>Descuentos por cantidad</li>
+              <li>Entrega nacional</li>
+            </ul>
+            <button className="info-btn">Solicitar Información</button>
+          </div>
+        </div>
+      </section>
+
+      {/* CALL TO ACTION */}
+      <section className="cta-services">
+        <div className="cta-content">
+          <h2>¿Necesitas un servicio personalizado?</h2>
+          <p>Contáctanos para crear una experiencia de café única para tu hogar o negocio. Nuestro equipo está listo para asesorarte.</p>
+          <a href="Contacto.html" className="cta-button">Solicitar Cotización</a>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer>
+        <div className="footer-content">
+          <div className="footer-column">
+            <h3>CaféSantander</h3>
+            <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
+            <div className="social-links">
+              <a href="#"><i className="fab fa-facebook-f"></i></a>
+              <a href="#"><i className="fab fa-instagram"></i></a>
+              <a href="#"><i className="fab fa-twitter"></i></a>
+              <a href="#"><i className="fab fa-whatsapp"></i></a>
+            </div>
+          </div>
+          
+          <div className="footer-column">
+            <h3>Enlaces Rápidos</h3>
+            <ul>
+              <li><a href="Inicio.html">Inicio</a></li>
+              <li><a href="Acerca.html">Acerca</a></li>
+              <li><a href="Servicios.html">Servicios</a></li>
+              <li><a href="Contacto.html">Contacto</a></li>
+            </ul>
+          </div>
+          
+          <div className="footer-column">
+            <h3>Servicios</h3>
+            <ul>
+              <li><a href="#">Entrega Express</a></li>
+              <li><a href="#">Envío Nacional</a></li>
+              <li><a href="#">Servicios Corporativos</a></li>
+              <li><a href="#">Regalos Empresariales</a></li>
+            </ul>
+          </div>
+          
+          <div className="footer-column">
+            <h3>Contacto</h3>
+            <ul>
+              <li><i className="fas fa-map-marker-alt"></i> Santander, Colombia</li>
+              <li><i className="fas fa-phone"></i> +57 321 456 7890</li>
+              <li><i className="fas fa-envelope"></i> info@cafesantander.com</li>
+              <li><i className="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div className="footer-bottom">
+          <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
+        </div>
+      </footer>
+    </div>
+  );
 }
 
-// Menú móvil
-const menuToggle = document.getElementById('menu-toggle');
-const mainNav = document.getElementById('main-nav');
+// Función para mostrar notificaciones toast
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+    ${message}
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 300);
+  }, 3000);
+}
 
-menuToggle.addEventListener('click', () => {
-  mainNav.classList.toggle('active');
-});
-
-// Cerrar menú al hacer clic en un enlace
-document.querySelectorAll('nav a').forEach(link => {
-  link.addEventListener('click', () => {
-    mainNav.classList.remove('active');
-  });
-});
+// Inicializar la aplicación
+ReactDOM.render(<ServicesPage />, document.getElementById('root'));
 </script>
-
 </body>
 </html>

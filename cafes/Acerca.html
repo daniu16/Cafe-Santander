@@ -5,17 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Acerca de - CaféSantander</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
 :root {
-  --bg:#fff;        /* Fondo blanco */
-  --accent:#e7a33d; /* Color acento dorado */
+  --bg:#fff;
+  --accent:#e7a33d;
   --accent-dark:#c58425;
-  --text:#222;      /* Texto principal */
+  --text:#222;
   --light-bg:#f9f5f0;
   --dark-text:#3a2611;
   --transition: all 0.3s ease;
   --shadow: 0 4px 12px rgba(0,0,0,0.1);
   --radius: 8px;
+  --success: #27ae60;
+  --error: #e74c3c;
 }
 
 * {
@@ -47,7 +52,6 @@ header {
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-/* LOGO */
 .logo {
   display: flex;
   align-items: center;
@@ -55,6 +59,7 @@ header {
   font-size: 24px;
   font-weight: bold;
   color: var(--text);
+  text-decoration: none;
 }
 .logo img {
   width: 60px;
@@ -62,34 +67,27 @@ header {
   border: 2px solid var(--accent);
 }
 
-/* ==============================
-   MENÚ DE NAVEGACIÓN
-============================== */
-nav {
+/* Navegación principal */
+.main-nav {
   display: flex;
   justify-content: center;  
   align-items: center;
-  gap: 60px;              /* separación entre enlaces */
+  gap: 40px;
   font-size: 18px;
 }
-
-/* Estilos para los enlaces */
-nav a {
+.main-nav a {
   text-decoration: none;
   color: var(--text);
   padding: 6px 12px;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   border-radius: 6px;
   font-weight: 500;
   position: relative;
 }
-
-/* Hover con fondo suave */
-nav a:hover {
+.main-nav a:hover {
   color: var(--accent);
 }
-
-nav a::after {
+.main-nav a::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -97,27 +95,28 @@ nav a::after {
   width: 0;
   height: 2px;
   background: var(--accent);
-  transition: all 0.3s ease;
+  transition: var(--transition);
   transform: translateX(-50%);
 }
-
-nav a:hover::after {
+.main-nav a:hover::after {
   width: 80%;
 }
-
-nav a.active {
+.main-nav a.active {
   color: var(--accent);
   font-weight: bold;
 }
-
-nav a.active::after {
+.main-nav a.active::after {
   width: 80%;
 }
 
-/* ==============================
-   BOTÓN LOGIN
-============================== */
-.login-btn {
+/* Botones de autenticación */
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.login-btn, .register-btn {
   background: none;
   border: 2px solid var(--accent);
   padding: 8px 20px;
@@ -125,12 +124,48 @@ nav a.active::after {
   font-weight: bold;
   text-decoration: none;
   color: var(--text);
-  transition: all 0.3s;
+  transition: var(--transition);
+  cursor: pointer;
+  font-size: 14px;
 }
-.login-btn:hover {
+
+.login-btn:hover, .register-btn:hover {
   background: var(--accent);
   color: #fff;
   transform: translateY(-2px);
+}
+
+.register-btn {
+  background: var(--accent);
+  color: white;
+}
+
+.register-btn:hover {
+  background: var(--accent-dark);
+}
+
+.cart-icon {
+  position: relative;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 1.2rem;
+  margin-left: 15px;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
 .menu-toggle {
@@ -140,6 +175,153 @@ nav a.active::after {
   font-size: 24px;
   cursor: pointer;
   color: var(--text);
+}
+
+/* Modal de autenticación */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.auth-modal {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 400px;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .auth-modal {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  color: var(--dark-text);
+  font-size: 1.5rem;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.close-modal:hover {
+  color: var(--accent);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+  border-bottom: 2px solid transparent;
+}
+
+.auth-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: var(--dark-text);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(231, 163, 61, 0.2);
+}
+
+.submit-btn {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.submit-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 /* ==============================
@@ -200,7 +382,7 @@ nav a.active::after {
 }
 
 /* ==============================
-   CARRUSEL
+   CARRUSEL MEJORADO
 ============================== */
 .carousel-section {
   margin-bottom: 80px;
@@ -352,6 +534,7 @@ nav a.active::after {
   text-align: center;
   box-shadow: var(--shadow);
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .value-card:hover {
@@ -398,6 +581,7 @@ nav a.active::after {
   box-shadow: var(--shadow);
   transition: var(--transition);
   text-align: center;
+  cursor: pointer;
 }
 
 .team-member:hover {
@@ -538,6 +722,7 @@ nav a.active::after {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   transition: var(--transition);
+  cursor: pointer;
 }
 
 .sustainability-feature:hover {
@@ -606,6 +791,148 @@ footer {
   font-size: 0.9rem;
 }
 
+/* Toast notifications */
+.toast {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background: var(--success);
+  color: white;
+  padding: 15px 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast.error {
+  background: var(--error);
+}
+
+/* Modal de miembro del equipo */
+.team-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.team-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.team-modal-content {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.7);
+  transition: transform 0.3s ease;
+}
+
+.team-modal.active .team-modal-content {
+  transform: scale(1);
+}
+
+.team-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.team-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.close-team-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+}
+
+.team-modal-body {
+  padding: 30px;
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.team-modal-image {
+  flex: 0 0 200px;
+}
+
+.team-modal-image img {
+  width: 100%;
+  border-radius: var(--radius);
+}
+
+.team-modal-info {
+  flex: 1;
+}
+
+.team-modal-role {
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.team-modal-bio {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.team-modal-details h4 {
+  margin-bottom: 10px;
+  color: var(--dark-text);
+}
+
+.team-modal-details ul {
+  list-style: none;
+  padding: 0;
+}
+
+.team-modal-details li {
+  margin-bottom: 8px;
+  color: #666;
+  padding-left: 20px;
+  position: relative;
+}
+
+.team-modal-details li::before {
+  content: '•';
+  color: var(--accent);
+  position: absolute;
+  left: 0;
+}
+
 /* ==============================
    RESPONSIVE
 ============================== */
@@ -630,6 +957,17 @@ footer {
   .carousel-item img {
     height: 400px;
   }
+
+  .team-modal-body {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .team-modal-image {
+    flex: none;
+    width: 200px;
+    margin: 0 auto;
+  }
 }
 
 @media (max-width: 768px) {
@@ -637,7 +975,7 @@ footer {
     padding: 15px 20px;
   }
   
-  nav {
+  .main-nav {
     display: none;
     position: absolute;
     top: 100%;
@@ -650,12 +988,17 @@ footer {
     gap: 15px;
   }
   
-  nav.active {
+  .main-nav.active {
     display: flex;
   }
   
   .menu-toggle {
     display: block;
+  }
+  
+  .auth-buttons {
+    flex-direction: column;
+    gap: 10px;
   }
   
   .about-hero {
@@ -723,442 +1066,665 @@ footer {
   .carousel-caption h3 {
     font-size: 1.2rem;
   }
+
+  .team-modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .team-modal-body {
+    padding: 20px;
+  }
 }
 </style>
 </head>
 
 <body>
-  <header>
-    <div class="logo">
-      <img src="imagenes/logoCafe.png" alt="logo">
-      CaféSantander
-    </div>
+  <div id="root"></div>
 
-    <nav id="main-nav">
-      <a href="Inicio.html">Inicio</a>
-      <a href="Acerca.html" class="active">Acerca</a>
-      <a href="Servicios.html">Servicios</a>
-      <a href="Contacto.html">Contacto</a>
-    </nav>
+  <script type="text/babel">
+    // Estado global de la aplicación
+    const AppState = {
+      cart: [],
+      user: null,
+      currentTeamMember: null
+    };
 
-    <a href="#" class="login-btn">Acceder</a>
-    <button class="menu-toggle" id="menu-toggle">
-      <i class="fas fa-bars"></i>
-    </button>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="about-hero">
-    <div class="hero-content">
-      <h1>Nuestra Historia</h1>
-      <p>Tres generaciones dedicadas al cultivo del mejor café de Santander</p>
-    </div>
-  </section>
-
-  <!-- Contenido Principal -->
-  <div class="about-container">
-    <!-- Carrusel de Imágenes -->
-    <section class="carousel-section">
-      <h2 class="section-title">Nuestra Finca</h2>
-      <div class="carousel-container">
-        <div class="carousel">
-          <!-- Imágenes del carrusel -->
-          <div class="carousel-item">
-            <img src="imagenes/cafe2.jpg" alt="Vista de nuestra granja">
-            <div class="carousel-caption">
-              <h3>Una vista de nuestra granja</h3>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/cafe1.jpg" alt="Primer cultivo en florecer">
-            <div class="carousel-caption">
-              <h3>Primer cultivo en florecer</h3>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/cafe3.jpg" alt="Áreas rebosadas de café">
-            <div class="carousel-caption">
-              <h3>Áreas rebosadas de café</h3>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/cafe4.jpg" alt="Cultivo de calidad">
-            <div class="carousel-caption">
-              <h3>Un cultivo de calidad</h3>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/cafe5.jpg" alt="Acercamiento al café">
-            <div class="carousel-caption">
-              <h3>Acercamiento al café</h3>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/cafe7.jpg" alt="Lugar para descansar">
-            <div class="carousel-caption">
-              <h3>Un lugar excelente hasta para descansar</h3>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/cafe8.jpg" alt="Café en diferentes colores">
-            <div class="carousel-caption">
-              <h3>Un buen café pasa por todos los colores</h3>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/cafe9.jpg" alt="Café bien cargado">
-            <div class="carousel-caption">
-              <h3>Están bien cargados</h3>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/cafe10.jpg" alt="Café esperando madurar">
-            <div class="carousel-caption">
-              <h3>Esperando a madurar</h3>
-            </div>
-          </div>
-        </div>
-        
-        <button class="carousel-btn prev">&#10094;</button>
-        <button class="carousel-btn next">&#10095;</button>
-        
-        <div class="carousel-indicators">
-          <span class="indicator active"></span>
-          <span class="indicator"></span>
-          <span class="indicator"></span>
-          <span class="indicator"></span>
-          <span class="indicator"></span>
-          <span class="indicator"></span>
-          <span class="indicator"></span>
-          <span class="indicator"></span>
-          <span class="indicator"></span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Nuestra Historia -->
-    <section class="our-story">
-      <div class="story-content">
-        <h2 class="section-title">Desde 1985</h2>
-        <p>Todo comenzó en las montañas de Santander, donde Don José Santander, nuestro fundador, cultivaba café con pasión y dedicación. Lo que empezó como una pequeña finca familiar se ha convertido en un legado que perdura por tres generaciones.</p>
-        <p>Hoy, continuamos con las mismas tradiciones y valores que nos inculcó Don José: respeto por la tierra, compromiso con la calidad y pasión por el café excepcional.</p>
-        <p>Cada taza de CaféSantander contiene no solo el sabor único de nuestras montañas, sino también la historia de una familia que ha dedicado su vida a perfeccionar el arte del cultivo del café.</p>
-      </div>
-    </section>
-
-    <!-- Nuestros Valores -->
-    <section class="our-values">
-      <h2 class="section-title">Nuestros Valores</h2>
-      <div class="values-grid">
-        <div class="value-card">
-          <div class="value-icon">
-            <i class="fas fa-seedling"></i>
-          </div>
-          <h3>Sostenibilidad</h3>
-          <p>Practicamos agricultura sostenible que respeta el medio ambiente y beneficia a nuestras comunidades locales.</p>
-        </div>
-        
-        <div class="value-card">
-          <div class="value-icon">
-            <i class="fas fa-award"></i>
-          </div>
-          <h3>Calidad</h3>
-          <p>Nos comprometemos con los más altos estándares de calidad en cada etapa de nuestro proceso.</p>
-        </div>
-        
-        <div class="value-card">
-          <div class="value-icon">
-            <i class="fas fa-heart"></i>
-          </div>
-          <h3>Pasión</h3>
-          <p>Amamos lo que hacemos y esa pasión se refleja en cada grano de café que producimos.</p>
-        </div>
-        
-        <div class="value-card">
-          <div class="value-icon">
-            <i class="fas fa-hands-helping"></i>
-          </div>
-          <h3>Comunidad</h3>
-          <p>Trabajamos en estrecha colaboración con nuestras comunidades para crear un impacto positivo.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Nuestro Equipo -->
-    <section class="our-team">
-      <h2 class="section-title">Conoce Nuestro Equipo</h2>
-      <div class="team-grid">
-        <div class="team-member">
-          <div class="member-image">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Carlos Santander">
-          </div>
-          <div class="member-info">
-            <h3>Carlos Santander</h3>
-            <div class="member-role">Director General</div>
-            <p class="member-bio">Nieto del fundador, continúa el legado familiar con innovación y respeto por la tradición.</p>
-            <div class="member-social">
-              <a href="#"><i class="fab fa-linkedin-in"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-            </div>
-          </div>
-        </div>
-        
-        <div class="team-member">
-          <div class="member-image">
-            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="María Rodríguez">
-          </div>
-          <div class="member-info">
-            <h3>María Rodríguez</h3>
-            <div class="member-role">Directora de Calidad</div>
-            <p class="member-bio">Especialista en catación con más de 15 años de experiencia en la industria del café.</p>
-            <div class="member-social">
-              <a href="#"><i class="fab fa-linkedin-in"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-            </div>
-          </div>
-        </div>
-        
-        <div class="team-member">
-          <div class="member-image">
-            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Roberto Gómez">
-          </div>
-          <div class="member-info">
-            <h3>Roberto Gómez</h3>
-            <div class="member-role">Jefe de Cultivo</div>
-            <p class="member-bio">Supervisa nuestras fincas con técnicas sostenibles y conocimiento ancestral.</p>
-            <div class="member-social">
-              <a href="#"><i class="fab fa-facebook-f"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-            </div>
-          </div>
-        </div>
-        
-        <div class="team-member">
-          <div class="member-image">
-            <img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ana López">
-          </div>
-          <div class="member-info">
-            <h3>Ana López</h3>
-            <div class="member-role">Directora de Sostenibilidad</div>
-            <p class="member-bio">Lidera nuestros programas de responsabilidad social y ambiental.</p>
-            <div class="member-social">
-              <a href="#"><i class="fab fa-linkedin-in"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Logros y Estadísticas -->
-    <section class="achievements">
-      <h2 class="section-title">Nuestros Logros</h2>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-number">38</div>
-          <div class="stat-label">Años de Experiencia</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">500+</div>
-          <div class="stat-label">Familias Beneficiadas</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">25</div>
-          <div class="stat-label">Premios de Calidad</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">15</div>
-          <div class="stat-label">Países que Exportamos</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Compromiso con la Sostenibilidad -->
-    <section class="sustainability">
-      <div class="sustainability-content">
-        <h2 class="section-title">Compromiso con la Sostenibilidad</h2>
-        <p>En CaféSantander creemos que un buen café no solo debe saber bien, sino que también debe hacer el bien. Por eso, hemos implementado prácticas que garantizan un impacto positivo en nuestro entorno y comunidades.</p>
-        
-        <div class="sustainability-features">
-          <div class="sustainability-feature">
-            <i class="fas fa-recycle"></i>
-            <h3>Agricultura Regenerativa</h3>
-            <p>Utilizamos técnicas que mejoran la salud del suelo y promueven la biodiversidad.</p>
-          </div>
-          
-          <div class="sustainability-feature">
-            <i class="fas fa-hand-holding-heart"></i>
-            <h3>Comercio Justo</h3>
-            <p>Garantizamos precios justos para nuestros productores y condiciones laborales dignas.</p>
-          </div>
-          
-          <div class="sustainability-feature">
-            <i class="fas fa-tint"></i>
-            <h3>Gestión del Agua</h3>
-            <p>Implementamos sistemas de riego eficientes y tratamos nuestras aguas residuales.</p>
-          </div>
-          
-          <div class="sustainability-feature">
-            <i class="fas fa-leaf"></i>
-            <h3>Energía Limpia</h3>
-            <p>Utilizamos energía solar en nuestras instalaciones de procesamiento.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- Footer -->
-  <footer>
-    <div class="footer-content">
-      <div class="footer-column">
-        <h3>CaféSantander</h3>
-        <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Enlaces Rápidos</h3>
-        <ul>
-          <li><a href="Inicio.html">Inicio</a></li>
-          <li><a href="Acerca.html">Acerca</a></li>
-          <li><a href="Servicios.html">Servicios</a></li>
-          <li><a href="Contacto.html">Contacto</a></li>
-        </ul>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Políticas</h3>
-        <ul>
-          <li><a href="#">Términos y Condiciones</a></li>
-          <li><a href="#">Política de Privacidad</a></li>
-          <li><a href="#">Política de Envíos</a></li>
-          <li><a href="#">Devoluciones</a></li>
-        </ul>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Contacto</h3>
-        <ul>
-          <li><i class="fas fa-map-marker-alt"></i> Santander, Colombia</li>
-          <li><i class="fas fa-phone"></i> +57 321 456 7890</li>
-          <li><i class="fas fa-envelope"></i> info@cafesantander.com</li>
-          <li><i class="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
-        </ul>
-      </div>
-    </div>
-    
-    <div class="footer-bottom">
-      <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
-    </div>
-  </footer>
-
-  <script>
-    // Menú móvil
-    const menuToggle = document.getElementById('menu-toggle');
-    const mainNav = document.getElementById('main-nav');
-
-    menuToggle.addEventListener('click', () => {
-      mainNav.classList.toggle('active');
-    });
-
-    // Carrusel
-    document.addEventListener('DOMContentLoaded', function() {
-      const carousel = document.querySelector('.carousel');
-      const items = document.querySelectorAll('.carousel-item');
-      const prevBtn = document.querySelector('.prev');
-      const nextBtn = document.querySelector('.next');
-      const indicators = document.querySelectorAll('.indicator');
-      
-      let currentIndex = 0;
-      const totalItems = items.length;
-      
-      // Función para actualizar el carrusel
-      function updateCarousel() {
-        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
-        
-        // Actualizar indicadores
-        indicators.forEach((indicator, index) => {
-          indicator.classList.toggle('active', index === currentIndex);
-        });
-      }
-      
-      // Evento para botón siguiente
-      nextBtn.addEventListener('click', function() {
-        currentIndex = (currentIndex + 1) % totalItems;
-        updateCarousel();
-      });
-      
-      // Evento para botón anterior
-      prevBtn.addEventListener('click', function() {
-        currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-        updateCarousel();
-      });
-      
-      // Evento para indicadores
-      indicators.forEach((indicator, index) => {
-        indicator.addEventListener('click', function() {
-          currentIndex = index;
-          updateCarousel();
-        });
-      });
-      
-      // Cambio automático cada 15 segundos
-      setInterval(function() {
-        currentIndex = (currentIndex + 1) % totalItems;
-        updateCarousel();
-      }, 15000);
-    });
-
-    // Animación de números para las estadísticas
-    function animateNumbers() {
-      const statNumbers = document.querySelectorAll('.stat-number');
-      
-      statNumbers.forEach(stat => {
-        const target = parseInt(stat.textContent);
-        let current = 0;
-        const increment = target / 50;
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= target) {
-            current = target;
-            clearInterval(timer);
-          }
-          stat.textContent = Math.floor(current);
-        }, 30);
-      });
-    }
-
-    // Observador de intersección para animar números cuando son visibles
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animateNumbers();
-          observer.unobserve(entry.target);
+    // Datos del equipo
+    const teamMembers = [
+      {
+        id: 1,
+        name: "Carlos Santander",
+        role: "Director General",
+        bio: "Nieto del fundador, continúa el legado familiar con innovación y respeto por la tradición. Con más de 20 años de experiencia en la industria del café.",
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        details: {
+          experiencia: "25 años en la industria del café",
+          especialidad: "Gestión de fincas y relaciones internacionales",
+          logros: "Expansión a 15 países internacionales"
+        },
+        social: {
+          linkedin: "#",
+          twitter: "#"
         }
-      });
-    }, { threshold: 0.5 });
+      },
+      {
+        id: 2,
+        name: "María Rodríguez",
+        role: "Directora de Calidad",
+        bio: "Especialista en catación con más de 15 años de experiencia en la industria del café. Certificada por la Specialty Coffee Association.",
+        image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        details: {
+          experiencia: "18 años en control de calidad",
+          especialidad: "Catación y desarrollo de perfiles de sabor",
+          certificaciones: "Q Grader, SCA Certified"
+        },
+        social: {
+          linkedin: "#",
+          instagram: "#"
+        }
+      },
+      {
+        id: 3,
+        name: "Roberto Gómez",
+        role: "Jefe de Cultivo",
+        bio: "Supervisa nuestras fincas con técnicas sostenibles y conocimiento ancestral heredado de generaciones anteriores.",
+        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        details: {
+          experiencia: "30 años en cultivo de café",
+          especialidad: "Agricultura sostenible y orgánica",
+          logros: "Implementación de prácticas regenerativas"
+        },
+        social: {
+          facebook: "#",
+          twitter: "#"
+        }
+      },
+      {
+        id: 4,
+        name: "Ana López",
+        role: "Directora de Sostenibilidad",
+        bio: "Lidera nuestros programas de responsabilidad social y ambiental. Ingeniera ambiental con maestría en desarrollo sostenible.",
+        image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        details: {
+          experiencia: "12 años en sostenibilidad",
+          especialidad: "Certificaciones ambientales y sociales",
+          logros: "Certificación Rainforest Alliance"
+        },
+        social: {
+          linkedin: "#",
+          instagram: "#"
+        }
+      }
+    ];
 
-    // Observar la sección de logros
-    const achievementsSection = document.querySelector('.achievements');
-    if (achievementsSection) {
-      observer.observe(achievementsSection);
+    // Componente de Header
+    function Header() {
+      const [isNavActive, setIsNavActive] = React.useState(false);
+      const [isModalOpen, setIsModalOpen] = React.useState(false);
+      const [activeAuthTab, setActiveAuthTab] = React.useState('login');
+
+      const toggleNav = () => {
+        setIsNavActive(!isNavActive);
+      };
+
+      const openAuthModal = (tab = 'login') => {
+        setActiveAuthTab(tab);
+        setIsModalOpen(true);
+      };
+
+      const closeAuthModal = () => {
+        setIsModalOpen(false);
+      };
+
+      const handleAuthSubmit = (e) => {
+        e.preventDefault();
+        showToast('¡Bienvenido a CaféSantander!', 'success');
+        closeAuthModal();
+      };
+
+      const cartCount = AppState.cart.reduce((total, item) => total + item.quantity, 0);
+
+      return (
+        <>
+          <header>
+            <a href="Inicio.html" className="logo">
+              <img src="imagenes/logoCafe.png" alt="logo" />
+              CaféSantander
+            </a>
+
+            <nav className={`main-nav ${isNavActive ? 'active' : ''}`} id="main-nav">
+              <a href="Inicio.html">Inicio</a>
+              <a href="Acerca.html" className="active">Acerca</a>
+              <a href="Servicios.html">Servicios</a>
+              <a href="Contacto.html">Contacto</a>
+              <a href="Carrito.html">Nuestros Productos</a>
+            </nav>
+
+            <div className="auth-buttons">
+              <button className="login-btn" onClick={() => openAuthModal('login')}>
+                Acceder
+              </button>
+              <button className="register-btn" onClick={() => openAuthModal('register')}>
+                Registrarse
+              </button>
+              <a href="Carrito.html" className="cart-icon">
+                <i className="fas fa-shopping-cart"></i>
+                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+              </a>
+            </div>
+            
+            <button className="menu-toggle" id="menu-toggle" onClick={toggleNav}>
+              <i className="fas fa-bars"></i>
+            </button>
+          </header>
+
+          {/* Modal de Autenticación */}
+          <div className={`modal-overlay ${isModalOpen ? 'active' : ''}`}>
+            <div className="auth-modal">
+              <div className="modal-header">
+                <h2>{activeAuthTab === 'login' ? 'Iniciar Sesión' : 'Registrarse'}</h2>
+                <button className="close-modal" onClick={closeAuthModal}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="auth-tabs">
+                  <button 
+                    className={`auth-tab ${activeAuthTab === 'login' ? 'active' : ''}`}
+                    onClick={() => setActiveAuthTab('login')}
+                  >
+                    Iniciar Sesión
+                  </button>
+                  <button 
+                    className={`auth-tab ${activeAuthTab === 'register' ? 'active' : ''}`}
+                    onClick={() => setActiveAuthTab('register')}
+                  >
+                    Registrarse
+                  </button>
+                </div>
+
+                <form className={`auth-form ${activeAuthTab === 'login' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="login-email">Correo Electrónico</label>
+                    <input type="email" id="login-email" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="login-password">Contraseña</label>
+                    <input type="password" id="login-password" required />
+                  </div>
+                  <button type="submit" className="submit-btn">Iniciar Sesión</button>
+                  <div className="form-footer">
+                    ¿No tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('register')}>Regístrate aquí</a>
+                  </div>
+                </form>
+
+                <form className={`auth-form ${activeAuthTab === 'register' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="register-name">Nombre Completo</label>
+                    <input type="text" id="register-name" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="register-email">Correo Electrónico</label>
+                    <input type="email" id="register-email" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="register-password">Contraseña</label>
+                    <input type="password" id="register-password" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="register-confirm">Confirmar Contraseña</label>
+                    <input type="password" id="register-confirm" required />
+                  </div>
+                  <button type="submit" className="submit-btn">Registrarse</button>
+                  <div className="form-footer">
+                    ¿Ya tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('login')}>Inicia sesión aquí</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </>
+      );
     }
 
-    // Animación suave al cargar
-    document.addEventListener('DOMContentLoaded', () => {
-      const elements = document.querySelectorAll('.value-card, .team-member, .sustainability-feature');
+    // Componente de Carrusel
+    function ImageCarousel() {
+      const [currentIndex, setCurrentIndex] = React.useState(0);
       
-      elements.forEach((el, index) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        
+      const images = [
+        {
+          src: "imagenes/cafe2.jpg",
+          caption: "Vista panorámica de nuestra finca en las montañas de Santander"
+        },
+        {
+          src: "imagenes/cafe1.jpg", 
+          caption: "Primeras flores del cafeto - señal de una buena cosecha"
+        },
+        {
+          src: "imagenes/cafe3.jpg",
+          caption: "Áreas de cultivo con sombra natural para un desarrollo óptimo"
+        },
+        {
+          src: "imagenes/cafe4.jpg",
+          caption: "Granos de café en su punto perfecto de maduración"
+        },
+        {
+          src: "imagenes/cafe5.jpg",
+          caption: "Detalle de los frutos del cafeto - la esencia de nuestro trabajo"
+        },
+        {
+          src: "imagenes/cafe7.jpg",
+          caption: "Espacios de descanso entre nuestros cultivos"
+        },
+        {
+          src: "imagenes/cafe8.jpg",
+          caption: "El proceso natural del café - del verde al rojo intenso"
+        },
+        {
+          src: "imagenes/cafe9.jpg",
+          caption: "Racimos cargados listos para la cosecha manual"
+        },
+        {
+          src: "imagenes/cafe10.jpg",
+          caption: "Café en desarrollo - el futuro de CaféSantander"
+        }
+      ];
+
+      const nextSlide = () => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+      };
+
+      const prevSlide = () => {
+        setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+      };
+
+      const goToSlide = (index) => {
+        setCurrentIndex(index);
+      };
+
+      // Cambio automático cada 8 segundos
+      React.useEffect(() => {
+        const interval = setInterval(nextSlide, 8000);
+        return () => clearInterval(interval);
+      }, []);
+
+      return (
+        <section className="carousel-section">
+          <h2 className="section-title">Nuestra Finca en Imágenes</h2>
+          <div className="carousel-container">
+            <div 
+              className="carousel"
+              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            >
+              {images.map((image, index) => (
+                <div key={index} className="carousel-item">
+                  <img src={image.src} alt={image.caption} />
+                  <div className="carousel-caption">
+                    <h3>{image.caption}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <button className="carousel-btn prev" onClick={prevSlide}>&#10094;</button>
+            <button className="carousel-btn next" onClick={nextSlide}>&#10095;</button>
+            
+            <div className="carousel-indicators">
+              {images.map((_, index) => (
+                <span 
+                  key={index}
+                  className={`indicator ${index === currentIndex ? 'active' : ''}`}
+                  onClick={() => goToSlide(index)}
+                ></span>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // Componente de Miembro del Equipo
+    function TeamMember({ member }) {
+      const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+      const openModal = () => {
+        AppState.currentTeamMember = member;
+        setIsModalOpen(true);
+      };
+
+      const closeModal = () => {
+        setIsModalOpen(false);
+      };
+
+      return (
+        <>
+          <div className="team-member" onClick={openModal}>
+            <div className="member-image">
+              <img src={member.image} alt={member.name} />
+            </div>
+            <div className="member-info">
+              <h3>{member.name}</h3>
+              <div className="member-role">{member.role}</div>
+              <p className="member-bio">{member.bio}</p>
+              <div className="member-social">
+                {member.social.linkedin && (
+                  <a href={member.social.linkedin} onClick={(e) => e.stopPropagation()}>
+                    <i className="fab fa-linkedin-in"></i>
+                  </a>
+                )}
+                {member.social.twitter && (
+                  <a href={member.social.twitter} onClick={(e) => e.stopPropagation()}>
+                    <i className="fab fa-twitter"></i>
+                  </a>
+                )}
+                {member.social.instagram && (
+                  <a href={member.social.instagram} onClick={(e) => e.stopPropagation()}>
+                    <i className="fab fa-instagram"></i>
+                  </a>
+                )}
+                {member.social.facebook && (
+                  <a href={member.social.facebook} onClick={(e) => e.stopPropagation()}>
+                    <i className="fab fa-facebook-f"></i>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Modal del miembro del equipo */}
+          <div className={`team-modal ${isModalOpen ? 'active' : ''}`}>
+            <div className="team-modal-content">
+              <div className="team-modal-header">
+                <h2>{member.name}</h2>
+                <button className="close-team-modal" onClick={closeModal}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+              <div className="team-modal-body">
+                <div className="team-modal-image">
+                  <img src={member.image} alt={member.name} />
+                </div>
+                <div className="team-modal-info">
+                  <div className="team-modal-role">{member.role}</div>
+                  <div className="team-modal-bio">{member.bio}</div>
+                  <div className="team-modal-details">
+                    <h4>Detalles Profesionales</h4>
+                    <ul>
+                      <li><strong>Experiencia:</strong> {member.details.experiencia}</li>
+                      <li><strong>Especialidad:</strong> {member.details.especialidad}</li>
+                      <li><strong>Logros:</strong> {member.details.logros}</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    // Componente de Estadísticas Animadas
+    function AnimatedStats() {
+      const [isVisible, setIsVisible] = React.useState(false);
+
+      React.useEffect(() => {
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              setIsVisible(true);
+            }
+          },
+          { threshold: 0.5 }
+        );
+
+        const statsSection = document.querySelector('.achievements');
+        if (statsSection) {
+          observer.observe(statsSection);
+        }
+
+        return () => observer.disconnect();
+      }, []);
+
+      const stats = [
+        { number: 38, label: "Años de Experiencia" },
+        { number: 500, label: "Familias Beneficiadas", plus: true },
+        { number: 25, label: "Premios de Calidad" },
+        { number: 15, label: "Países que Exportamos" }
+      ];
+
+      return (
+        <section className="achievements">
+          <h2 className="section-title">Nuestros Logros</h2>
+          <div className="stats-grid">
+            {stats.map((stat, index) => (
+              <div key={index} className="stat-item">
+                <div className="stat-number">
+                  {isVisible ? (
+                    <AnimatedNumber value={stat.number} />
+                  ) : (
+                    "0"
+                  )}
+                  {stat.plus && "+"}
+                </div>
+                <div className="stat-label">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+    }
+
+    // Componente para números animados
+    function AnimatedNumber({ value }) {
+      const [count, setCount] = React.useState(0);
+
+      React.useEffect(() => {
+        if (count < value) {
+          const increment = value / 50;
+          const timer = setInterval(() => {
+            setCount(prevCount => {
+              const newCount = prevCount + increment;
+              if (newCount >= value) {
+                clearInterval(timer);
+                return value;
+              }
+              return newCount;
+            });
+          }, 30);
+
+          return () => clearInterval(timer);
+        }
+      }, [value, count]);
+
+      return Math.floor(count);
+    }
+
+    // Componente principal de la aplicación
+    function App() {
+      return (
+        <div className="main-container">
+          <Header />
+          
+          {/* Hero Section */}
+          <section className="about-hero">
+            <div className="hero-content">
+              <h1>Nuestra Historia</h1>
+              <p>Tres generaciones dedicadas al cultivo del mejor café de Santander</p>
+            </div>
+          </section>
+
+          {/* Contenido Principal */}
+          <div className="about-container">
+            <ImageCarousel />
+
+            {/* Nuestra Historia */}
+            <section className="our-story">
+              <div className="story-content">
+                <h2 className="section-title">Desde 1985</h2>
+                <p>Todo comenzó en las montañas de Santander, donde Don José Santander, nuestro fundador, cultivaba café con pasión y dedicación. Lo que empezó como una pequeña finca familiar se ha convertido en un legado que perdura por tres generaciones.</p>
+                <p>Hoy, continuamos con las mismas tradiciones y valores que nos inculcó Don José: respeto por la tierra, compromiso con la calidad y pasión por el café excepcional.</p>
+                <p>Cada taza de CaféSantander contiene no solo el sabor único de nuestras montañas, sino también la historia de una familia que ha dedicado su vida a perfeccionar el arte del cultivo del café.</p>
+              </div>
+            </section>
+
+            {/* Nuestros Valores */}
+            <section className="our-values">
+              <h2 className="section-title">Nuestros Valores</h2>
+              <div className="values-grid">
+                <div className="value-card">
+                  <div className="value-icon">
+                    <i className="fas fa-seedling"></i>
+                  </div>
+                  <h3>Sostenibilidad</h3>
+                  <p>Practicamos agricultura sostenible que respeta el medio ambiente y beneficia a nuestras comunidades locales.</p>
+                </div>
+                
+                <div className="value-card">
+                  <div className="value-icon">
+                    <i className="fas fa-award"></i>
+                  </div>
+                  <h3>Calidad</h3>
+                  <p>Nos comprometemos con los más altos estándares de calidad en cada etapa de nuestro proceso.</p>
+                </div>
+                
+                <div className="value-card">
+                  <div className="value-icon">
+                    <i className="fas fa-heart"></i>
+                  </div>
+                  <h3>Pasión</h3>
+                  <p>Amamos lo que hacemos y esa pasión se refleja en cada grano de café que producimos.</p>
+                </div>
+                
+                <div className="value-card">
+                  <div className="value-icon">
+                    <i className="fas fa-hands-helping"></i>
+                  </div>
+                  <h3>Comunidad</h3>
+                  <p>Trabajamos en estrecha colaboración con nuestras comunidades para crear un impacto positivo.</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Nuestro Equipo */}
+            <section className="our-team">
+              <h2 className="section-title">Conoce Nuestro Equipo</h2>
+              <div className="team-grid">
+                {teamMembers.map(member => (
+                  <TeamMember key={member.id} member={member} />
+                ))}
+              </div>
+            </section>
+
+            <AnimatedStats />
+
+            {/* Compromiso con la Sostenibilidad */}
+            <section className="sustainability">
+              <div className="sustainability-content">
+                <h2 className="section-title">Compromiso con la Sostenibilidad</h2>
+                <p>En CaféSantander creemos que un buen café no solo debe saber bien, sino que también debe hacer el bien. Por eso, hemos implementado prácticas que garantizan un impacto positivo en nuestro entorno y comunidades.</p>
+                
+                <div className="sustainability-features">
+                  <div className="sustainability-feature">
+                    <i className="fas fa-recycle"></i>
+                    <h3>Agricultura Regenerativa</h3>
+                    <p>Utilizamos técnicas que mejoran la salud del suelo y promueven la biodiversidad.</p>
+                  </div>
+                  
+                  <div className="sustainability-feature">
+                    <i className="fas fa-hand-holding-heart"></i>
+                    <h3>Comercio Justo</h3>
+                    <p>Garantizamos precios justos para nuestros productores y condiciones laborales dignas.</p>
+                  </div>
+                  
+                  <div className="sustainability-feature">
+                    <i className="fas fa-tint"></i>
+                    <h3>Gestión del Agua</h3>
+                    <p>Implementamos sistemas de riego eficientes y tratamos nuestras aguas residuales.</p>
+                  </div>
+                  
+                  <div className="sustainability-feature">
+                    <i className="fas fa-leaf"></i>
+                    <h3>Energía Limpia</h3>
+                    <p>Utilizamos energía solar en nuestras instalaciones de procesamiento.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Footer */}
+          <footer>
+            <div className="footer-content">
+              <div className="footer-column">
+                <h3>CaféSantander</h3>
+                <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
+              </div>
+              
+              <div className="footer-column">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                  <li><a href="Inicio.html">Inicio</a></li>
+                  <li><a href="Acerca.html">Acerca</a></li>
+                  <li><a href="Servicios.html">Servicios</a></li>
+                  <li><a href="Contacto.html">Contacto</a></li>
+                </ul>
+              </div>
+              
+              <div className="footer-column">
+                <h3>Políticas</h3>
+                <ul>
+                  <li><a href="#">Términos y Condiciones</a></li>
+                  <li><a href="#">Política de Privacidad</a></li>
+                  <li><a href="#">Política de Envíos</a></li>
+                  <li><a href="#">Devoluciones</a></li>
+                </ul>
+              </div>
+              
+              <div className="footer-column">
+                <h3>Contacto</h3>
+                <ul>
+                  <li><i className="fas fa-map-marker-alt"></i> Santander, Colombia</li>
+                  <li><i className="fas fa-phone"></i> +57 321 456 7890</li>
+                  <li><i className="fas fa-envelope"></i> info@cafesantander.com</li>
+                  <li><i className="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="footer-bottom">
+              <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    // Función para mostrar notificaciones toast
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+        ${message}
+      `;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 100);
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
         setTimeout(() => {
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
-        }, 100 * index);
-      });
-    });
+          document.body.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+
+    // Inicializar la aplicación
+    ReactDOM.render(<App />, document.getElementById('root'));
   </script>
 </body>
 </html>

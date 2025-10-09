@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>CaféSantander - Café Premium de Granja a Taza</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
 :root {
   --bg:#fff;
@@ -16,6 +19,8 @@
   --transition: all 0.3s ease;
   --shadow: 0 4px 12px rgba(0,0,0,0.1);
   --radius: 8px;
+  --success: #27ae60;
+  --error: #e74c3c;
 }
 
 * {
@@ -52,6 +57,7 @@ header {
   font-size: 24px;
   font-weight: bold;
   color: var(--text);
+  text-decoration: none;
 }
 .logo img {
   width: 60px;
@@ -59,7 +65,7 @@ header {
   border: 2px solid var(--accent);
 }
 
-/* Navegación principal (entre páginas) */
+/* Navegación principal */
 .main-nav {
   display: flex;
   justify-content: center;  
@@ -101,7 +107,7 @@ header {
   width: 80%;
 }
 
-/* Navegación por secciones (dentro de la página) */
+/* Navegación por secciones */
 .section-nav {
   display: flex;
   justify-content: center;
@@ -139,7 +145,14 @@ header {
   color: white;
 }
 
-.login-btn {
+/* Botones de autenticación */
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.login-btn, .register-btn {
   background: none;
   border: 2px solid var(--accent);
   padding: 8px 20px;
@@ -148,11 +161,47 @@ header {
   text-decoration: none;
   color: var(--text);
   transition: var(--transition);
+  cursor: pointer;
+  font-size: 14px;
 }
-.login-btn:hover {
+
+.login-btn:hover, .register-btn:hover {
   background: var(--accent);
   color: #fff;
   transform: translateY(-2px);
+}
+
+.register-btn {
+  background: var(--accent);
+  color: white;
+}
+
+.register-btn:hover {
+  background: var(--accent-dark);
+}
+
+.cart-icon {
+  position: relative;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 1.2rem;
+  margin-left: 15px;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
 .menu-toggle {
@@ -162,6 +211,153 @@ header {
   font-size: 24px;
   cursor: pointer;
   color: var(--text);
+}
+
+/* Modal de autenticación */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.auth-modal {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 400px;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .auth-modal {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  color: var(--dark-text);
+  font-size: 1.5rem;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.close-modal:hover {
+  color: var(--accent);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+  border-bottom: 2px solid transparent;
+}
+
+.auth-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: var(--dark-text);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(231, 163, 61, 0.2);
+}
+
+.submit-btn {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.submit-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 /* Hero */
@@ -227,7 +423,8 @@ header {
   text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
-.hero button {
+.hero-btn {
+  display: inline-block;
   background-color: #fff;
   color: var(--accent-dark);
   border: none;
@@ -238,16 +435,14 @@ header {
   transition: var(--transition);
   font-weight: bold;
   box-shadow: var(--shadow);
+  text-decoration: none;
 }
-.hero button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
+.hero-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
 
 /* Secciones */
 section {
   padding: 80px 30px;
-  scroll-margin-top: 140px; /* Para que el scroll tenga en cuenta la navegación fija */
+  scroll-margin-top: 140px;
 }
 
 .section-title {
@@ -288,6 +483,7 @@ section {
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: var(--transition);
+  position: relative;
 }
 
 .product-card:hover {
@@ -352,6 +548,10 @@ section {
 
 .add-to-cart:hover {
   background: var(--accent-dark);
+}
+
+.add-to-cart.added {
+  background: var(--success);
 }
 
 /* Mensaje de productos */
@@ -689,6 +889,29 @@ footer {
   font-size: 0.9rem;
 }
 
+/* Toast notifications */
+.toast {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background: var(--success);
+  color: white;
+  padding: 15px 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast.error {
+  background: var(--error);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .process-steps {
@@ -728,6 +951,11 @@ footer {
   
   .menu-toggle {
     display: block;
+  }
+  
+  .auth-buttons {
+    flex-direction: column;
+    gap: 10px;
   }
   
   .hero {
@@ -780,456 +1008,605 @@ footer {
 </head>
 
 <body>
-  <header>
-    <div class="logo">
-      <img src="imagenes/logoCafe.png" alt="logo">
-      CaféSantander
-    </div>
+  <div id="root"></div>
 
-    <!-- Navegación principal (entre páginas) -->
-    <nav class="main-nav" id="main-nav">
-      <a href="Inicio.html" class="active">Inicio</a>
-      <a href="Acerca.html">Acerca</a>
-      <a href="Servicios.html">Servicios</a>
-      <a href="Contacto.html">Contacto</a>
-    </nav>
-
-    <a href="#" class="login-btn">Acceder</a>
-    <button class="menu-toggle" id="menu-toggle">
-      <i class="fas fa-bars"></i>
-    </button>
-  </header>
-
-  <!-- Navegación por secciones (dentro de la página) -->
-  <nav class="section-nav" id="section-nav">
-    <a href="#productos">Productos</a>
-    <a href="#nosotros">Nosotros</a>
-    <a href="#proceso">Proceso</a>
-    <a href="#testimonios">Testimonios</a>
-    <a href="#blog">Blog</a>
-    <a href="#contacto">Contacto</a>
-  </nav>
-
-  <!-- Hero -->
-  <section class="hero" id="hero">
-    <div class="hero-content">
-      <h1>Café fresco de nuestra granja a tu taza</h1>
-      <p>Descubre los aromas y sabores únicos de nuestro café 100% natural</p>
-      <button>Explorar Productos</button>
-    </div>
-  </section>
-
-  <!-- Productos Destacados -->
-  <section class="featured-products" id="productos">
-    <h2 class="section-title">Nuestros Productos</h2>
-    <div class="products-grid">
-      <div class="product-card">
-        <div class="product-image">
-          <img src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Café Arábica">
-        </div>
-        <div class="product-info">
-          <h3>Café Arábica Premium</h3>
-          <p>Café de altura con notas afrutadas y aroma intenso. Ideal para los paladares más exigentes.</p>
-          <div class="product-price">
-            <span class="price">$42.000 COP</span>
-            <button class="add-to-cart">Añadir al carrito</button>
-          </div>
-        </div>
-      </div>
-      
-      <div class="product-card">
-        <div class="product-image">
-          <img src="https://images.unsplash.com/photo-1568649929103-28ffbefaca1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Café Robusta">
-        </div>
-        <div class="product-info">
-          <h3>Café Robusta Selecto</h3>
-          <p>Intenso y con cuerpo, perfecto para empezar el día con energía. Notas a chocolate y especias.</p>
-          <div class="product-price">
-            <span class="price">$36.000 COP</span>
-            <button class="add-to-cart">Añadir al carrito</button>
-          </div>
-        </div>
-      </div>
-      
-      <div class="product-card">
-        <div class="product-image">
-          <img src="https://images.unsplash.com/photo-1570194065650-2c9c2bc6a0ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Café Descafeinado">
-        </div>
-        <div class="product-info">
-          <h3>Café Descafeinado Natural</h3>
-          <p>Todo el sabor sin la cafeína. Proceso natural que preserva el aroma y sabor original.</p>
-          <div class="product-price">
-            <span class="price">$49.000 COP</span>
-            <button class="add-to-cart">Añadir al carrito</button>
-          </div>
-        </div>
-      </div>
-      
-      <div class="product-card">
-        <div class="product-image">
-          <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Mezcla Especial">
-        </div>
-        <div class="product-info">
-          <h3>Mezcla Especial Santander</h3>
-          <p>Nuestra mezcla exclusiva con granos seleccionados de las mejores fincas colombianas.</p>
-          <div class="product-price">
-            <span class="price">$55.000 COP</span>
-            <button class="add-to-cart">Añadir al carrito</button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Nuevos productos de repostería -->
-      <div class="product-card">
-        <div class="product-image">
-          <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Pastel de Chocolate">
-        </div>
-        <div class="product-info">
-          <h3>Pastel de Chocolate Artesanal</h3>
-          <p>Delicioso pastel de chocolate con cobertura de ganache y relleno cremoso. Perfecto para acompañar tu café.</p>
-          <div class="product-price">
-            <span class="price">$25.000 COP</span>
-            <button class="add-to-cart">Añadir al carrito</button>
-          </div>
-        </div>
-      </div>
-      
-      <div class="product-card">
-        <div class="product-image">
-          <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Croissants">
-        </div>
-        <div class="product-info">
-          <h3>Croissants de Mantequilla</h3>
-          <p>Croissants recién horneados, crujientes por fuera y suaves por dentro. El acompañamiento perfecto para tu café.</p>
-          <div class="product-price">
-            <span class="price">$18.000 COP</span>
-            <button class="add-to-cart">Añadir al carrito</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Mensaje de productos -->
-  <div class="product-message">
-    <h2>¿Estás cerca de nuestras oficinas?</h2>
-    <p>No te contengas, pide nuestros productos directamente. ¡Entrega rápida y fresca en tu zona!</p>
-  </div>
-
-  <!-- Sobre Nosotros -->
-  <section class="about-us" id="nosotros">
-    <div class="about-image">
-      <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Sobre nosotros">
-    </div>
-    <div class="about-content">
-      <h2 class="section-title">Nuestra Historia</h2>
-      <p>Desde 1985, CaféSantander ha estado comprometido con la producción de café de la más alta calidad. Nuestra familia ha cultivado café en las montañas de Santander por tres generaciones, perfeccionando nuestras técnicas para ofrecerte una experiencia única en cada taza.</p>
-      <p>Creemos en el comercio justo y en prácticas sostenibles que respetan el medio ambiente y benefician a nuestras comunidades locales.</p>
-      
-      <div class="about-features">
-        <div class="feature">
-          <i class="fas fa-seedling"></i>
-          <span>Cultivo Sostenible</span>
-        </div>
-        <div class="feature">
-          <i class="fas fa-award"></i>
-          <span>Calidad Premium</span>
-        </div>
-        <div class="feature">
-          <i class="fas fa-truck"></i>
-          <span>Envío Gratis</span>
-        </div>
-        <div class="feature">
-          <i class="fas fa-heart"></i>
-          <span>Comercio Justo</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Proceso -->
-  <section class="process" id="proceso">
-    <h2 class="section-title">Nuestro Proceso</h2>
-    <div class="process-steps">
-      <div class="step">
-        <div class="step-icon">
-          <i class="fas fa-seedling"></i>
-        </div>
-        <h3>Cultivo</h3>
-        <p>Cultivamos nuestros granos en las altas montañas de Santander, donde el clima y el suelo son perfectos para el café.</p>
-      </div>
-      
-      <div class="step">
-        <div class="step-icon">
-          <i class="fas fa-hand-paper"></i>
-        </div>
-        <h3>Cosecha</h3>
-        <p>Recolectamos manualmente solo los granos en su punto óptimo de maduración para garantizar la mejor calidad.</p>
-      </div>
-      
-      <div class="step">
-        <div class="step-icon">
-          <i class="fas fa-tint"></i>
-        </div>
-        <h3>Lavado</h3>
-        <p>Procesamos los granos con métodos tradicionales que preservan sus características únicas y sabores naturales.</p>
-      </div>
-      
-      <div class="step">
-        <div class="step-icon">
-          <i class="fas fa-fire"></i>
-        </div>
-        <h3>Tostado</h3>
-        <p>Tostamos en pequeños lotes para controlar perfectamente el perfil de sabor y desarrollar todo el potencial del grano.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonios -->
-  <section class="testimonials" id="testimonios">
-    <h2 class="section-title">Lo Que Dicen Nuestros Clientes</h2>
-    <div class="testimonial-cards">
-      <div class="testimonial">
-        <div class="testimonial-text">
-          El mejor café que he probado en mi vida. Las notas afrutadas y el aroma son increíbles. Nunca volveré a otro café.
-        </div>
-        <div class="testimonial-author">
-          <div class="author-avatar">
-            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María González">
-          </div>
-          <div class="author-info">
-            <h4>María González</h4>
-            <p>Bogotá, Colombia</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="testimonial">
-        <div class="testimonial-text">
-          Como barista profesional, puedo decir que la calidad de CaféSantander es excepcional. Sus granos son perfectos para espresso.
-        </div>
-        <div class="testimonial-author">
-          <div class="author-avatar">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Carlos Rodríguez">
-          </div>
-          <div class="author-info">
-            <h4>Carlos Rodríguez</h4>
-            <p>Medellín, Colombia</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="testimonial">
-        <div class="testimonial-text">
-          Me encanta que sea un producto local y sostenible. El sabor es increíble y saber que apoyo a comunidades locales me hace sentir bien.
-        </div>
-        <div class="testimonial-author">
-          <div class="author-avatar">
-            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Ana Martínez">
-          </div>
-          <div class="author-info">
-            <h4>Ana Martínez</h4>
-            <p>Cali, Colombia</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Blog -->
-  <section class="blog" id="blog">
-    <h2 class="section-title">Nuestro Blog</h2>
-    <div class="blog-posts">
-      <div class="blog-post">
-        <div class="blog-image">
-          <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Cultivo de café">
-        </div>
-        <div class="blog-content">
-          <h3>Guía para reconocer un café de calidad</h3>
-          <div class="blog-meta">
-            <span><i class="far fa-calendar"></i> 15 Mayo, 2023</span>
-            <span><i class="far fa-comment"></i> 12 Comentarios</span>
-          </div>
-          <p>Aprende a identificar las características de un café premium y cómo diferenciarlo de productos de menor calidad.</p>
-          <a href="#" class="read-more">Leer más</a>
-        </div>
-      </div>
-      
-      <div class="blog-post">
-        <div class="blog-image">
-          <img src="https://images.unsplash.com/photo-1498804103079-a6351b050096?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Métodos de preparación">
-        </div>
-        <div class="blog-content">
-          <h3>Los mejores métodos para preparar café</h3>
-          <div class="blog-meta">
-            <span><i class="far fa-calendar"></i> 2 Abril, 2023</span>
-            <span><i class="far fa-comment"></i> 8 Comentarios</span>
-          </div>
-          <p>Descubre diferentes técnicas de preparación y cómo cada una afecta el sabor final de tu bebida favorita.</p>
-          <a href="#" class="read-more">Leer más</a>
-        </div>
-      </div>
-      
-      <div class="blog-post">
-        <div class="blog-image">
-          <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Café sostenible">
-        </div>
-        <div class="blog-content">
-          <h3>Nuestro compromiso con la sostenibilidad</h3>
-          <div class="blog-meta">
-            <span><i class="far fa-calendar"></i> 20 Marzo, 2023</span>
-            <span><i class="far fa-comment"></i> 15 Comentarios</span>
-          </div>
-          <p>Conoce nuestras prácticas agrícolas sostenibles y cómo contribuimos a la protección del medio ambiente.</p>
-          <a href="#" class="read-more">Leer más</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer id="contacto">
-    <div class="footer-content">
-      <div class="footer-column">
-        <h3>CaféSantander</h3>
-        <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
-        <div class="social-links">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-youtube"></i></a>
-        </div>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Enlaces Rápidos</h3>
-        <ul>
-          <li><a href="Inicio.html">Inicio</a></li>
-          <li><a href="Acerca.html">Acerca</a></li>
-          <li><a href="Servicios.html">Servicios</a></li>
-          <li><a href="Contacto.html">Contacto</a></li>
-        </ul>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Políticas</h3>
-        <ul>
-          <li><a href="#">Términos y Condiciones</a></li>
-          <li><a href="#">Política de Privacidad</a></li>
-          <li><a href="#">Política de Envíos</a></li>
-          <li><a href="#">Devoluciones</a></li>
-        </ul>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Contacto</h3>
-        <ul>
-          <li><i class="fas fa-map-marker-alt"></i> Santander, Colombia</li>
-          <li><i class="fas fa-phone"></i> +57 321 456 7890</li>
-          <li><i class="fas fa-envelope"></i> info@cafesantander.com</li>
-          <li><i class="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
-        </ul>
-      </div>
-    </div>
-    
-    <div class="footer-bottom">
-      <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
-    </div>
-  </footer>
-
-  <script>
-    // Cambio de imágenes en el hero
-    const hero = document.getElementById('hero');
-    const images = [
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80',
-      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80',
-      'https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'
-    ];
-    let index = 0;
-
-    setInterval(() => {
-      index = (index + 1) % images.length;
-      hero.style.backgroundImage = `url('${images[index]}')`;
-    }, 5000);
-
-    // Menú móvil
-    const menuToggle = document.getElementById('menu-toggle');
-    const mainNav = document.getElementById('main-nav');
-
-    menuToggle.addEventListener('click', () => {
-      mainNav.classList.toggle('active');
-    });
-
-    // Navegación por secciones activa
-    const sectionNavLinks = document.querySelectorAll('.section-nav a');
-    const sections = document.querySelectorAll('section[id]');
-    
-    // Actualizar navegación de secciones al hacer scroll
-    function updateSectionNav() {
-      let currentSection = '';
-      
-      sections.forEach(section => {
-        const sectionTop = section.offsetTop - 150;
-        const sectionHeight = section.clientHeight;
-        if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
-          currentSection = section.getAttribute('id');
+  <script type="text/babel">
+    // Estado global de la aplicación
+    const AppState = {
+      cart: [],
+      user: null,
+      products: [
+        {
+          id: 1,
+          name: "☕ Expreso",
+          description: "Intenso, aromático y lleno de carácter. El café expreso es una bebida concentrada elaborada al pasar agua caliente a presión por café molido fino.",
+          price: 7000,
+          image: "imagenes/expreso.png"
+        },
+        {
+          id: 2,
+          name: "🍫 Mocachino",
+          description: "Deliciosa combinación de café expreso, leche vaporizada y chocolate. Su sabor suave y dulce lo convierte en la opción perfecta.",
+          price: 8000,
+          image: "imagenes/mocachino.png"
+        },
+        {
+          id: 3,
+          name: "🥛 Latte",
+          description: "Suave y cremosa mezcla de café expreso y leche vaporizada, con una ligera capa de espuma en la parte superior.",
+          price: 7000,
+          image: "imagenes/latte.png"
+        },
+        {
+          id: 4,
+          name: "🍵 Chocolate Caliente",
+          description: "Una bebida reconfortante y cremosa elaborada con leche caliente y chocolate derretido.",
+          price: 9000,
+          image: "imagenes/chocolate.png"
+        },
+        {
+          id: 5,
+          name: "🍫 Pastelito de Chocolate",
+          description: "Un pequeño placer irresistible: suave, húmedo y lleno de sabor. Ideal para acompañar tu café.",
+          price: 15000,
+          image: "imagenes/pastelchocolate.png"
+        },
+        {
+          id: 6,
+          name: "🍪 Galletas",
+          description: "Crujientes por fuera, suaves por dentro y llenas de sabor. El acompañante perfecto para tu bebida favorita.",
+          price: 6000,
+          image: "imagenes/galletitas.png"
         }
-      });
-      
-      sectionNavLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${currentSection}`) {
-          link.classList.add('active');
-        }
-      });
-    }
-    
-    window.addEventListener('scroll', updateSectionNav);
-    
-    // Smooth scroll para enlaces internos
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        const targetId = this.getAttribute('href');
-        if(targetId === '#') return;
-        
-        const targetElement = document.querySelector(targetId);
-        if(targetElement) {
-          window.scrollTo({
-            top: targetElement.offsetTop - 140,
-            behavior: 'smooth'
-          });
-          
-          // Cerrar menú móvil si está abierto
-          if(mainNav.classList.contains('active')) {
-            mainNav.classList.remove('active');
-          }
-        }
-      });
-    });
-
-    // Animación al hacer scroll
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
+      ]
     };
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if(entry.isIntersecting) {
-          entry.target.style.opacity = 1;
-          entry.target.style.transform = 'translateY(0)';
-        }
-      });
-    }, observerOptions);
+    // Componente de Header
+    function Header() {
+      const [isNavActive, setIsNavActive] = React.useState(false);
+      const [isModalOpen, setIsModalOpen] = React.useState(false);
+      const [activeAuthTab, setActiveAuthTab] = React.useState('login');
 
-    // Observar elementos para animación
-    document.querySelectorAll('.product-card, .step, .testimonial, .blog-post').forEach(el => {
-      el.style.opacity = 0;
-      el.style.transform = 'translateY(20px)';
-      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      observer.observe(el);
+      const toggleNav = () => {
+        setIsNavActive(!isNavActive);
+      };
+
+      const openAuthModal = (tab = 'login') => {
+        setActiveAuthTab(tab);
+        setIsModalOpen(true);
+      };
+
+      const closeAuthModal = () => {
+        setIsModalOpen(false);
+      };
+
+      const handleAuthSubmit = (e) => {
+        e.preventDefault();
+        // Aquí iría la lógica de autenticación
+        showToast('¡Bienvenido a CaféSantander!', 'success');
+        closeAuthModal();
+      };
+
+      const cartCount = AppState.cart.reduce((total, item) => total + item.quantity, 0);
+
+      return (
+        <>
+          <header>
+            <a href="Inicio.html" className="logo">
+              <img src="imagenes/logoCafe.png" alt="logo" />
+              CaféSantander
+            </a>
+
+            <nav className={`main-nav ${isNavActive ? 'active' : ''}`} id="main-nav">
+              <a href="Inicio.html" className="active">Inicio</a>
+              <a href="Acerca.html">Acerca</a>
+              <a href="Servicios.html">Servicios</a>
+              <a href="Contacto.html">Contacto</a>
+              <a href="Carrito.html">Nuestros Productos</a>
+            </nav>
+
+            <div className="auth-buttons">
+              <button className="login-btn" onClick={() => openAuthModal('login')}>
+                Acceder
+              </button>
+              <button className="register-btn" onClick={() => openAuthModal('register')}>
+                Registrarse
+              </button>
+              <a href="Carrito.html" className="cart-icon">
+                <i className="fas fa-shopping-cart"></i>
+                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+              </a>
+            </div>
+            
+            <button className="menu-toggle" id="menu-toggle" onClick={toggleNav}>
+              <i className="fas fa-bars"></i>
+            </button>
+          </header>
+
+          {/* Modal de Autenticación */}
+          <div className={`modal-overlay ${isModalOpen ? 'active' : ''}`}>
+            <div className="auth-modal">
+              <div className="modal-header">
+                <h2>{activeAuthTab === 'login' ? 'Iniciar Sesión' : 'Registrarse'}</h2>
+                <button className="close-modal" onClick={closeAuthModal}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="auth-tabs">
+                  <button 
+                    className={`auth-tab ${activeAuthTab === 'login' ? 'active' : ''}`}
+                    onClick={() => setActiveAuthTab('login')}
+                  >
+                    Iniciar Sesión
+                  </button>
+                  <button 
+                    className={`auth-tab ${activeAuthTab === 'register' ? 'active' : ''}`}
+                    onClick={() => setActiveAuthTab('register')}
+                  >
+                    Registrarse
+                  </button>
+                </div>
+
+                <form className={`auth-form ${activeAuthTab === 'login' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="login-email">Correo Electrónico</label>
+                    <input type="email" id="login-email" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="login-password">Contraseña</label>
+                    <input type="password" id="login-password" required />
+                  </div>
+                  <button type="submit" className="submit-btn">Iniciar Sesión</button>
+                  <div className="form-footer">
+                    ¿No tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('register')}>Regístrate aquí</a>
+                  </div>
+                </form>
+
+                <form className={`auth-form ${activeAuthTab === 'register' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="register-name">Nombre Completo</label>
+                    <input type="text" id="register-name" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="register-email">Correo Electrónico</label>
+                    <input type="email" id="register-email" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="register-password">Contraseña</label>
+                    <input type="password" id="register-password" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="register-confirm">Confirmar Contraseña</label>
+                    <input type="password" id="register-confirm" required />
+                  </div>
+                  <button type="submit" className="submit-btn">Registrarse</button>
+                  <div className="form-footer">
+                    ¿Ya tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('login')}>Inicia sesión aquí</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    // Componente de Producto
+    function ProductCard({ product }) {
+      const [isAdded, setIsAdded] = React.useState(false);
+
+      const addToCart = () => {
+        const existingItem = AppState.cart.find(item => item.id === product.id);
+        
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          AppState.cart.push({
+            ...product,
+            quantity: 1
+          });
+        }
+
+        setIsAdded(true);
+        showToast(`${product.name} añadido al carrito`, 'success');
+        
+        // Forzar re-render del header para actualizar contador
+        ReactDOM.render(<App />, document.getElementById('root'));
+        
+        setTimeout(() => setIsAdded(false), 2000);
+      };
+
+      return (
+        <div className="product-card">
+          <div className="product-image">
+            <img src={product.image} alt={product.name} />
+          </div>
+          <div className="product-info">
+            <h3>{product.name}</h3>
+            <p>{product.description}</p>
+            <div className="product-price">
+              <span className="price">${product.price.toLocaleString()} COP</span>
+              <button 
+                className={`add-to-cart ${isAdded ? 'added' : ''}`}
+                onClick={addToCart}
+              >
+                {isAdded ? '✓ Añadido' : 'Añadir al carrito'}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Componente principal de la aplicación
+    function App() {
+      return (
+        <div className="main-container">
+          <Header />
+          
+          {/* Navegación por secciones */}
+          <nav className="section-nav" id="section-nav">
+            <a href="#productos">Productos</a>
+            <a href="#nosotros">Nosotros</a>
+            <a href="#proceso">Proceso</a>
+            <a href="#testimonios">Testimonios</a>
+            <a href="#blog">Blog</a>
+            <a href="#contacto">Contacto</a>
+          </nav>
+
+          {/* Hero Section */}
+          <section className="hero" id="hero">
+            <div className="hero-content">
+              <h1>Café fresco de nuestra granja a tu taza</h1>
+              <p>Descubre los aromas y sabores únicos de nuestro café 100% natural</p>
+              <a href="#productos" className="hero-btn">Explorar Productos</a>
+            </div>
+          </section>
+
+          {/* Productos Destacados */}
+          <section className="featured-products" id="productos">
+            <h2 className="section-title">Nuestros Productos</h2>
+            <div className="products-grid">
+              {AppState.products.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+
+          {/* Resto del contenido existente... */}
+          <div className="product-message">
+            <h2>¿Estás cerca de nuestras oficinas?</h2>
+            <p>No te contengas, pide nuestros productos directamente. ¡Entrega rápida y fresca en tu zona!</p>
+          </div>
+
+          <section className="about-us" id="nosotros">
+            <div className="about-image">
+              <img src="imagenes/cafesantander.jpg" alt="Sobre nosotros" />
+            </div>
+            <div className="about-content">
+              <h2 className="section-title">Nuestra Historia</h2>
+              <p>Desde 1985, CaféSantander ha estado comprometido con la producción de café de la más alta calidad. Nuestra familia ha cultivado café en las montañas de Santander por tres generaciones, perfeccionando nuestras técnicas para ofrecerte una experiencia única en cada taza.</p>
+              <p>Creemos en el comercio justo y en prácticas sostenibles que respetan el medio ambiente y benefician a nuestras comunidades locales.</p>
+              
+              <div className="about-features">
+                <div className="feature">
+                  <i className="fas fa-seedling"></i>
+                  <span>Cultivo Sostenible</span>
+                </div>
+                <div className="feature">
+                  <i className="fas fa-award"></i>
+                  <span>Calidad Premium</span>
+                </div>
+                <div className="feature">
+                  <i className="fas fa-truck"></i>
+                  <span>Envío Gratis</span>
+                </div>
+                <div className="feature">
+                  <i className="fas fa-heart"></i>
+                  <span>Comercio Justo</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Resto de las secciones... */}
+          <section className="process" id="proceso">
+            <h2 className="section-title">Nuestro Proceso</h2>
+            <div className="process-steps">
+              <div className="step">
+                <div className="step-icon">
+                  <i className="fas fa-seedling"></i>
+                </div>
+                <h3>Cultivo</h3>
+                <p>Cultivamos nuestros granos en las altas montañas de Santander, donde el clima y el suelo son perfectos para el café.</p>
+              </div>
+              
+              <div className="step">
+                <div className="step-icon">
+                  <i className="fas fa-hand-paper"></i>
+                </div>
+                <h3>Cosecha</h3>
+                <p>Recolectamos manualmente solo los granos en su punto óptimo de maduración para garantizar la mejor calidad.</p>
+              </div>
+              
+              <div className="step">
+                <div className="step-icon">
+                  <i className="fas fa-tint"></i>
+                </div>
+                <h3>Lavado</h3>
+                <p>Procesamos los granos con métodos tradicionales que preservan sus características únicas y sabores naturales.</p>
+              </div>
+              
+              <div className="step">
+                <div className="step-icon">
+                  <i className="fas fa-fire"></i>
+                </div>
+                <h3>Tostado</h3>
+                <p>Tostamos en pequeños lotes para controlar perfectamente el perfil de sabor y desarrollar todo el potencial del grano.</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="testimonials" id="testimonios">
+            <h2 className="section-title">Lo Que Dicen Nuestros Clientes</h2>
+            <div className="testimonial-cards">
+              <div className="testimonial">
+                <div className="testimonial-text">
+                  El mejor café que he probado en mi vida. Las notas afrutadas y el aroma son increíbles. Nunca volveré a otro café.
+                </div>
+                <div className="testimonial-author">
+                  <div className="author-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María González" />
+                  </div>
+                  <div className="author-info">
+                    <h4>María González</h4>
+                    <p>Bogotá, Colombia</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="testimonial">
+                <div className="testimonial-text">
+                  Como barista profesional, puedo decir que la calidad de CaféSantander es excepcional. Sus granos son perfectos para espresso.
+                </div>
+                <div className="testimonial-author">
+                  <div className="author-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Carlos Rodríguez" />
+                  </div>
+                  <div className="author-info">
+                    <h4>Carlos Rodríguez</h4>
+                    <p>Medellín, Colombia</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="testimonial">
+                <div className="testimonial-text">
+                  Me encanta que sea un producto local y sostenible. El sabor es increíble y saber que apoyo a comunidades locales me hace sentir bien.
+                </div>
+                <div className="testimonial-author">
+                  <div className="author-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Ana Martínez" />
+                  </div>
+                  <div className="author-info">
+                    <h4>Ana Martínez</h4>
+                    <p>Cali, Colombia</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="blog" id="blog">
+            <h2 className="section-title">Nuestro Blog</h2>
+            <div className="blog-posts">
+              <div className="blog-post">
+                <div className="blog-image">
+                  <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Cultivo de café" />
+                </div>
+                <div className="blog-content">
+                  <h3>Guía para reconocer un café de calidad</h3>
+                  <div className="blog-meta">
+                    <span><i className="far fa-calendar"></i> 15 Mayo, 2023</span>
+                    <span><i className="far fa-comment"></i> 12 Comentarios</span>
+                  </div>
+                  <p>Aprende a identificar las características de un café premium y cómo diferenciarlo de productos de menor calidad.</p>
+                  <a href="https://www.reddit.com/r/Santiago/comments/1c2loth/d%C3%B3nde_comprar_buen_caf%C3%A9/" className="read-more" target="_blank">Leer más</a>
+                </div>
+              </div>
+              
+              <div className="blog-post">
+                <div className="blog-image">
+                  <img src="https://images.unsplash.com/photo-1498804103079-a6351b050096?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Métodos de preparación" />
+                </div>
+                <div className="blog-content">
+                  <h3>Los mejores métodos para preparar café</h3>
+                  <div className="blog-meta">
+                    <span><i className="far fa-calendar"></i> 2 Abril, 2023</span>
+                    <span><i className="far fa-comment"></i> 8 Comentarios</span>
+                  </div>
+                  <p>Descubre diferentes técnicas de preparación y cómo cada una afecta el sabor final de tu bebida favorita.</p>
+                  <a href="https://www.reddit.com/r/espanol/comments/rqz5xn/las_mejores_formas_para_preparar_el_caf%C3%A9/" className="read-more" target="_blank">Leer más</a>
+                </div>
+              </div>
+              
+              <div className="blog-post">
+                <div className="blog-image">
+                  <img src="https://content.elmueble.com/medio/2023/06/08/arbol-grano-cafe-frutos_83f4fed6_230608100224_1200x630.jpg" alt="Café sostenible" />
+                </div>
+                <div className="blog-content">
+                  <h3>Practicas sostenibles</h3>
+                  <div className="blog-meta">
+                    <span><i className="far fa-calendar"></i> 20 Marzo, 2023</span>
+                    <span><i className="far fa-comment"></i> 15 Comentarios</span>
+                  </div>
+                  <p>Conoce prácticas agrícolas sostenibles y cómo contribuimos a la protección del medio ambiente.</p>
+                  <a href="https://www.reddit.com/r/selfreliance/comments/14edf7d/guide_how_to_practice_sustainable_agriculture/" className="read-more" target="_blank">Leer más</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <footer id="contacto">
+            <div className="footer-content">
+              <div className="footer-column">
+                <h3>CaféSantander</h3>
+                <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
+                <div className="social-links">
+                  <a href="#"><i className="fab fa-facebook-f"></i></a>
+                  <a href="#"><i className="fab fa-instagram"></i></a>
+                  <a href="#"><i className="fab fa-twitter"></i></a>
+                  <a href="#"><i className="fab fa-youtube"></i></a>
+                </div>
+              </div>
+              
+              <div className="footer-column">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                  <li><a href="Inicio.html">Inicio</a></li>
+                  <li><a href="Acerca.html">Acerca</a></li>
+                  <li><a href="Servicios.html">Servicios</a></li>
+                  <li><a href="Contacto.html">Contacto</a></li>
+                </ul>
+              </div>
+              
+              <div className="footer-column">
+                <h3>Políticas</h3>
+                <ul>
+                  <li><a href="#">Términos y Condiciones</a></li>
+                  <li><a href="#">Política de Privacidad</a></li>
+                  <li><a href="#">Política de Envíos</a></li>
+                  <li><a href="#">Devoluciones</a></li>
+                </ul>
+              </div>
+              
+              <div className="footer-column">
+                <h3>Contacto</h3>
+                <ul>
+                  <li><i className="fas fa-map-marker-alt"></i> Santander, Colombia</li>
+                  <li><i className="fas fa-phone"></i> +57 321 456 7890</li>
+                  <li><i className="fas fa-envelope"></i> info@cafesantander.com</li>
+                  <li><i className="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="footer-bottom">
+              <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    // Función para mostrar notificaciones toast
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+        ${message}
+      `;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 100);
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          document.body.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+
+    // Inicializar la aplicación
+    ReactDOM.render(<App />, document.getElementById('root'));
+
+    // JavaScript existente para funcionalidades adicionales
+    document.addEventListener('DOMContentLoaded', function() {
+      // Cambio de imágenes en el hero
+      const hero = document.getElementById('hero');
+      const images = [
+        'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80',
+        'https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80',
+        'https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'
+      ];
+      let index = 0;
+
+      setInterval(() => {
+        index = (index + 1) % images.length;
+        hero.style.backgroundImage = `url('${images[index]}')`;
+      }, 5000);
+
+      // Navegación por secciones activa
+      const sectionNavLinks = document.querySelectorAll('.section-nav a');
+      const sections = document.querySelectorAll('section[id]');
+      
+      function updateSectionNav() {
+        let currentSection = '';
+        
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop - 150;
+          const sectionHeight = section.clientHeight;
+          if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+            currentSection = section.getAttribute('id');
+          }
+        });
+        
+        sectionNavLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${currentSection}`) {
+            link.classList.add('active');
+          }
+        });
+      }
+      
+      window.addEventListener('scroll', updateSectionNav);
+      
+      // Smooth scroll para enlaces internos
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const targetId = this.getAttribute('href');
+          if(targetId === '#') return;
+          
+          const targetElement = document.querySelector(targetId);
+          if(targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 140,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+
+      // Animación al hacer scroll
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting) {
+            entry.target.style.opacity = 1;
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, observerOptions);
+
+      // Observar elementos para animación
+      document.querySelectorAll('.product-card, .step, .testimonial, .blog-post').forEach(el => {
+        el.style.opacity = 0;
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(el);
+      });
     });
   </script>
 </body>

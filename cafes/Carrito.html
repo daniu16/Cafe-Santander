@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Carrito de Compras - CaféSantander</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+:root {
+  --bg:#fff;
+  --accent:#e7a33d;
+  --accent-dark:#c58425;
+  --text:#222;
+  --light-bg:#f9f5f0;
+  --dark-text:#3a2611;
+  --muted:#666;
+  --card:#fff;
+  --border:#e0e0e0;
+  --success:#27ae60;
+  --warning:#e74c3c;
+  --shadow: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
+  --radius: 8px;
+  --transition-fast: 0.2s;
+  --transition-medium: 0.4s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==============================
+   ENCABEZADO
+============================== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 60px;
+  border-bottom: 2px solid var(--accent);
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text);
+  text-decoration: none;
+}
+.logo img {
+  width: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+
+/* Navegación principal */
+.main-nav {
+  display: flex;
+  justify-content: center;  
+  align-items: center;
+  gap: 40px;
+  font-size: 18px;
+}
+.main-nav a {
+  text-decoration: none;
+  color: var(--text);
+  padding: 6px 12px;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  font-weight: 500;
+  position: relative;
+}
+.main-nav a:hover {
+  color: var(--accent);
+}
+.main-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+.main-nav a:hover::after {
+  width: 80%;
+}
+.main-nav a.active {
+  color: var(--accent);
+  font-weight: bold;
+}
+.main-nav a.active::after {
+  width: 80%;
+}
+
+/* Botones de autenticación */
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.login-btn, .register-btn {
+  background: none;
+  border: 2px solid var(--accent);
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.login-btn:hover, .register-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.register-btn {
+  background: var(--accent);
+  color: white;
+}
+
+.register-btn:hover {
+  background: var(--accent-dark);
+}
+
+.cart-icon {
+  position: relative;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 1.2rem;
+  margin-left: 15px;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+/* Modal de autenticación */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.auth-modal {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 400px;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .auth-modal {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  color: var(--dark-text);
+  font-size: 1.5rem;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+  color: var(--accent);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.auth-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: var(--dark-text);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(231, 163, 61, 0.2);
+}
+
+.submit-btn {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* ==============================
+   CONTENIDO PRINCIPAL
+============================== */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-title {
+  text-align: center;
+  padding: 60px 20px 30px;
+  background: var(--light-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://images.unsplash.com/photo-1498804103079-a6351b050096?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+  opacity: 0.1;
+  z-index: 0;
+}
+
+.page-title h1 {
+  font-size: 3rem;
+  color: var(--dark-text);
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.page-title p {
+  font-size: 1.3rem;
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ==============================
+   CONTENIDO DEL CARRITO
+============================== */
+.cart-container {
+  display: flex;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.cart-items {
+  flex: 2;
+}
+
+.cart-summary {
+  flex: 1;
+  background: var(--light-bg);
+  border-radius: var(--radius);
+  padding: 30px;
+  height: fit-content;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 100px;
+}
+
+.cart-summary h2 {
+  margin-bottom: 20px;
+  color: var(--dark-text);
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 10px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-total {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--dark-text);
+  margin-top: 10px;
+  border-top: 2px solid var(--accent);
+  padding-top: 10px;
+}
+
+.checkout-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition-medium);
+  font-weight: bold;
+  font-size: 1.1rem;
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.checkout-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.continue-shopping {
+  display: block;
+  text-align: center;
+  margin-top: 15px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.continue-shopping:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+
+/* ==============================
+   ITEMS DEL CARRITO
+============================== */
+.cart-item {
+  display: flex;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: var(--transition-medium);
+}
+
+.cart-item:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.item-image {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-details {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.item-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--dark-text);
+  margin-bottom: 5px;
+}
+
+.item-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--accent-dark);
+}
+
+.item-description {
+  color: var(--muted);
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+.item-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantity-btn {
+  background: var(--light-bg);
+  border: 1px solid var(--border);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.quantity-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.quantity {
+  font-weight: bold;
+  min-width: 30px;
+  text-align: center;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: var(--warning);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: var(--transition-fast);
+  padding: 5px 10px;
+  border-radius: var(--radius);
+}
+
+.remove-btn:hover {
+  background: var(--warning);
+  color: white;
+}
+
+/* ==============================
+   CARRITO VACÍO
+============================== */
+.empty-cart {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--light-bg);
+  border-radius: var(--radius);
+  margin: 40px auto;
+  max-width: 600px;
+}
+
+.empty-cart-icon {
+  font-size: 4rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.empty-cart h2 {
+  margin-bottom: 15px;
+  color: var(--dark-text);
+}
+
+.empty-cart p {
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+
+.shop-now-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  padding: 12px 30px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: bold;
+  transition: var(--transition-medium);
+}
+
+.shop-now-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ==============================
+   RECOMENDACIONES
+============================== */
+.recommendations {
+  margin: 60px auto;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.recommendations h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--dark-text);
+  font-size: 2rem;
+  position: relative;
+}
+
+.recommendations h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--accent);
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.recommendation-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: var(--transition-medium);
+  text-align: center;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-hover);
+}
+
+.recommendation-image {
+  height: 180px;
+  overflow: hidden;
+}
+
+.recommendation-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-medium);
+}
+
+.recommendation-card:hover .recommendation-image img {
+  transform: scale(1.05);
+}
+
+.recommendation-info {
+  padding: 20px;
+}
+
+.recommendation-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--dark-text);
+  margin-bottom: 10px;
+}
+
+.recommendation-price {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--accent-dark);
+  margin-bottom: 15px;
+}
+
+.add-to-cart-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition-medium);
+  font-weight: bold;
+  width: 100%;
+}
+
+.add-to-cart-btn:hover {
+  background: var(--accent-dark);
+}
+
+/* ==============================
+   FOOTER
+============================== */
+footer {
+  background: var(--dark-text);
+  color: white;
+  padding: 60px 30px 30px;
+  margin-top: auto;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-column h3 {
+  margin-bottom: 20px;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.footer-column ul {
+  list-style: none;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+}
+
+.footer-column ul li a {
+  color: #ccc;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.footer-column ul li a:hover {
+  color: var(--accent);
+  padding-left: 5px;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.social-links a:hover {
+  background: var(--accent);
+  transform: translateY(-3px);
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+/* ==============================
+   ANIMACIONES
+============================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Toast notifications */
+.toast {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background: var(--success);
+  color: white;
+  padding: 15px 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast.error {
+  background: var(--error);
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+@media(max-width:1000px){
+  .cart-container {
+    flex-direction: column;
+  }
+  
+  .cart-summary {
+    position: static;
+  }
+  
+  .main-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    gap: 15px;
+  }
+  
+  .main-nav.active {
+    display: flex;
+  }
+  
+  .menu-toggle {
+    display: block;
+  }
+  
+  header {
+    padding: 15px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-title h1 {
+    font-size: 2.2rem;
+  }
+  
+  .page-title p {
+    font-size: 1.1rem;
+  }
+  
+  .cart-item {
+    flex-direction: column;
+  }
+  
+  .item-image {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .item-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .item-price {
+    margin-top: 5px;
+  }
+  
+  .item-controls {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .recommendation-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    padding: 40px 15px 20px;
+  }
+  
+  .page-title h1 {
+    font-size: 1.8rem;
+  }
+  
+  .cart-container {
+    margin: 20px auto;
+    padding: 0 15px;
+  }
+  
+  .cart-summary {
+    padding: 20px;
+  }
+  
+  .recommendations {
+    margin: 40px auto;
+    padding: 0 15px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+// Estado global de la aplicación
+const AppState = {
+  cart: [],
+  user: null,
+  products: [
+    {
+      id: 1,
+      name: "☕ Expreso",
+      description: "Intenso, aromático y lleno de carácter. El café expreso es una bebida concentrada elaborada al pasar agua caliente a presión por café molido fino.",
+      price: 7000,
+      image: "imagenes/expreso.png"
+    },
+    {
+      id: 2,
+      name: "🍫 Mocachino",
+      description: "Deliciosa combinación de café expreso, leche vaporizada y chocolate. Su sabor suave y dulce lo convierte en la opción perfecta.",
+      price: 8000,
+      image: "imagenes/mocachino.png"
+    },
+    {
+      id: 3,
+      name: "🥛 Latte",
+      description: "Suave y cremosa mezcla de café expreso y leche vaporizada, con una ligera capa de espuma en la parte superior.",
+      price: 7000,
+      image: "imagenes/latte.png"
+    },
+    {
+      id: 4,
+      name: "🍵 Chocolate Caliente",
+      description: "Una bebida reconfortante y cremosa elaborada con leche caliente y chocolate derretido.",
+      price: 9000,
+      image: "imagenes/chocolate.png"
+    },
+    {
+      id: 5,
+      name: "🍫 Pastelito de Chocolate",
+      description: "Un pequeño placer irresistible: suave, húmedo y lleno de sabor. Ideal para acompañar tu café.",
+      price: 15000,
+      image: "imagenes/pastelchocolate.png"
+    },
+    {
+      id: 6,
+      name: "🍪 Galletas",
+      description: "Crujientes por fuera, suaves por dentro y llenas de sabor. El acompañante perfecto para tu bebida favorita.",
+      price: 6000,
+      image: "imagenes/galletitas.png"
+    }
+  ]
+};
+
+// Componente de Header
+function Header() {
+  const [isNavActive, setIsNavActive] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [activeAuthTab, setActiveAuthTab] = React.useState('login');
+
+  const toggleNav = () => {
+    setIsNavActive(!isNavActive);
+  };
+
+  const openAuthModal = (tab = 'login') => {
+    setActiveAuthTab(tab);
+    setIsModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleAuthSubmit = (e) => {
+    e.preventDefault();
+    showToast('¡Bienvenido a CaféSantander!', 'success');
+    closeAuthModal();
+  };
+
+  const cartCount = AppState.cart.reduce((total, item) => total + item.quantity, 0);
+
+  return (
+    <>
+      <header>
+        <a href="Inicio.html" className="logo">
+          <img src="imagenes/logoCafe.png" alt="logo" />
+          CaféSantander
+        </a>
+
+        <nav className={`main-nav ${isNavActive ? 'active' : ''}`} id="main-nav">
+          <a href="Inicio.html">Inicio</a>
+          <a href="Acerca.html">Acerca</a>
+          <a href="Servicios.html">Servicios</a>
+          <a href="Contacto.html">Contacto</a>
+          <a href="Carrito.html" className="active">Nuestros Productos</a>
+        </nav>
+
+        <div className="auth-buttons">
+          <button className="login-btn" onClick={() => openAuthModal('login')}>
+            Acceder
+          </button>
+          <button className="register-btn" onClick={() => openAuthModal('register')}>
+            Registrarse
+          </button>
+          <a href="Carrito.html" className="cart-icon">
+            <i className="fas fa-shopping-cart"></i>
+            {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+          </a>
+        </div>
+        
+        <button className="menu-toggle" id="menu-toggle" onClick={toggleNav}>
+          <i className="fas fa-bars"></i>
+        </button>
+      </header>
+
+      {/* Modal de Autenticación */}
+      <div className={`modal-overlay ${isModalOpen ? 'active' : ''}`}>
+        <div className="auth-modal">
+          <div className="modal-header">
+            <h2>{activeAuthTab === 'login' ? 'Iniciar Sesión' : 'Registrarse'}</h2>
+            <button className="close-modal" onClick={closeAuthModal}>
+              <i className="fas fa-times"></i>
+            </button>
+          </div>
+          <div className="modal-body">
+            <div className="auth-tabs">
+              <button 
+                className={`auth-tab ${activeAuthTab === 'login' ? 'active' : ''}`}
+                onClick={() => setActiveAuthTab('login')}
+              >
+                Iniciar Sesión
+              </button>
+              <button 
+                className={`auth-tab ${activeAuthTab === 'register' ? 'active' : ''}`}
+                onClick={() => setActiveAuthTab('register')}
+              >
+                Registrarse
+              </button>
+            </div>
+
+            <form className={`auth-form ${activeAuthTab === 'login' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+              <div className="form-group">
+                <label htmlFor="login-email">Correo Electrónico</label>
+                <input type="email" id="login-email" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="login-password">Contraseña</label>
+                <input type="password" id="login-password" required />
+              </div>
+              <button type="submit" className="submit-btn">Iniciar Sesión</button>
+              <div className="form-footer">
+                ¿No tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('register')}>Regístrate aquí</a>
+              </div>
+            </form>
+
+            <form className={`auth-form ${activeAuthTab === 'register' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+              <div className="form-group">
+                <label htmlFor="register-name">Nombre Completo</label>
+                <input type="text" id="register-name" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="register-email">Correo Electrónico</label>
+                <input type="email" id="register-email" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="register-password">Contraseña</label>
+                <input type="password" id="register-password" required />
+              </div>
+              <div className="form-group">
+                <label htmlFor="register-confirm">Confirmar Contraseña</label>
+                <input type="password" id="register-confirm" required />
+              </div>
+              <button type="submit" className="submit-btn">Registrarse</button>
+              <div className="form-footer">
+                ¿Ya tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('login')}>Inicia sesión aquí</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// Componente de Item del Carrito
+function CartItem({ item, onUpdateQuantity, onRemove }) {
+  const handleQuantityChange = (change) => {
+    const newQuantity = item.quantity + change;
+    if (newQuantity > 0) {
+      onUpdateQuantity(item.id, newQuantity);
+    }
+  };
+
+  return (
+    <div className="cart-item">
+      <div className="item-image">
+        <img src={item.image} alt={item.name} />
+      </div>
+      <div className="item-details">
+        <div className="item-header">
+          <div>
+            <div className="item-name">{item.name}</div>
+            <div className="item-description">{item.description}</div>
+          </div>
+          <div className="item-price">${item.price.toLocaleString()} COP</div>
+        </div>
+        <div className="item-controls">
+          <div className="quantity-controls">
+            <button className="quantity-btn minus" onClick={() => handleQuantityChange(-1)}>-</button>
+            <span className="quantity">{item.quantity}</span>
+            <button className="quantity-btn plus" onClick={() => handleQuantityChange(1)}>+</button>
+          </div>
+          <button className="remove-btn" onClick={() => onRemove(item.id)}>
+            <i className="fas fa-trash"></i> Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Componente de Producto Recomendado
+function RecommendationCard({ product, onAddToCart }) {
+  const handleAddToCart = () => {
+    onAddToCart(product);
+    showToast(`${product.name} añadido al carrito`, 'success');
+  };
+
+  return (
+    <div className="recommendation-card">
+      <div className="recommendation-image">
+        <img src={product.image} alt={product.name} />
+      </div>
+      <div className="recommendation-info">
+        <div className="recommendation-name">{product.name}</div>
+        <div className="recommendation-price">${product.price.toLocaleString()} COP</div>
+        <button className="add-to-cart-btn" onClick={handleAddToCart}>
+          Añadir al Carrito
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Componente principal del Carrito
+function CartPage() {
+  const [cartItems, setCartItems] = React.useState(AppState.cart);
+  const [recommendedProducts, setRecommendedProducts] = React.useState([]);
+
+  // Cargar productos recomendados (todos los productos que no están en el carrito)
+  React.useEffect(() => {
+    const cartProductIds = cartItems.map(item => item.id);
+    const recommended = AppState.products.filter(product => !cartProductIds.includes(product.id));
+    setRecommendedProducts(recommended);
+  }, [cartItems]);
+
+  const updateQuantity = (productId, newQuantity) => {
+    const updatedCart = cartItems.map(item => 
+      item.id === productId ? { ...item, quantity: newQuantity } : item
+    );
+    setCartItems(updatedCart);
+    AppState.cart = updatedCart;
+  };
+
+  const removeItem = (productId) => {
+    const updatedCart = cartItems.filter(item => item.id !== productId);
+    setCartItems(updatedCart);
+    AppState.cart = updatedCart;
+    showToast('Producto eliminado del carrito', 'success');
+  };
+
+  const addToCart = (product) => {
+    const existingItem = cartItems.find(item => item.id === product.id);
+    
+    if (existingItem) {
+      updateQuantity(product.id, existingItem.quantity + 1);
+    } else {
+      const newItem = { ...product, quantity: 1 };
+      const updatedCart = [...cartItems, newItem];
+      setCartItems(updatedCart);
+      AppState.cart = updatedCart;
+    }
+  };
+
+  const getSubtotal = () => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const getTotalItems = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      showToast('Tu carrito está vacío', 'error');
+      return;
+    }
+    
+    showToast('¡Procesando tu pedido!', 'success');
+    // Aquí iría la lógica real de checkout
+  };
+
+  const subtotal = getSubtotal();
+  const shipping = 12000;
+  const discount = cartItems.length > 0 ? 15000 : 0;
+  const total = subtotal + shipping - discount;
+
+  return (
+    <div className="main-container">
+      <Header />
+      
+      {/* TÍTULO DE PÁGINA */}
+      <section className="page-title">
+        <h1>Tu Carrito de Compras</h1>
+        <p>Revisa tus productos antes de finalizar tu pedido</p>
+      </section>
+
+      {/* CONTENIDO DEL CARRITO */}
+      <div className="cart-container">
+        {/* ITEMS DEL CARRITO */}
+        <div className="cart-items" id="cartItems">
+          {cartItems.length === 0 ? (
+            <div className="empty-cart">
+              <div className="empty-cart-icon">
+                <i className="fas fa-shopping-cart"></i>
+              </div>
+              <h2>Tu carrito está vacío</h2>
+              <p>Parece que aún no has añadido productos a tu carrito. ¡Descubre nuestros deliciosos cafés!</p>
+              <a href="Inicio.html" className="shop-now-btn">Explorar Productos</a>
+            </div>
+          ) : (
+            cartItems.map(item => (
+              <CartItem 
+                key={item.id} 
+                item={item} 
+                onUpdateQuantity={updateQuantity}
+                onRemove={removeItem}
+              />
+            ))
+          )}
+        </div>
+
+        {/* RESUMEN DEL PEDIDO */}
+        {cartItems.length > 0 && (
+          <div className="cart-summary">
+            <h2>Resumen del Pedido</h2>
+            
+            <div className="summary-row">
+              <span>Subtotal ({getTotalItems()} productos)</span>
+              <span>${subtotal.toLocaleString()}</span>
+            </div>
+            
+            <div className="summary-row">
+              <span>Envío</span>
+              <span>${shipping.toLocaleString()}</span>
+            </div>
+            
+            <div className="summary-row">
+              <span>Descuento</span>
+              <span style={{color: 'var(--success)'}}>-${discount.toLocaleString()}</span>
+            </div>
+            
+            <div className="summary-row summary-total">
+              <span>Total</span>
+              <span>${total.toLocaleString()}</span>
+            </div>
+            
+            <button className="checkout-btn" onClick={handleCheckout}>
+              <i className="fas fa-lock"></i> Proceder al Pago
+            </button>
+            
+            <a href="Inicio.html" className="continue-shopping">
+              <i className="fas fa-arrow-left"></i> Continuar Comprando
+            </a>
+          </div>
+        )}
+      </div>
+
+      {/* RECOMENDACIONES */}
+      {cartItems.length > 0 && recommendedProducts.length > 0 && (
+        <section className="recommendations">
+          <h2>Productos que te pueden gustar</h2>
+          <div className="recommendation-grid">
+            {recommendedProducts.map(product => (
+              <RecommendationCard 
+                key={product.id} 
+                product={product} 
+                onAddToCart={addToCart}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* FOOTER */}
+      <footer>
+        <div className="footer-content">
+          <div className="footer-column">
+            <h3>CaféSantander</h3>
+            <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
+            <div className="social-links">
+              <a href="#"><i className="fab fa-facebook-f"></i></a>
+              <a href="#"><i className="fab fa-instagram"></i></a>
+              <a href="#"><i className="fab fa-twitter"></i></a>
+              <a href="#"><i className="fab fa-whatsapp"></i></a>
+            </div>
+          </div>
+          
+          <div className="footer-column">
+            <h3>Enlaces Rápidos</h3>
+            <ul>
+              <li><a href="Inicio.html">Inicio</a></li>
+              <li><a href="Acerca.html">Acerca</a></li>
+              <li><a href="Servicios.html">Servicios</a></li>
+              <li><a href="Contacto.html">Contacto</a></li>
+            </ul>
+          </div>
+          
+          <div className="footer-column">
+            <h3>Servicios</h3>
+            <ul>
+              <li><a href="#">Entrega Express</a></li>
+              <li><a href="#">Envío Nacional</a></li>
+              <li><a href="#">Servicios Corporativos</a></li>
+              <li><a href="#">Regalos Empresariales</a></li>
+            </ul>
+          </div>
+          
+          <div className="footer-column">
+            <h3>Contacto</h3>
+            <ul>
+              <li><i className="fas fa-map-marker-alt"></i> Santander, Colombia</li>
+              <li><i className="fas fa-phone"></i> +57 321 456 7890</li>
+              <li><i className="fas fa-envelope"></i> info@cafesantander.com</li>
+              <li><i className="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div className="footer-bottom">
+          <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// Función para mostrar notificaciones toast
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+    ${message}
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 300);
+  }, 3000);
+}
+
+// Inicializar la aplicación
+ReactDOM.render(<CartPage />, document.getElementById('root'));
+</script>
+</body>
+</html>

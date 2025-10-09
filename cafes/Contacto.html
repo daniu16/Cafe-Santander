@@ -5,17 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Contacto - CaféSantander</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
 :root {
-  --bg:#fff;        /* Fondo blanco */
-  --accent:#e7a33d; /* Color acento dorado */
+  --bg:#fff;
+  --accent:#e7a33d;
   --accent-dark:#c58425;
-  --text:#222;      /* Texto principal */
+  --text:#222;
   --light-bg:#f9f5f0;
   --dark-text:#3a2611;
   --transition: all 0.3s ease;
   --shadow: 0 4px 12px rgba(0,0,0,0.1);
   --radius: 8px;
+  --success: #27ae60;
+  --error: #e74c3c;
 }
 
 * {
@@ -47,7 +52,6 @@ header {
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-/* LOGO */
 .logo {
   display: flex;
   align-items: center;
@@ -55,6 +59,7 @@ header {
   font-size: 24px;
   font-weight: bold;
   color: var(--text);
+  text-decoration: none;
 }
 .logo img {
   width: 60px;
@@ -62,34 +67,27 @@ header {
   border: 2px solid var(--accent);
 }
 
-/* ==============================
-   MENÚ DE NAVEGACIÓN
-============================== */
-nav {
+/* Navegación principal */
+.main-nav {
   display: flex;
   justify-content: center;  
   align-items: center;
-  gap: 60px;              /* separación entre enlaces */
+  gap: 40px;
   font-size: 18px;
 }
-
-/* Estilos para los enlaces */
-nav a {
+.main-nav a {
   text-decoration: none;
   color: var(--text);
   padding: 6px 12px;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   border-radius: 6px;
   font-weight: 500;
   position: relative;
 }
-
-/* Hover con fondo suave */
-nav a:hover {
+.main-nav a:hover {
   color: var(--accent);
 }
-
-nav a::after {
+.main-nav a::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -97,27 +95,28 @@ nav a::after {
   width: 0;
   height: 2px;
   background: var(--accent);
-  transition: all 0.3s ease;
+  transition: var(--transition);
   transform: translateX(-50%);
 }
-
-nav a:hover::after {
+.main-nav a:hover::after {
   width: 80%;
 }
-
-nav a.active {
+.main-nav a.active {
   color: var(--accent);
   font-weight: bold;
 }
-
-nav a.active::after {
+.main-nav a.active::after {
   width: 80%;
 }
 
-/* ==============================
-   BOTÓN LOGIN
-============================== */
-.login-btn {
+/* Botones de autenticación */
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.login-btn, .register-btn {
   background: none;
   border: 2px solid var(--accent);
   padding: 8px 20px;
@@ -125,12 +124,48 @@ nav a.active::after {
   font-weight: bold;
   text-decoration: none;
   color: var(--text);
-  transition: all 0.3s;
+  transition: var(--transition);
+  cursor: pointer;
+  font-size: 14px;
 }
-.login-btn:hover {
+
+.login-btn:hover, .register-btn:hover {
   background: var(--accent);
   color: #fff;
   transform: translateY(-2px);
+}
+
+.register-btn {
+  background: var(--accent);
+  color: white;
+}
+
+.register-btn:hover {
+  background: var(--accent-dark);
+}
+
+.cart-icon {
+  position: relative;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 1.2rem;
+  margin-left: 15px;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
 .menu-toggle {
@@ -140,6 +175,159 @@ nav a.active::after {
   font-size: 24px;
   cursor: pointer;
   color: var(--text);
+}
+
+/* Modal de autenticación */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.auth-modal {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 400px;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .auth-modal {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  color: var(--dark-text);
+  font-size: 1.5rem;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.close-modal:hover {
+  color: var(--accent);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+  border-bottom: 2px solid transparent;
+}
+
+.auth-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: var(--dark-text);
+}
+
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(231, 163, 61, 0.2);
+}
+
+.form-group textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.submit-btn {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.submit-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 /* ==============================
@@ -295,58 +483,10 @@ nav a.active::after {
   font-size: 1.8rem;
 }
 
-.form-group {
-  margin-bottom: 25px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: var(--dark-text);
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: 12px 15px;
-  border: 1px solid #ddd;
-  border-radius: var(--radius);
-  font-size: 1rem;
-  transition: var(--transition);
-  font-family: inherit;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(231, 163, 61, 0.2);
-}
-
-.form-group textarea {
-  min-height: 150px;
-  resize: vertical;
-}
-
-.submit-btn {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 14px 30px;
-  border-radius: var(--radius);
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: var(--transition);
-  width: 100%;
-}
-
-.submit-btn:hover {
-  background: var(--accent-dark);
-  transform: translateY(-2px);
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
 /* ==============================
@@ -436,6 +576,116 @@ nav a.active::after {
 }
 
 /* ==============================
+   EQUIPO DE ATENCIÓN
+============================== */
+.team-section {
+  padding: 80px 20px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.team-member {
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  text-align: center;
+}
+
+.team-member:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+}
+
+.member-image {
+  height: 200px;
+  overflow: hidden;
+}
+
+.member-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.team-member:hover .member-image img {
+  transform: scale(1.05);
+}
+
+.member-info {
+  padding: 25px 20px;
+}
+
+.member-info h3 {
+  margin-bottom: 5px;
+  color: var(--dark-text);
+}
+
+.member-role {
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+.member-contact {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+/* ==============================
+   HORARIOS DE ATENCIÓN
+============================== */
+.hours-section {
+  background: var(--light-bg);
+  padding: 80px 20px;
+  margin-bottom: 80px;
+}
+
+.hours-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  padding: 40px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.hours-list {
+  list-style: none;
+}
+
+.hours-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.hours-list li:last-child {
+  border-bottom: none;
+}
+
+.hours-list .day {
+  font-weight: 500;
+  color: var(--dark-text);
+}
+
+.hours-list .time {
+  color: var(--accent-dark);
+  font-weight: 500;
+}
+
+/* ==============================
    FOOTER
 ============================== */
 footer {
@@ -486,6 +736,52 @@ footer {
   font-size: 0.9rem;
 }
 
+/* Toast notifications */
+.toast {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background: var(--success);
+  color: white;
+  padding: 15px 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast.error {
+  background: var(--error);
+}
+
+/* ==============================
+   ANIMACIONES
+============================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* ==============================
    RESPONSIVE
 ============================== */
@@ -502,6 +798,10 @@ footer {
   .hero-content h1 {
     font-size: 2.8rem;
   }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
@@ -509,7 +809,7 @@ footer {
     padding: 15px 20px;
   }
   
-  nav {
+  .main-nav {
     display: none;
     position: absolute;
     top: 100%;
@@ -522,12 +822,17 @@ footer {
     gap: 15px;
   }
   
-  nav.active {
+  .main-nav.active {
     display: flex;
   }
   
   .menu-toggle {
     display: block;
+  }
+  
+  .auth-buttons {
+    flex-direction: column;
+    gap: 10px;
   }
   
   .contact-hero {
@@ -549,6 +854,10 @@ footer {
   
   .section-title {
     font-size: 2rem;
+  }
+  
+  .team-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -578,364 +887,577 @@ footer {
   .contact-icon {
     margin-bottom: 10px;
   }
-}
-
-/* ==============================
-   SECCIÓN DE MAPA
-============================== */
-.map-section {
-  margin: 60px auto;
-  max-width: 1000px;
-}
-
-.map-option {
-  margin-bottom: 50px;
-  padding: 30px;
-  background: var(--light-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-.map-container {
-  width: 100%;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.location-info {
-  text-align: center;
-  padding: 20px;
-  background: var(--light-bg);
-  border-radius: var(--radius);
-  margin-top: 20px;
-}
-
-.location-info i {
-  font-size: 2.5rem;
-  color: var(--accent);
-  margin-bottom: 15px;
-}
-
-.location-info h3 {
-  margin-bottom: 10px;
-  color: var(--dark-text);
-}
-
-.location-info p {
-  color: #666;
-  margin-bottom: 5px;
+  
+  .hours-container {
+    padding: 25px 20px;
+  }
 }
 </style>
 </head>
 
 <body>
-  <header>
-    <div class="logo">
-      <img src="imagenes/logoCafe.png" alt="logo">
-      CaféSantander
-    </div>
+  <div id="root"></div>
 
-    <nav id="main-nav">
-      <a href="Inicio.html">Inicio</a>
-      <a href="Acerca.html">Acerca</a>
-      <a href="Servicios.html">Servicios</a>
-      <a href="Contacto.html" class="active">Contacto</a>
-    </nav>
+  <script type="text/babel">
+    // Estado global de la aplicación
+    const AppState = {
+      cart: [],
+      user: null
+    };
 
-    <a href="#" class="login-btn">Acceder</a>
-    <button class="menu-toggle" id="menu-toggle">
-      <i class="fas fa-bars"></i>
-    </button>
-  </header>
+    // Componente de Header
+    function Header() {
+      const [isNavActive, setIsNavActive] = React.useState(false);
+      const [isModalOpen, setIsModalOpen] = React.useState(false);
+      const [activeAuthTab, setActiveAuthTab] = React.useState('login');
 
-  <!-- Hero Section -->
-  <section class="contact-hero">
-    <div class="hero-content">
-      <h1>Contáctanos</h1>
-      <p>Estamos aquí para responder todas tus preguntas sobre nuestro café y servicios</p>
-    </div>
-  </section>
+      const toggleNav = () => {
+        setIsNavActive(!isNavActive);
+      };
 
-  <!-- Contenido Principal -->
-  <div class="contact-container">
-    <!-- Sección de Contacto -->
-    <section class="contact-section">
-      <!-- Información de Contacto -->
-      <div class="contact-info">
-        <h3>Información de Contacto</h3>
-        
-        <div class="contact-details">
-          <div class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-map-marker-alt"></i>
+      const openAuthModal = (tab = 'login') => {
+        setActiveAuthTab(tab);
+        setIsModalOpen(true);
+      };
+
+      const closeAuthModal = () => {
+        setIsModalOpen(false);
+      };
+
+      const handleAuthSubmit = (e) => {
+        e.preventDefault();
+        showToast('¡Bienvenido a CaféSantander!', 'success');
+        closeAuthModal();
+      };
+
+      const cartCount = AppState.cart.reduce((total, item) => total + item.quantity, 0);
+
+      return (
+        <>
+          <header>
+            <a href="Inicio.html" className="logo">
+              <img src="imagenes/logoCafe.png" alt="logo" />
+              CaféSantander
+            </a>
+
+            <nav className={`main-nav ${isNavActive ? 'active' : ''}`} id="main-nav">
+              <a href="Inicio.html">Inicio</a>
+              <a href="Acerca.html">Acerca</a>
+              <a href="Servicios.html">Servicios</a>
+              <a href="Contacto.html" className="active">Contacto</a>
+              <a href="Carrito.html">Nuestros Productos</a>
+            </nav>
+
+            <div className="auth-buttons">
+              <button className="login-btn" onClick={() => openAuthModal('login')}>
+                Acceder
+              </button>
+              <button className="register-btn" onClick={() => openAuthModal('register')}>
+                Registrarse
+              </button>
+              <a href="Carrito.html" className="cart-icon">
+                <i className="fas fa-shopping-cart"></i>
+                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+              </a>
             </div>
-            <div class="contact-text">
-              <h4>Nuestra Ubicación</h4>
-              <p>Santander, Colombia<br>Finca La Esperanza, Vereda El Cafetal</p>
+            
+            <button className="menu-toggle" id="menu-toggle" onClick={toggleNav}>
+              <i className="fas fa-bars"></i>
+            </button>
+          </header>
+
+          {/* Modal de Autenticación */}
+          <div className={`modal-overlay ${isModalOpen ? 'active' : ''}`}>
+            <div className="auth-modal">
+              <div className="modal-header">
+                <h2>{activeAuthTab === 'login' ? 'Iniciar Sesión' : 'Registrarse'}</h2>
+                <button className="close-modal" onClick={closeAuthModal}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="auth-tabs">
+                  <button 
+                    className={`auth-tab ${activeAuthTab === 'login' ? 'active' : ''}`}
+                    onClick={() => setActiveAuthTab('login')}
+                  >
+                    Iniciar Sesión
+                  </button>
+                  <button 
+                    className={`auth-tab ${activeAuthTab === 'register' ? 'active' : ''}`}
+                    onClick={() => setActiveAuthTab('register')}
+                  >
+                    Registrarse
+                  </button>
+                </div>
+
+                <form className={`auth-form ${activeAuthTab === 'login' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="login-email">Correo Electrónico</label>
+                    <input type="email" id="login-email" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="login-password">Contraseña</label>
+                    <input type="password" id="login-password" required />
+                  </div>
+                  <button type="submit" className="submit-btn">Iniciar Sesión</button>
+                  <div className="form-footer">
+                    ¿No tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('register')}>Regístrate aquí</a>
+                  </div>
+                </form>
+
+                <form className={`auth-form ${activeAuthTab === 'register' ? 'active' : ''}`} onSubmit={handleAuthSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="register-name">Nombre Completo</label>
+                    <input type="text" id="register-name" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="register-email">Correo Electrónico</label>
+                    <input type="email" id="register-email" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="register-password">Contraseña</label>
+                    <input type="password" id="register-password" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="register-confirm">Confirmar Contraseña</label>
+                    <input type="password" id="register-confirm" required />
+                  </div>
+                  <button type="submit" className="submit-btn">Registrarse</button>
+                  <div className="form-footer">
+                    ¿Ya tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('login')}>Inicia sesión aquí</a>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
-          
-          <div class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-phone"></i>
-            </div>
-            <div class="contact-text">
-              <h4>Teléfono</h4>
-              <p>+57 321 456 7890<br>Lun-Vie: 8:00am - 6:00pm</p>
-            </div>
-          </div>
-          
-          <div class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-envelope"></i>
-            </div>
-            <div class="contact-text">
-              <h4>Email</h4>
-              <p>info@cafesantander.com<br>ventas@cafesantander.com</p>
-            </div>
-          </div>
-        </div>
-        
-        <h4>Síguenos en redes sociales</h4>
-        <div class="social-links">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-whatsapp"></i></a>
-        </div>
-      </div>
-      
-      <!-- Formulario de Contacto -->
-      <div class="contact-form">
-        <h3>Envíanos un Mensaje</h3>
-        <form id="contactForm">
-          <div class="form-group">
-            <label for="name">Nombre Completo *</label>
-            <input type="text" id="name" name="name" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="email">Correo Electrónico *</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="phone">Teléfono</label>
-            <input type="tel" id="phone" name="phone">
-          </div>
-          
-          <div class="form-group">
-            <label for="subject">Asunto *</label>
-            <select id="subject" name="subject" required>
-              <option value="">Selecciona un asunto</option>
-              <option value="general">Consulta General</option>
-              <option value="productos">Información de Productos</option>
-              <option value="pedidos">Pedidos y Envíos</option>
-              <option value="socios">Socios y Distribuidores</option>
-              <option value="otros">Otros</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="message">Mensaje *</label>
-            <textarea id="message" name="message" placeholder="Escribe tu mensaje aquí..." required></textarea>
-          </div>
-          
-          <button type="submit" class="submit-btn">Enviar Mensaje</button>
-        </form>
-      </div>
-    </section>
-    
-    <!-- Seleccion de mapa -->
-    <section class="map-section">
-      <h2 class="section-title" style="text-align:center;">Nuestra Ubicación</h2>
+        </>
+      );
+    }
 
-      <!-- OpenStreetMap -->
-      <div class="map-option">
-        <h3 style="text-align: center;">Encuéntranos</h3>
-        <div class="map-container">
-          <iframe 
-            src="https://www.openstreetmap.org/export/embed.html?bbox=-73.07174%2C6.60889%2C-73.05174%2C6.62889&layer=mapnik&marker=6.61889%2C-73.06174"
-            width="100%" 
-            height="400" 
-            style="border: none; border-radius: 8px;"
-            title="Ubicación de CaféSantander en OpenStreetMap">
-          </iframe>
-        </div>
-        <div class="location-info">
-          <i class="fas fa-map-marked-alt"></i>
-          <h3>Santander, Colombia</h3>
-          <p>Finca el Cucharal, Vereda El Carmen</p>
-        </div>
-      </div>
-    </section>
-    
-    <!-- Preguntas Frecuentes -->
-    <section class="faq-section">
-      <h2 class="section-title">Preguntas Frecuentes</h2>
-      <div class="faq-container">
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>¿Cuál es el tiempo de entrega de los pedidos?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>El tiempo de entrega varía según la ubicación. En áreas urbanas principales, los pedidos se entregan en 2-3 días hábiles. Para zonas rurales, puede tomar hasta 5 días hábiles. Ofrecemos seguimiento en tiempo real para todos los pedidos.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>¿Ofrecen envío internacional?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>Sí, realizamos envíos internacionales a la mayoría de países. Los tiempos de entrega y costos varían según el destino. Contáctanos para obtener una cotización específica para tu país.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>¿Puedo visitar su finca de café?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>¡Por supuesto! Ofrecemos tours guiados por nuestra finca donde podrás conocer nuestro proceso de cultivo y producción. Los tours deben reservarse con al menos 48 horas de anticipación. Contáctanos para coordinar tu visita.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>¿Tienen opciones de café descafeinado?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>Sí, ofrecemos varias opciones de café descafeinado procesado con métodos naturales que preservan el sabor y aroma del café. Consulta nuestra sección de productos para ver las variedades disponibles.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>¿Ofrecen descuentos por compras al por mayor?</span>
-            <i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            <p>Sí, ofrecemos precios especiales para cafeterías, restaurantes y distribuidores. Los descuentos varían según el volumen de compra. Contáctanos para discutir tus necesidades específicas.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+    // Componente de Formulario de Contacto
+    function ContactForm() {
+      const [formData, setFormData] = React.useState({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
 
-  <!-- Footer -->
-  <footer>
-    <div class="footer-content">
-      <div class="footer-column">
-        <h3>CaféSantander</h3>
-        <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Enlaces Rápidos</h3>
-        <ul>
-          <li><a href="Inicio.html">Inicio</a></li>
-          <li><a href="Acerca.html">Acerca</a></li>
-          <li><a href="Servicios.html">Servicios</a></li>
-          <li><a href="Contacto.html">Contacto</a></li>
-        </ul>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Políticas</h3>
-        <ul>
-          <li><a href="#">Términos y Condiciones</a></li>
-          <li><a href="#">Política de Privacidad</a></li>
-          <li><a href="#">Política de Envíos</a></li>
-          <li><a href="#">Devoluciones</a></li>
-        </ul>
-      </div>
-      
-      <div class="footer-column">
-        <h3>Contacto</h3>
-        <ul>
-          <li><i class="fas fa-map-marker-alt"></i> Santander, Colombia</li>
-          <li><i class="fas fa-phone"></i> +57 321 456 7890</li>
-          <li><i class="fas fa-envelope"></i> info@cafesantander.com</li>
-          <li><i class="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
-        </ul>
-      </div>
-    </div>
-    
-    <div class="footer-bottom">
-      <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
-    </div>
-  </footer>
-
-  <script>
-    // Menú móvil
-    const menuToggle = document.getElementById('menu-toggle');
-    const mainNav = document.getElementById('main-nav');
-
-    menuToggle.addEventListener('click', () => {
-      mainNav.classList.toggle('active');
-    });
-
-    // FAQ interactivo
-    const faqItems = document.querySelectorAll('.faq-item');
-    
-    faqItems.forEach(item => {
-      const question = item.querySelector('.faq-question');
-      
-      question.addEventListener('click', () => {
-        // Cerrar otros items abiertos
-        faqItems.forEach(otherItem => {
-          if (otherItem !== item && otherItem.classList.contains('active')) {
-            otherItem.classList.remove('active');
-            otherItem.querySelector('.faq-answer').style.maxHeight = null;
-          }
+      const handleChange = (e) => {
+        setFormData({
+          ...formData,
+          [e.target.name]: e.target.value
         });
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
         
-        // Alternar el item actual
-        item.classList.toggle('active');
-        const answer = item.querySelector('.faq-answer');
-        
-        if (item.classList.contains('active')) {
-          answer.style.maxHeight = answer.scrollHeight + 'px';
-        } else {
-          answer.style.maxHeight = null;
+        // Validación básica
+        if (!formData.name || !formData.email || !formData.message) {
+          showToast('Por favor completa todos los campos obligatorios', 'error');
+          return;
         }
-      });
-    });
 
-    // Formulario de contacto
-    const contactForm = document.getElementById('contactForm');
-    
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      // Aquí iría la lógica para enviar el formulario
-      // Por ahora, solo mostramos un mensaje de éxito
-      alert('¡Gracias por tu mensaje! Te contactaremos pronto.');
-      contactForm.reset();
-    });
-
-    // Animación suave al cargar
-    document.addEventListener('DOMContentLoaded', () => {
-      const elements = document.querySelectorAll('.contact-info, .contact-form, .map-section, .faq-item');
-      
-      elements.forEach((el, index) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        // Simulación de envío
+        showToast('¡Mensaje enviado correctamente! Te contactaremos pronto.', 'success');
         
+        // Resetear formulario
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: ''
+        });
+      };
+
+      return (
+        <form className="contact-form" onSubmit={handleSubmit}>
+          <h3>Envíanos un Mensaje</h3>
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="name">Nombre Completo *</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                value={formData.name}
+                onChange={handleChange}
+                required 
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="email">Correo Electrónico *</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                value={formData.email}
+                onChange={handleChange}
+                required 
+              />
+            </div>
+          </div>
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="phone">Teléfono</label>
+              <input 
+                type="tel" 
+                id="phone" 
+                name="phone" 
+                value={formData.phone}
+                onChange={handleChange}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="subject">Asunto *</label>
+              <select 
+                id="subject" 
+                name="subject" 
+                value={formData.subject}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Selecciona un asunto</option>
+                <option value="general">Consulta General</option>
+                <option value="productos">Información de Productos</option>
+                <option value="pedidos">Pedidos y Envíos</option>
+                <option value="socios">Socios y Distribuidores</option>
+                <option value="quejas">Quejas y Sugerencias</option>
+                <option value="otros">Otros</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="message">Mensaje *</label>
+            <textarea 
+              id="message" 
+              name="message" 
+              placeholder="Escribe tu mensaje aquí..." 
+              value={formData.message}
+              onChange={handleChange}
+              required
+            ></textarea>
+          </div>
+          
+          <button type="submit" className="submit-btn">Enviar Mensaje</button>
+        </form>
+      );
+    }
+
+    // Componente de FAQ
+    function FAQItem({ question, answer }) {
+      const [isActive, setIsActive] = React.useState(false);
+
+      const toggleFAQ = () => {
+        setIsActive(!isActive);
+      };
+
+      return (
+        <div className={`faq-item ${isActive ? 'active' : ''}`}>
+          <div className="faq-question" onClick={toggleFAQ}>
+            <span>{question}</span>
+            <i className={`fas fa-chevron-${isActive ? 'up' : 'down'}`}></i>
+          </div>
+          <div className="faq-answer" style={{ maxHeight: isActive ? '200px' : '0' }}>
+            <p>{answer}</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Componente de Miembro del Equipo
+    function TeamMember({ name, role, email, phone, image }) {
+      return (
+        <div className="team-member">
+          <div className="member-image">
+            <img src={image} alt={name} />
+          </div>
+          <div className="member-info">
+            <h3>{name}</h3>
+            <div className="member-role">{role}</div>
+            <div className="member-contact">
+              <div><i className="fas fa-envelope"></i> {email}</div>
+              <div><i className="fas fa-phone"></i> {phone}</div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Componente principal de Contacto
+    function ContactPage() {
+      const faqItems = [
+        {
+          question: "¿Cuál es el tiempo de entrega de los pedidos?",
+          answer: "El tiempo de entrega varía según la ubicación. En áreas urbanas principales, los pedidos se entregan en 2-3 días hábiles. Para zonas rurales, puede tomar hasta 5 días hábiles. Ofrecemos seguimiento en tiempo real para todos los pedidos."
+        },
+        {
+          question: "¿Ofrecen envío internacional?",
+          answer: "Sí, realizamos envíos internacionales a la mayoría de países. Los tiempos de entrega y costos varían según el destino. Contáctanos para obtener una cotización específica para tu país."
+        },
+        {
+          question: "¿Puedo visitar su finca de café?",
+          answer: "¡Por supuesto! Ofrecemos tours guiados por nuestra finca donde podrás conocer nuestro proceso de cultivo y producción. Los tours deben reservarse con al menos 48 horas de anticipación. Contáctanos para coordinar tu visita."
+        },
+        {
+          question: "¿Tienen opciones de café descafeinado?",
+          answer: "Sí, ofrecemos varias opciones de café descafeinado procesado con métodos naturales que preservan el sabor y aroma del café. Consulta nuestra sección de productos para ver las variedades disponibles."
+        },
+        {
+          question: "¿Ofrecen descuentos por compras al por mayor?",
+          answer: "Sí, ofrecemos precios especiales para cafeterías, restaurantes y distribuidores. Los descuentos varían según el volumen de compra. Contáctanos para discutir tus necesidades específicas."
+        }
+      ];
+
+      const teamMembers = [
+        {
+          name: "María Rodríguez",
+          role: "Directora de Atención al Cliente",
+          email: "maria@cafesantander.com",
+          phone: "+57 321 456 7891",
+          image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          name: "Carlos Gómez",
+          role: "Especialista en Ventas",
+          email: "carlos@cafesantander.com",
+          phone: "+57 321 456 7892",
+          image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          name: "Ana López",
+          role: "Coordinadora de Pedidos",
+          email: "ana@cafesantander.com",
+          phone: "+57 321 456 7893",
+          image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          name: "Roberto Silva",
+          role: "Soporte Técnico",
+          email: "roberto@cafesantander.com",
+          phone: "+57 321 456 7894",
+          image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+        }
+      ];
+
+      return (
+        <div className="main-container">
+          <Header />
+          
+          {/* Hero Section */}
+          <section className="contact-hero">
+            <div className="hero-content">
+              <h1>Contáctanos</h1>
+              <p>Estamos aquí para responder todas tus preguntas sobre nuestro café y servicios</p>
+            </div>
+          </section>
+
+          {/* Contenido Principal */}
+          <div className="contact-container">
+            {/* Sección de Contacto */}
+            <section className="contact-section">
+              {/* Información de Contacto */}
+              <div className="contact-info">
+                <h3>Información de Contacto</h3>
+                
+                <div className="contact-details">
+                  <div className="contact-item">
+                    <div className="contact-icon">
+                      <i className="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div className="contact-text">
+                      <h4>Nuestra Ubicación</h4>
+                      <p>Santander, Colombia<br />Finca La Esperanza, Vereda El Cafetal</p>
+                    </div>
+                  </div>
+                  
+                  <div className="contact-item">
+                    <div className="contact-icon">
+                      <i className="fas fa-phone"></i>
+                    </div>
+                    <div className="contact-text">
+                      <h4>Teléfono</h4>
+                      <p>+57 321 456 7890<br />Lun-Vie: 8:00am - 6:00pm</p>
+                    </div>
+                  </div>
+                  
+                  <div className="contact-item">
+                    <div className="contact-icon">
+                      <i className="fas fa-envelope"></i>
+                    </div>
+                    <div className="contact-text">
+                      <h4>Email</h4>
+                      <p>info@cafesantander.com<br />ventas@cafesantander.com</p>
+                    </div>
+                  </div>
+
+                  <div className="contact-item">
+                    <div className="contact-icon">
+                      <i className="fas fa-clock"></i>
+                    </div>
+                    <div className="contact-text">
+                      <h4>Horarios de Atención</h4>
+                      <p>Lunes a Viernes: 8am - 6pm<br />Sábados: 9am - 2pm</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <h4>Síguenos en redes sociales</h4>
+                <div className="social-links">
+                  <a href="#"><i className="fab fa-facebook-f"></i></a>
+                  <a href="#"><i className="fab fa-instagram"></i></a>
+                  <a href="#"><i className="fab fa-twitter"></i></a>
+                  <a href="#"><i className="fab fa-whatsapp"></i></a>
+                </div>
+              </div>
+              
+              {/* Formulario de Contacto */}
+              <ContactForm />
+            </section>
+            
+            {/* Mapa y Ubicación */}
+            <section className="map-section">
+              <h2 className="section-title">Nuestra Ubicación</h2>
+              <div className="map-container">
+                <iframe 
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=-73.07174%2C6.60889%2C-73.05174%2C6.62889&layer=mapnik&marker=6.61889%2C-73.06174"
+                  width="100%" 
+                  height="400" 
+                  style={{ border: 'none', borderRadius: '8px' }}
+                  title="Ubicación de CaféSantander en OpenStreetMap"
+                  allowFullScreen
+                >
+                </iframe>
+              </div>
+            </section>
+
+            {/* Equipo de Atención */}
+            <section className="team-section">
+              <h2 className="section-title">Nuestro Equipo de Atención</h2>
+              <div className="team-grid">
+                {teamMembers.map((member, index) => (
+                  <TeamMember key={index} {...member} />
+                ))}
+              </div>
+            </section>
+
+            {/* Horarios de Atención */}
+            <section className="hours-section">
+              <h2 className="section-title">Horarios de Atención</h2>
+              <div className="hours-container">
+                <ul className="hours-list">
+                  <li>
+                    <span className="day">Lunes - Viernes</span>
+                    <span className="time">8:00 AM - 6:00 PM</span>
+                  </li>
+                  <li>
+                    <span className="day">Sábados</span>
+                    <span className="time">9:00 AM - 2:00 PM</span>
+                  </li>
+                  <li>
+                    <span className="day">Domingos</span>
+                    <span className="time">Cerrado</span>
+                  </li>
+                  <li>
+                    <span className="day">Festivos</span>
+                    <span className="time">Horario especial</span>
+                  </li>
+                </ul>
+              </div>
+            </section>
+            
+            {/* Preguntas Frecuentes */}
+            <section className="faq-section">
+              <h2 className="section-title">Preguntas Frecuentes</h2>
+              <div className="faq-container">
+                {faqItems.map((item, index) => (
+                  <FAQItem key={index} question={item.question} answer={item.answer} />
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* Footer */}
+          <footer>
+            <div className="footer-content">
+              <div className="footer-column">
+                <h3>CaféSantander</h3>
+                <p>Desde 1985 llevando el mejor café de las montañas de Santander directamente a tu hogar.</p>
+              </div>
+              
+              <div className="footer-column">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                  <li><a href="Inicio.html">Inicio</a></li>
+                  <li><a href="Acerca.html">Acerca</a></li>
+                  <li><a href="Servicios.html">Servicios</a></li>
+                  <li><a href="Contacto.html">Contacto</a></li>
+                </ul>
+              </div>
+              
+              <div className="footer-column">
+                <h3>Políticas</h3>
+                <ul>
+                  <li><a href="#">Términos y Condiciones</a></li>
+                  <li><a href="#">Política de Privacidad</a></li>
+                  <li><a href="#">Política de Envíos</a></li>
+                  <li><a href="#">Devoluciones</a></li>
+                </ul>
+              </div>
+              
+              <div className="footer-column">
+                <h3>Contacto</h3>
+                <ul>
+                  <li><i className="fas fa-map-marker-alt"></i> Santander, Colombia</li>
+                  <li><i className="fas fa-phone"></i> +57 321 456 7890</li>
+                  <li><i className="fas fa-envelope"></i> info@cafesantander.com</li>
+                  <li><i className="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="footer-bottom">
+              <p>&copy; 2023 CaféSantander. Todos los derechos reservados.</p>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    // Función para mostrar notificaciones toast
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+        ${message}
+      `;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 100);
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
         setTimeout(() => {
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
-        }, 100 * index);
-      });
-    });
+          document.body.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+
+    // Inicializar la aplicación
+    ReactDOM.render(<ContactPage />, document.getElementById('root'));
   </script>
 </body>
 </html>
