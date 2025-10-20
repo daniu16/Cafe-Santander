@@ -24,6 +24,8 @@
   --transition-fast: 0.2s;
   --transition-medium: 0.4s;
   --transition-slow: 0.9s;
+  --success: #27ae60;
+  --error: #e74c3c;
 }
 
 * {
@@ -520,7 +522,7 @@ svg {
 }
 
 /* ==============================
-   SECCIÓN DE PRODUCTO FINAL - MODIFICADA PARA VERTICAL
+   SECCIÓN DE PRODUCTO FINAL
 ============================== */
 .final-product {
   margin-top: 25px;
@@ -1113,16 +1115,57 @@ footer {
 
 <script type="text/babel">
 // Estado global de la aplicación
-const AppState = {
-  cart: [],
-  user: null
+const getInitialState = () => {
+  const saved = localStorage.getItem('cafesantander_state');
+  const defaultState = {
+    cart: [],
+    user: null
+  };
+  return saved ? { ...defaultState, ...JSON.parse(saved) } : defaultState;
 };
+
+const AppState = getInitialState();
+
+const saveState = (state) => {
+  localStorage.setItem('cafesantander_state', JSON.stringify({
+    cart: state.cart,
+    user: state.user
+  }));
+};
+
+// Hook para notificaciones Toast
+function useToast() {
+  const showToast = (message, type = 'success') => {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+      ${message}
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => {
+        document.body.removeChild(toast);
+      }, 300);
+    }, 3000);
+  };
+
+  return showToast;
+}
 
 // Componente de Header
 function Header() {
   const [isNavActive, setIsNavActive] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [activeAuthTab, setActiveAuthTab] = React.useState('login');
+  const showToast = useToast();
 
   const toggleNav = () => {
     setIsNavActive(!isNavActive);
@@ -1215,7 +1258,7 @@ function Header() {
               </div>
               <button type="submit" className="submit-btn">Iniciar Sesión</button>
               <div className="form-footer">
-                ¿No tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('register')}>Regístrate aquí</a>
+                ¿No tienes cuenta? <a href="#" onClick={(e) => { e.preventDefault(); setActiveAuthTab('register'); }}>Regístrate aquí</a>
               </div>
             </form>
 
@@ -1238,7 +1281,7 @@ function Header() {
               </div>
               <button type="submit" className="submit-btn">Registrarse</button>
               <div className="form-footer">
-                ¿Ya tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('login')}>Inicia sesión aquí</a>
+                ¿Ya tienes cuenta? <a href="#" onClick={(e) => { e.preventDefault(); setActiveAuthTab('login'); }}>Inicia sesión aquí</a>
               </div>
             </form>
           </div>
@@ -1254,139 +1297,139 @@ function CoffeeWheel() {
   const [selectedSubOption, setSelectedSubOption] = React.useState(null);
   const [selectedFinalOption, setSelectedFinalOption] = React.useState(null);
   const [finalProduct, setFinalProduct] = React.useState(null);
+  const showToast = useToast();
 
   // Datos de la rueda catadora
   const wheelData = {
     "AFRUTADO": {
-  "description": "Una mezcla dulce, floral y aromática de una variedad de frutas maduras.",
-  "subOptions": ["Baya", "Fruta seca", "Otras frutas", "Cítricos"],
-  "finalOptions": {
-    "Baya": ["Mora", "Frambuesa", "Arandano", "Fresa"],
-    "Fruta seca": ["Pasas de uva","Pasas de ciruela"],
-    "Otras frutas": ["Coco","Cereza","Granada","Piña","Uva","Manzana","Melocotón","Pera"],
-    "Cítricos": ["Pomelo","Naranja", "Limón","Lima"]
-  },
-  "products": {
-    "Mora": {
-      "name": "Café con Mora",
-      "description": "El aromático dulce, oscuro, afrutado, floral, ligeramente ácido, algo amaderado asociado con las moras.",
-      "price": 14500,
-      "image": "imagenes/cafe/temora.jpg"
+      "description": "Una mezcla dulce, floral y aromática de una variedad de frutas maduras.",
+      "subOptions": ["Baya", "Fruta seca", "Otras frutas", "Cítricos"],
+      "finalOptions": {
+        "Baya": ["Mora", "Frambuesa", "Arandano", "Fresa"],
+        "Fruta seca": ["Pasas de uva","Pasas de ciruela"],
+        "Otras frutas": ["Coco","Cereza","Granada","Piña","Uva","Manzana","Melocotón","Pera"],
+        "Cítricos": ["Pomelo","Naranja", "Limón","Lima"]
+      },
+      "products": {
+        "Mora": {
+          "name": "Café con Mora",
+          "description": "El aromático dulce, oscuro, afrutado, floral, ligeramente ácido, algo amaderado asociado con las moras.",
+          "price": 14500,
+          "image": "imagenes/cafe/temora.jpg"
+        },
+        "Frambuesa": {
+          "name": "Café con Frambuesa",
+          "description": "El aromático ligeramente dulce, afrutado, floral, ligeramente ácido y mohoso asociado con las frambuesas.",
+          "price": 14500,
+          "image": "imagenes/cafe/teframbuesa.jpg"
+        },
+        "Arandano": {
+          "name": "Café con Arándano",
+          "description": "El aromático ligeramente oscuro, afrutado, dulce, ligeramente ácido, mohoso, polvoriento y floral asociado con el arándano.",
+          "price": 14500,
+          "image": "imagenes/cafe/tearanonos.jpg"
+        },
+        "Fresa": {
+          "name": "Café con Fresa",
+          "description": "El aromático algo dulce, ligeramente ácido, floral, afrutado, frecuentemente vinícola asociado con la fresa.",
+          "price": 14500,
+          "image": "imagenes/cafe/tefresas.jpg"
+        },
+        "Pasas de uva": {
+          "name": "Café con Pasas de Uva",
+          "description": "El aromático concentrado, dulce, algo ácido, marrón, afrutado y floral característico de las uvas secas.",
+          "price": 14500,
+          "image": "imagenes/cafe/teuvaspasas.jpg"
+        },
+        "Pasas de ciruela": {
+          "name": "Café con Pasas de Ciruela",
+          "description": "La impresión aromática dulce, ligeramente marrón, floral, mohosa y demasiado madura de la fruta negra asociada con las ciruelas secas.",
+          "price": 14500,
+          "image": "imagenes/cafe/tepasasciruela.jpg"
+        },
+        "Coco": {
+          "name": "Café con Coco",
+          "description": "El aromático ligeramente dulce, a nuez y algo amaderado asociado con el coco.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafecoco.jpg"
+        },
+        "Cereza": {
+          "name": "Café con Cereza",
+          "description": "El aromático floral agrio, afrutado, ligeramente amargo asociado con las cerezas.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafecereza.jpg"
+        },
+        "Granada": {
+          "name": "Café con Granada",
+          "description": "Un aromático afrutado agrio y dulce que puede ser algo oscuro, mohoso y terroso, que recuerda a frutas oscuras y tubérculos como remolacha y zanahoria; también puede tener una sensación en boca astringente.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafegranada.jpg"
+        },
+        "Piña": {
+          "name": "Café con Piña",
+          "description": "El aromático dulce, ligeramente picante y afrutado asociado con la piña.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafepiña.jpg"
+        },
+        "Uva": {
+          "name": "Café con Uva",
+          "description": "El aromático dulce, afrutado, floral, ligeramente ácido y mohoso comúnmente asociado con las uvas.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafeuva.jpg"
+        },
+        "Manzana": {
+          "name": "Café con Manzana",
+          "description": "Un aromático dulce, ligero, afrutado, algo floral, comúnmente asociado con manzanas frescas o procesadas.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafemanzana.jpg"
+        },
+        "Melocotón": {
+          "name": "Café con Melocotón",
+          "description": "El aromático floral, perfumado, afrutado, dulce y ligeramente ácido asociado con los melocotones.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafedurazno.jpg"
+        },
+        "Pera": {
+          "name": "Café con Pera",
+          "description": "El aromático dulce, ligeramente floral, mohoso, amaderado y afrutado asociado con las peras.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafepera.jpg"
+        },
+        "Pomelo": {
+          "name": "Café con Pomelo",
+          "description": "El aromático cítrico, ácido, amargo, astringente, pelado, agudo, ligeramente dulce asociado con la toronja.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafepomelo.jpg"
+        },
+        "Naranja": {
+          "name": "Café con Naranja",
+          "description": "El aromático cítrico, dulce, floral, ligeramente ácido asociado con las naranjas, que puede incluir notas amargas, peladas y astringentes.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafenaranja.jpg"
+        },
+        "Limón": {
+          "name": "Café con Limón",
+          "description": "El aromático cítrico, ácido, astringente, ligeramente dulce, pelado y algo floral asociado con el limón.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafelimon.jpg"
+        },
+        "Lima": {
+          "name": "Café con Lima",
+          "description": "El aromático cítrico, ácido, astringente, amargo, verde, pelado, agudo y algo floral asociado con las limas.",
+          "price": 14500,
+          "image": "imagenes/cafe/cafelima.jpg"
+        }
+      }
     },
-    "Frambuesa": {
-      "name": "Café con Frambuesa",
-      "description": "El aromático ligeramente dulce, afrutado, floral, ligeramente ácido y mohoso asociado con las frambuesas.",
-      "price": 14500,
-      "image": "imagenes/cafe/teframbuesa.jpg"
-    },
-    "Arandano": {
-      "name": "Café con Arándano",
-      "description": "El aromático ligeramente oscuro, afrutado, dulce, ligeramente ácido, mohoso, polvoriento y floral asociado con el arándano.",
-      "price": 14500,
-      "image": "imagenes/cafe/tearanonos.jpg"
-    },
-    "Fresa": {
-      "name": "Café con Fresa",
-      "description": "El aromático algo dulce, ligeramente ácido, floral, afrutado, frecuentemente vinícola asociado con la fresa.",
-      "price": 14500,
-      "image": "imagenes/cafe/tefresas.jpg"
-    },
-    "Pasas de uva": {
-      "name": "Café con Pasas de Uva",
-      "description": "El aromático concentrado, dulce, algo ácido, marrón, afrutado y floral característico de las uvas secas..",
-      "price": 14500,
-      "image": "imagenes/cafe/teuvaspasas.jpg"
-    },
-    "Pasas de ciruela": {
-      "name": "Café con Pasas de Ciruela",
-      "description": "La impresión aromática dulce, ligeramente marrón, floral, mohosa y demasiado madura de la fruta negra asociada con las ciruelas secas.",
-      "price": 14500,
-      "image": "imagenes/cafe/tepasasciruela.jpg"
-    },
-    "Coco": {
-      "name": "Café con Coco",
-      "description": "El aromático ligeramente dulce, a nuez y algo amaderado asociado con el coco.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafecoco.jpg"
-    },
-    "Cereza": {
-      "name": "Café con Cereza",
-      "description": "El aromático floral agrio, afrutado, ligeramente amargo asociado con las cerezas.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafecereza.jpg"
-    },
-    "Granada": {
-      "name": "Café con Granada",
-      "description": "Un aromático afrutado agrio y dulce que puede ser algo oscuro, mohoso y terroso, que recuerda a frutas oscuras y tubérculos como remolacha y zanahoria; también puede tener una sensación en boca astringente.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafegranada.jpg"
-    },
-    "Piña": {
-      "name": "Café con Piña",
-      "description": "El aromático dulce, ligeramente picante y afrutado asociado con la piña.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafepiña.jpg"
-    },
-    "Uva": {
-      "name": "Café con Uva",
-      "description": " El aromático dulce, afrutado, floral, ligeramente ácido y mohoso comúnmente asociado con las uvas.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafeuva.jpg"
-    },
-    "Manzana": {
-      "name": "Café con Manzana",
-      "description": "Un aromático dulce, ligero, afrutado, algo floral, comúnmente asociado con manzanas frescas o procesadas.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafemanzana.jpg"
-    },
-    "Melocotón": {
-      "name": "Café con Melocotón",
-      "description": "El aromático floral, perfumado, afrutado, dulce y ligeramente ácido asociado con los melocotones.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafedurazno.jpg"
-    },
-    "Pera": {
-      "name": "Café con Pera",
-      "description": "El aromático dulce, ligeramente floral, mohoso, amaderado y afrutado asociado con las peras.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafepera.jpg"
-    },
-    "Pomelo": {
-      "name": "Café con Pomelo",
-      "description": "El aromático cítrico, ácido, amargo, astringente, pelado, agudo, ligeramente dulce asociado con la toronja.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafepomelo.jpg"
-    },
-    "Naranja": {
-      "name": "Café con Naranja",
-      "description": "El aromático cítrico, dulce, floral, ligeramente ácido asociado con las naranjas, que puede incluir notas amargas, peladas y astringentes.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafenaranja.jpg"
-    },
-    "Limón": {
-      "name": "Café con Limón",
-      "description": "El aromático cítrico, ácido, astringente, ligeramente dulce, pelado y algo floral asociado con el limón.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafelimon.jpg"
-    },
-    "Lima": {
-      "name": "Café con Lima",
-      "description": "El aromático cítrico, ácido, astringente, amargo, verde, pelado, agudo y algo floral asociado con las limas.",
-      "price": 14500,
-      "image": "imagenes/cafe/cafelima.jpg"
-    }
-    }
-    },
-
 
     "FLORAL": {
-      description: "Aromas florales con una verdadera variaad suave.",
-      subOptions: ["Té negro","Floral"],
-      finalOptions: {
+      "description": "Aromas florales con una verdadera variaad suave.",
+      "subOptions": ["Té negro","Floral"],
+      "finalOptions": {
         "Floral": ["Manzanilla", "Jazmín", "Rosa"],
-        "Té negro": ["Té negro" ]     
+        "Té negro": ["Té negro"]     
       },
-      products: {
+      "products": {
         "Té negro": {
           "name": "Café de té negro",
           "description": "Una planta algo marrón, mohosa, seca y corteza seca aromática asociada con la oxidación de las hojas de té.",
@@ -1394,488 +1437,478 @@ function CoffeeWheel() {
           "image": "imagenes/cafe/tenegro.jpg"
         },
         "Manzanilla": { 
-          name: "Café con Manzanilla", 
-          description: "El verde dulce, ligeramente floral / afrutado, algo amaderado asociado con la manzanilla.",
-          price: 15000,
-          image: "imagenes/cafe/temanzanilla.jpg"
+          "name": "Café con Manzanilla", 
+          "description": "El verde dulce, ligeramente floral / afrutado, algo amaderado asociado con la manzanilla.",
+          "price": 15000,
+          "image": "imagenes/cafe/temanzanilla.jpg"
         },
         "Jazmín": { 
-          name: "Café con Jazmín", 
-          description: "Un aromático floral, dulce, intenso y ligeramente picante con notas verdes, mohosas y polvorientas subyacentes.",
-          price: 15000,
-          image: "imagenes/cafe/tejazmin.jpg"
+          "name": "Café con Jazmín", 
+          "description": "Un aromático floral, dulce, intenso y ligeramente picante con notas verdes, mohosas y polvorientas subyacentes.",
+          "price": 15000,
+          "image": "imagenes/cafe/tejazmin.jpg"
         },
         "Rosa": { 
-          name: "Café con Rosas", 
-          description: "Una fragancia floral dulce, suave, ligeramente mohosa / polvorienta asociada con rosas frescas o secas.",
-          price: 15000,
-          image: "imagenes/cafe/terosa.jpg"
+          "name": "Café con Rosas", 
+          "description": "Una fragancia floral dulce, suave, ligeramente mohosa / polvorienta asociada con rosas frescas o secas.",
+          "price": 15000,
+          "image": "imagenes/cafe/terosa.jpg"
         }
-      },
+      }
     },
 
-
     "DULCE": {
-      description: "Frutas secas y especiadas: canela, clavo, nuez moscada.",
-      subOptions: ["Azucar morena", "Azucarados"],
-      finalOptions: {
+      "description": "Frutas secas y especiadas: canela, clavo, nuez moscada.",
+      "subOptions": ["Azucar morena", "Azucarados"],
+      "finalOptions": {
         "Azucar morena": ["Melaza", "Jarabe de manzana", "Caramelizado","Miel"],
         "Azucarados": ["Vainilla", "Aroma de vainilla","Dulce en general","Aromáticcos dulces"]
       },
-      products: {
+      "products": {
         "Melaza": { 
-          name: "Café de Melaza", 
-          description: "Notas de salida oscuras y caramelizadas que pueden incluir notas ligeramente agudas, acres y de azufre características de la melaza.",
-          price: 15000,
-          image: ""
+          "name": "Café de Melaza", 
+          "description": "Notas de salida oscuras y caramelizadas que pueden incluir notas ligeramente agudas, acres y de azufre características de la melaza.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafemelaza.jpg"
         },
         "Miel": { 
-          name: "Café de Miel", 
-          description: "Dulce, marrón claro, ligeramente picante, aromático asociado con la miel.",
-          price: 15000,
-          image: ""
+          "name": "Café de Miel", 
+          "description": "Dulce, marrón claro, ligeramente picante, aromático asociado con la miel.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafemiel.jpg"
         },
         "Jarabe de manzana": { 
-          name: "Café de Jarabe de Manzana", 
-          description: "Un aromático amaderado, dulce, caramelizado, marrón, ligeramente verde asociado con el jarabe de arce.",
-          price: 15000,
-          image: ""
+          "name": "Café de Jarabe de Manzana", 
+          "description": "Un aromático amaderado, dulce, caramelizado, marrón, ligeramente verde asociado con el jarabe de arce.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafejarabe.jpg"
         },
         "Caramelizado": { 
-          name: "Café Caramelizado", 
-          description: "Un aromático dulce, redondo, de cuerpo completo, de color marrón medio asociado con azúcares cocidos y otros carbohidratos. No incluye notas quemadas o chamuscadas.",
-          price: 15000,
-          image: ""
+          "name": "Café Caramelizado", 
+          "description": "Un aromático dulce, redondo, de cuerpo completo, de color marrón medio asociado con azúcares cocidos y otros carbohidratos. No incluye notas quemadas o chamuscadas.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafecaramelizado.jpg"
         },
         "Vainilla": { 
-          name: "Café con Vainilla", 
-          description: ".Un factor de sabor fundamental del que la sacarosa es típica.",
-          price: 15000,
-          image: ""
+          "name": "Café con Vainilla", 
+          "description": "Un factor de sabor fundamental del que la sacarosa es típica.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafevainilla.jpg"
         },
         "Aroma de vainilla": { 
-          name: "Café con Aroma a Vainilla", 
-          description: "Un aromático extremadamente dulce y no natural asociado con la vainilla, el algodón de azúcar y los malvaviscos.",
-          price: 15000,
-          image: ""
+          "name": "Café con Aroma a Vainilla", 
+          "description": "Un aromático extremadamente dulce y no natural asociado con la vainilla, el algodón de azúcar y los malvaviscos.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafearomavainilla.jpg"
         },
         "Dulce en general": { 
-          name: "Café Dulce", 
-          description: "La percepción de una combinación de sabor dulce y aromáticos.",
-          price: 15000,
-          image: ""
+          "name": "Café Dulce", 
+          "description": "La percepción de una combinación de sabor dulce y aromáticos.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafedulce.jpg"
         },
         "Aromáticcos dulces": { 
-          name: "Café con Aromáticos Dulces", 
-          description: "Un aromático asociado con la impresión de una sustancia dulce.",
-          price: 15000,
-          image: ""
+          "name": "Café con Aromáticos Dulces", 
+          "description": "Un aromático asociado con la impresión de una sustancia dulce.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafearomaticodulce.jpg"
         }
       }
     },
-
 
     "ACIDO/FERMENTADO": {
-      description: "Notas ácidas o fermentadas, como vinagre, sidra o frutas en fermentación.",
-      subOptions: ["Acido", "Alcohol/Fermentado"],
-      finalOptions: {
-        "Acido": ["Aromaticos ácidos", "Ácido acético", "Ácio butírico", "Ácido isovalérico", "Ácido cítrico", "Ácido málico"],
+      "description": "Notas ácidas o fermentadas, como vinagre, sidra o frutas en fermentación.",
+      "subOptions": ["Acido", "Alcohol/Fermentado"],
+      "finalOptions": {
+        "Acido": ["Aromaticos ácidos", "Ácido acético", "Ácido butírico", "Ácido isovalérico", "Ácido cítrico", "Ácido málico"],
         "Alcohol/Fermentado": ["Vinoso", "Whisky", "Fermentado", "Muy maduro"]
       },
-      products: {
+      "products": {
         "Aromaticos ácidos": { 
-          name: "Café con Aromáticos Ácidos", 
-          description: "Un aromático asociado con la impresión de un producto ácido.",
-          price: 15000,
-          image: "imagenes/cafe/cafearomaticoacido.jpg"
+          "name": "Café con Aromáticos Ácidos", 
+          "description": "Un aromático asociado con la impresión de un producto ácido.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafearomaticoacido.jpg"
         },
         "Ácido acético": { 
-          name: "Café con Ácido Acético", 
-          description: "Un aromático agrio, astringente y ligeramente picante asociado con el vinagre.",
-          price: 15000,
-          image: "imagenes/cafe/cafeacetico.jpg"
+          "name": "Café con Ácido Acético", 
+          "description": "Un aromático agrio, astringente y ligeramente picante asociado con el vinagre.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeacetico.jpg"
         },
-        "Ácio butírico": { 
-          name: "Café con Ácido Butírico", 
-          description: "Un aromático agrio, lácteo fermentado asociado con ciertos quesos añejos como el parmesan",
-          price: 15000,
-          image: "imagenes/cafe/cafebuirico.jpg"
+        "Ácido butírico": { 
+          "name": "Café con Ácido Butírico", 
+          "description": "Un aromático agrio, lácteo fermentado asociado con ciertos quesos añejos como el parmesan",
+          "price": 15000,
+          "image": "imagenes/cafe/cafebuirico.jpg"
         },
         "Ácido isovalérico": { 
-          name: "Café con Ácido Isovalérico", 
-          description: "Un aromático picante y agrio asociado con el olor a pies sudoroso generado por la transpiración y ciertos quesos añejos como el Romano.",
-          price: 15000,
-          image: "imagenes/cafe/cafeisolaverico.jpg"
+          "name": "Café con Ácido Isovalérico", 
+          "description": "Un aromático picante y agrio asociado con el olor a pies sudoroso generado por la transpiración y ciertos quesos añejos como el Romano.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeisolaverico.jpg"
         },
         "Ácido cítrico": { 
-          name: "Café con Ácido Cítrico", 
-          description: "Un aromático suave, limpio y ácido con ligeras notas cítricas acompañadas de astringencia.",
-          price: 15000,
-          image: "imagenes/cafe/caecitrico.jpg"
+          "name": "Café con Ácido Cítrico", 
+          "description": "Un aromático suave, limpio y ácido con ligeras notas cítricas acompañadas de astringencia.",
+          "price": 15000,
+          "image": "imagenes/cafe/caecitrico.jpg"
         },
         "Ácido málico": { 
-          name: "Café con Ácido Málico", 
-          description: "Un aroma ácido, punzante, algo afrutado acompañado de astringencia.",
-          price: 15000,
-          image: "imagenes/cafe/cafemalico.jpg"
+          "name": "Café con Ácido Málico", 
+          "description": "Un aroma ácido, punzante, algo afrutado acompañado de astringencia.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafemalico.jpg"
         },
         "Vinoso": { 
-          name: "Café con Aromáticos Vinosos", 
-          description: "El aromático agudo, picante, algo afrutado, similar al alcohol asociado con el vino.",
-          price: 15000,
-          image: "imagenes/cafe/cafevino.jpg"
+          "name": "Café con Aromáticos Vinosos", 
+          "description": "El aromático agudo, picante, algo afrutado, similar al alcohol asociado con el vino.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafevino.jpg"
         },
         "Whisky": { 
-          name: "Café con Aromáticos a Whisky", 
-          description: "El aromático asociado con los productos destilados del puré de granos fermentados.",
-          price: 15000,
-          image: "imagenes/cafe/cafewisky.jpg"
+          "name": "Café con Aromáticos a Whisky", 
+          "description": "El aromático asociado con los productos destilados del puré de granos fermentados.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafewisky.jpg"
         },
         "Fermentado": { 
-          name: "Café con Aromáticos Fermentados", 
-          description: "El aromático picante, dulce, ligeramente ácido, a veces con levadura, similar al alcohol, característico de las frutas fermentadas o el azúcar o la masa sobrefermentada.",
-          price: 15000,
-          image: "imagenes/cafe/cafefermentado.jpg"
+          "name": "Café con Aromáticos Fermentados", 
+          "description": "El aromático picante, dulce, ligeramente ácido, a veces con levadura, similar al alcohol, característico de las frutas fermentadas o el azúcar o la masa sobrefermentada.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafefermentado.jpg"
         },
         "Muy maduro": { 
-          name: "Café con Aromáticos Muy Maduros", 
-          description: "(Demasiado maduro / Casi fermentado) El aromático dulce, ligeramente ácido, húmedo, mohoso/terroso característico de las frutas o verduras pasadas su madurez óptima.",
-          price: 15000,
-          image: "imagenes/cafe/cafemuymaduro.jpg"
+          "name": "Café con Aromáticos Muy Maduros", 
+          "description": "(Demasiado maduro / Casi fermentado) El aromático dulce, ligeramente ácido, húmedo, mohoso/terroso característico de las frutas o verduras pasadas su madurez óptima.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafemuymaduro.jpg"
         }
       }
-
-      
     },
+
     "VERDE/VEGETAL": {
-      description: "Notas herbales y vegetales para un cafe fuerte.",
-      subOptions: ["Verde/vegetativo", "Otros"],
-      finalOptions: {
+      "description": "Notas herbales y vegetales para un cafe fuerte.",
+      "subOptions": ["Verde/vegetativo", "Otros"],
+      "finalOptions": {
         "Verde/vegetativo": ["Poco mauduro", "Peapod", "Fresco", "Verde oscuro", "Vegetativo", "Como heno", "Parecido a hierba"],
         "Otros": ["Aceite de oliva", "Crudo", "Beany"]
       },
-      products: {
+      "products": {
         "Poco mauduro": { 
-          name: "Café Poco Maduro", 
-          description: "Un aromático que se encuentra en frutas verdes / poco maduras.",
-          price: 15000,
-          image: "imagenes/cafe/cafepocomaduro.jpg"
+          "name": "Café Poco Maduro", 
+          "description": "Un aromático que se encuentra en frutas verdes / poco maduras.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafepocomaduro.jpg"
         },
         "Peapod": { 
-          name: "Café con Peapod", 
-          description: "Verde aromático que es dulce, frijol, fresco, crudo y mohoso/terroso.",
-          price: 15000,
-          image: "imagenes/cafe/cafeguisantes.jpg"
+          "name": "Café con Peapod", 
+          "description": "Verde aromático que es dulce, frijol, fresco, crudo y mohoso/terroso.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeguisantes.jpg"
         },
         "Fresco": { 
-          name: "Café Fresco", 
-          description: "Un aromático verde asociado con la hierba recién cortada y las plantas frondosas, caracterizado por un carácter dulce y picante.",
-          price: 15000,
-          image: "imagenes/cafe/cafepocomaduro.jpg"
+          "name": "Café Fresco", 
+          "description": "Un aromático verde asociado con la hierba recién cortada y las plantas frondosas, caracterizado por un carácter dulce y picante.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafepocomaduro.jpg"
         },
         "Verde oscuro": { 
-          name: "Café Verde Oscuro", 
-          description: "El aromático comúnmente asociado con las verduras verdes cocidas como la espinaca, la col rizada o las judías verdes que puede incluir elementos amargos, dulces, polvorientos, mohosos o terrosos, y puede tener una impresión oscura y pesada.",
-          price: 15000,
-          image: "imagenes/cafe/cafecrudo.jpg"
+          "name": "Café Verde Oscuro", 
+          "description": "El aromático comúnmente asociado con las verduras verdes cocidas como la espinaca, la col rizada o las judías verdes que puede incluir elementos amargos, dulces, polvorientos, mohosos o terrosos, y puede tener una impresión oscura y pesada.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafecrudo.jpg"
         },
         "Vegetativo": { 
-          name: "Café Vegetativo", 
-          description: "aAromático agudo y ligeramente picante asociado con plantas verdes o materia vegetal como perejil, espinaca o guisante.",
-          price: 15000,
-          image: "imagenes/cafe/cafevegetativo.jpg"
+          "name": "Café Vegetativo", 
+          "description": "Aromático agudo y ligeramente picante asociado con plantas verdes o materia vegetal como perejil, espinaca o guisante.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafevegetativo.jpg"
         },
         "Como heno": { 
-          name: "Café con Aroma a Heno", 
-          description: "El aromático ligeramente dulce, seco y polvoriento con un ligero carácter verde asociado con pastos secos.",
-          price: 15000,
-          image: "imagenes/cafe/cafeheno.jpg"
+          "name": "Café con Aroma a Heno", 
+          "description": "El aromático ligeramente dulce, seco y polvoriento con un ligero carácter verde asociado con pastos secos.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeheno.jpg"
         },
         "Parecido a hierba": { 
-          name: "Café con Aroma a Hierba", 
-          description: "El aromático comúnmente asociado con las hierbas verdes que puede caracterizarse como dulce, ligeramente picante y ligeramente amargo. Puede o no incluir notas verdes o marrones.",
-          price: 15000,
-          image: "imagenes/cafe/cafehierba.jpg"
+          "name": "Café con Aroma a Hierba", 
+          "description": "El aromático comúnmente asociado con las hierbas verdes que puede caracterizarse como dulce, ligeramente picante y ligeramente amargo. Puede o no incluir notas verdes o marrones.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafehierba.jpg"
         },
         "Aceite de oliva": { 
-          name: "Café con Aceite de Oliva", 
-          description: "Un aromático ligero y aceitoso que puede tener notas mantecosas, verdes, picantes, amargas y dulces.",
-          price: 15000,
-          image: "imagenes/cafe/cafeoliva.jpg"
+          "name": "Café con Aceite de Oliva", 
+          "description": "Un aromático ligero y aceitoso que puede tener notas mantecosas, verdes, picantes, amargas y dulces.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeoliva.jpg"
         },
         "Crudo": { 
-          name: "Café Crudo", 
-          description: "Un aromático asociado a los productos crudos.",
-          price: 15000,
-          image: "imagenes/cafe/cafecrudo.jpg"
+          "name": "Café Crudo", 
+          "description": "Un aromático asociado a los productos crudos.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafecrudo.jpg"
         },
         "Beany": { 
-          name: "Café Beany", 
-          description: "Una característica aromática de los frijoles y productos de frijoles que contiene elementos mohosos / terrosos, mohosos / polvorientos, aromáticos agrios, aromáticos amargos, almidonados y verdes / guisantes, nuez o marrones.",
-          price: 15000,
-          image: "imagenes/cafe/cafebeany.jpg"
+          "name": "Café Beany", 
+          "description": "Una característica aromática de los frijoles y productos de frijoles que contiene elementos mohosos / terrosos, mohosos / polvorientos, aromáticos agrios, aromáticos amargos, almidonados y verdes / guisantes, nuez o marrones.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafebeany.jpg"
         }
       }
-
-
-
-      
     },
+
     "OTROS": {
-      description: "Aromas cítricos y otras notas variadas.",
-      subOptions: ["Papel/Mohoso", "Químico"],
-      finalOptions: {
+      "description": "Aromas cítricos y otras notas variadas.",
+      "subOptions": ["Papel/Mohoso", "Químico"],
+      "finalOptions": {
         "Papel/Mohoso": ["Duro", "Cartón","Papel", "Leñoso", "Mohoso/Húmedo", "Mohoso/polvoriento", "Mohoso/Terroso", "Animalic", "Carnoso/Caldoso", "Fenólico"],
         "Químico": ["Amargo", "Salado", "Medicinal", "Petróleo", "Skunk", "Caucho"]
       },
-      products: {
+      "products": {
         "Duro": { 
-          name: "Café Duro", 
-          description: "El aromático caracterizado por la falta de frescura",
-          price: 15000,
-          image: "imagenes/cafe/cafeuro.jpg"
+          "name": "Café Duro", 
+          "description": "El aromático caracterizado por la falta de frescura",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeuro.jpg"
         },
         "Cartón": { 
-          name: "Café Cartón", 
-          description: "El aromático asociado con los envases de cartón o papel.",
-          price: 15000,
-          image: "imagenes/cafe/cafecarton.jpg"
+          "name": "Café Cartón", 
+          "description": "El aromático asociado con los envases de cartón o papel.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafecarton.jpg"
         },
         "Papel": { 
-          name: "Café Papel", 
-          description: "El aromático asociado con los vasos de papel blanco.",
-          price: 15000,
-          image: "imagenes/cafe/cafepapel.jpg"
+          "name": "Café Papel", 
+          "description": "El aromático asociado con los vasos de papel blanco.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafepapel.jpg"
         },
         "Leñoso": { 
-          name: "Café Leñoso", 
-          description: "El aromático dulce, marrón, mohoso y oscuro asociado con la corteza de un árbol.",
-          price: 15000,
-          image: "imagenes/cafe/cafeleñozo.jpg"
+          "name": "Café Leñoso", 
+          "description": "El aromático dulce, marrón, mohoso y oscuro asociado con la corteza de un árbol.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeleñozo.jpg"
         },
         "Mohoso/Húmedo": { 
-          name: "Café Mohoso/Húmedo", 
-          description: "El aromático asociado con espacios húmedos y cerrados o sótanos. Puede ser mohoso, afilado y ligeramente verde.",
-          price: 15000,
-          image: "imagenes/cafe/cafemohoso.jpg"
+          "name": "Café Mohoso/Húmedo", 
+          "description": "El aromático asociado con espacios húmedos y cerrados o sótanos. Puede ser mohoso, afilado y ligeramente verde.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafemohoso.jpg"
         },
         "Mohoso/polvoriento": { 
-          name: "Café Mohoso/Polvoriento", 
-          description: "El aromático asociado con espacios secos y al aire libre como áticos y armarios. Puede tener elementos de suelo seco, mohoso, parecido al papel, seco o grano.",
-          price: 15000,
-          image: "imagenes/cafe/cafepolvoriento.jpg"
+          "name": "Café Mohoso/Polvoriento", 
+          "description": "El aromático asociado con espacios secos y al aire libre como áticos y armarios. Puede tener elementos de suelo seco, mohoso, parecido al papel, seco o grano.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafepolvoriento.jpg"
         },
         "Mohoso/Terroso": { 
-          name: "Café Mohoso/Terroso", 
-          description: "El aromático algo dulce y pesado asociado con la vegetación en descomposición y el suelo negro y húmedo.",
-          price: 15000,
-          image: "imagenes/cafe/cafeterroso.jpg"
+          "name": "Café Mohoso/Terroso", 
+          "description": "El aromático algo dulce y pesado asociado con la vegetación en descomposición y el suelo negro y húmedo.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeterroso.jpg"
         },
         "Animalic": { 
-          name: "Café Animalic", 
-          description: "Una combinación de los aromáticos asociados con los animales de granja y la habitación de animales vivos.",
-          price: 15000,
-          image: "imagenes/cafe/cafeanimalic.jpg"
+          "name": "Café Animalic", 
+          "description": "Una combinación de los aromáticos asociados con los animales de granja y la habitación de animales vivos.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeanimalic.jpg"
         },
         "Carnoso/Caldoso": { 
-          name: "Café Carnoso/Caldoso", 
-          description: "El aromático asociado con la carne hervida, la sopa o el caldo, con notas carnosas débiles.",
-          price: 15000,
-          image: "imagenes/cafe/cafecaldoso.jpg"
+          "name": "Café Carnoso/Caldoso", 
+          "description": "El aromático asociado con la carne hervida, la sopa o el caldo, con notas carnosas débiles.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafecaldoso.jpg"
         },
         "Fenólico": { 
-          name: "Café Fenólico", 
-          description: "El aromático se describe como húmedo, mohoso y como piel de animal. Con reminiscencias de un guadarnés.",
-          price: 15000,
-          image: "imagenes/cafe/cafefenolico.jpg"
+          "name": "Café Fenólico", 
+          "description": "El aromático se describe como húmedo, mohoso y como piel de animal. Con reminiscencias de un guadarnés.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafefenolico.jpg"
         },
         "Amargo": { 
-          name: "Café Amargo", 
-          description: "El factor de sabor fundamental asociado con una solución de cafeína.",
-          price: 15000,
-          image: "imagenes/cafe/cafeamargo.jpg"
+          "name": "Café Amargo", 
+          "description": "El factor de sabor fundamental asociado con una solución de cafeína.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeamargo.jpg"
         },
         "Salado": { 
-          name: "Café Salado", 
-          description: "Un factor de sabor fundamental del que es típico el cloruro de sodio",
-          price: 15000,
-          image: "imagenes/cafe/cafesalado.jpg"
+          "name": "Café Salado", 
+          "description": "Un factor de sabor fundamental del que es típico el cloruro de sodio",
+          "price": 15000,
+          "image": "imagenes/cafe/cafesalado.jpg"
         },
         "Medicinal": { 
-          name: "Café Medicinal", 
-          description: "Una característica aromática limpia y estéril de productos similares a los antisépticos como las curitas, el alcohol y el yodo.",
-          price: 15000,
-          image: "imagenes/cafe/cafemedicinal.jpg"
+          "name": "Café Medicinal", 
+          "description": "Una característica aromática limpia y estéril de productos similares a los antisépticos como las curitas, el alcohol y el yodo.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafemedicinal.jpg"
         },
         "Petróleo": { 
-          name: "Café Petróleo", 
-          description: "Un químico aromático específico asociado con el petróleo crudo y sus productos refinados, que tienen características de petróleo pesado",
-          price: 15000,
-          image: "imagenes/cafe/cafepetroleo.jpg"
+          "name": "Café Petróleo", 
+          "description": "Un químico aromático específico asociado con el petróleo crudo y sus productos refinados, que tienen características de petróleo pesado",
+          "price": 15000,
+          "image": "imagenes/cafe/cafepetroleo.jpg"
         },
         "Skunk": { 
-          name: "Café Skunk",
-          description: "Un químico aromático específico asociado con el olor a zorrillo.",
-          price: 15000,
-          image: "imagenes/cafe/cafeshunky.jpg"
+          "name": "Café Skunk",
+          "description": "Un químico aromático específico asociado con el olor a zorrillo.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeshunky.jpg"
         },
         "Caucho": { 
-          name: "Café Caucho",
-          description: "Un aromático oscuro, pesado, ligeramente agudo y picante asociado con el caucho.",
-          price: 15000,
-          image: "imagenes/cafe/cafecausho.jpg"
+          "name": "Café Caucho",
+          "description": "Un aromático oscuro, pesado, ligeramente agudo y picante asociado con el caucho.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafecausho.jpg"
         }
-
       }
     },
 
-
     "TOSTADO": {
-      description: "Impresión de color marrón oscuro característica de los productos cocinados a alta temperatura por calor seco. No incluye notas amargas ni quemadas.",
-      subOptions: ["Quemado", "Cereal", "Otros"],
-      finalOptions: {
+      "description": "Impresión de color marrón oscuro característica de los productos cocinados a alta temperatura por calor seco. No incluye notas amargas ni quemadas.",
+      "subOptions": ["Quemado", "Cereal", "Otros"],
+      "finalOptions": {
         "Quemado": ["Acre", "Ceniciento", "Ahumado", "Marrón,Tostado"],
         "Cereal": ["Grano", "Malta"],
         "Otros": ["Tabaco de pipa", "Tabaco"]
       },
-      products: {
+      "products": {
         "Marrón,Tostado": { 
-          name: "Café Tostado", 
-          description: "Una impresión aromática rica, completa y redonda siempre caracterizada como cierto grado de oscuridad, generalmente asociada con atributos como tostado, nuez, tostado y dulce.",
-          price: 15000,
-          image: "imagenes/cafe/cafetostado.jpg"
+          "name": "Café Tostado", 
+          "description": "Una impresión aromática rica, completa y redonda siempre caracterizada como cierto grado de oscuridad, generalmente asociada con atributos como tostado, nuez, tostado y dulce.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafetostado.jpg"
         },
         "Acre": { 
-          name: "Café Acre", 
-          description: "El aromático picante, picante, amargo y ácido asociado con productos que se tuestan o doran en exceso.",
-          price: 15000,
-          image: "imagenes/cafe/cafeacre.jpg"
+          "name": "Café Acre", 
+          "description": "El aromático picante, picante, amargo y ácido asociado con productos que se tuestan o doran en exceso.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeacre.jpg"
         },
         "Ceniciento": { 
-          name: "Café Ceniciento", 
-          description: "El aromático seco, polvoriento, sucio y ahumado asociado con el residuo de productos quemados.",
-          price: 15000,
-          image: ""
+          "name": "Café Ceniciento", 
+          "description": "El aromático seco, polvoriento, sucio y ahumado asociado con el residuo de productos quemados.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeceniciento.jpg"
         },
         "Ahumado": { 
-          name: "Café Ahumado", 
-          description: "Un aromático agudo y picante que es producto de la combustión de madera, hojas o un producto no natural.",
-          price: 15000,
-          image: ""
+          "name": "Café Ahumado", 
+          "description": "Un aromático agudo y picante que es producto de la combustión de madera, hojas o un producto no natural.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeahumado.jpg"
         },
         "Grano": { 
-          name: "Café con Aroma a Grano", 
-          description: "El aromático dulce de color marrón claro, polvoriento, mohoso asociado con los granos.",
-          price: 15000,
-          image: ""
+          "name": "Café con Aroma a Grano", 
+          "description": "El aromático dulce de color marrón claro, polvoriento, mohoso asociado con los granos.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafearoma.jpg"
         },
         "Malta": { 
-          name: "Café con Aroma a Malta", 
-          description: "El aromático de color marrón claro, polvoriento, mohoso, dulce, agrio o ligeramente fermentado asociado con los granos.",
-          price: 15000,
-          image: ""
+          "name": "Café con Aroma a Malta", 
+          "description": "El aromático de color marrón claro, polvoriento, mohoso, dulce, agrio o ligeramente fermentado asociado con los granos.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafemalta.jpg"
         },
         "Tabaco de pipa": { 
-          name: "Café con Aroma a Tabaco de Pipa", 
-          description: "El aromático marrón, dulce, ligeramente picante, afrutado, floral y picante asociado con el tabaco curado.",
-          price: 15000,
-          image: ""
+          "name": "Café con Aroma a Tabaco de Pipa", 
+          "description": "El aromático marrón, dulce, ligeramente picante, afrutado, floral y picante asociado con el tabaco curado.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafetabaco.jpg"
         },
         "Tabaco": { 
-          name: "Café con Aroma a Tabaco", 
-          description: "El aromático marrón, ligeramente dulce y ligeramente picante asociado con el tabaco curado.",
-          price: 15000,
-          image: ""
+          "name": "Café con Aroma a Tabaco", 
+          "description": "El aromático marrón, ligeramente dulce y ligeramente picante asociado con el tabaco curado.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafearomatabaco.jpg"
         }
       }
     },
 
-
-
     "ESPECIAS": {
-      description: "Especias como pimienta, nuez moscada, clavo y canela.",
-      subOptions: ["Especias marrón", "Otras especias"],
-      finalOptions: {
+      "description": "Especias como pimienta, nuez moscada, clavo y canela.",
+      "subOptions": ["Especias marrón", "Otras especias"],
+      "finalOptions": {
         "Especias marrón": ["Anís", "Nuez moscada", "Canela", "Clavo"],
-        "Otras especias": ["Acre", "Pimienta"] },
-      products: {
+        "Otras especias": ["Acre", "Pimienta"] 
+      },
+      "products": {
         "Anís": { 
-          name: "Café de Anís", 
-          description: "Un aromático acre, dulce, marrón y caramelizado que puede contener notas de petróleo, medicinales y florales.",
-          price: 15000,
-          image: ""
+          "name": "Café de Anís", 
+          "description": "Un aromático acre, dulce, marrón y caramelizado que puede contener notas de petróleo, medicinales y florales.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeanis.jpg"
         },
         "Nuez moscada": { 
-          name: "Café con Nuez Moscada", 
-          description: "Un aromático húmedo, marrón, amaderado, picante, parecido al petróleo, pesado con una impresión ligeramente alimonada.",
-          price: 15000,
-          image: ""
+          "name": "Café con Nuez Moscada", 
+          "description": "Un aromático húmedo, marrón, amaderado, picante, parecido al petróleo, pesado con una impresión ligeramente alimonada.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafemoscada.jpg"
         },
         "Canela": { 
-          name: "Café con Canela", 
-          description: "Un aroma dulce, marrón, ligeramente amaderado, ligeramente picante y especiado.",
-          price: 15000,
-          image: ""
+          "name": "Café con Canela", 
+          "description": "Un aroma dulce, marrón, ligeramente amaderado, ligeramente picante y especiado.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafecanela.jpg"
         },
         "Clavo": { 
-          name: "Café con Clavo", 
-          description: "El aromático dulce y marrón asociado con especias como la canela, el clavo, la nuez moscada y la pimienta de Jamaica",
-          price: 15000,
-          image: ""
+          "name": "Café con Clavo", 
+          "description": "El aromático dulce y marrón asociado con especias como la canela, el clavo, la nuez moscada y la pimienta de Jamaica",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeclavo.jpg"
         },
         "Acre": { 
-          name: "Café Acre", 
-          description: "Una sensación aguda y físicamente penetrante en la cavidad nasal.",
-          price: 15000,
-          image: ""
+          "name": "Café Acre", 
+          "description": "Una sensación aguda y físicamente penetrante en la cavidad nasal.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeconacre.jpg"
         },
         "Pimienta": { 
-          name: "Café de Pimienta", 
-          description: "La característica aromática picante, picante, mohosa y amaderada de la pimienta negra molida.",
-          price: 15000,
-          image: ""
-        },
+          "name": "Café de Pimienta", 
+          "description": "La característica aromática picante, picante, mohosa y amaderada de la pimienta negra molida.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafepimienta.jpg"
+        }
       }
     },
 
-
     "NUECES/CACAO": {
-      description: "Distintivos sabores y aromas secos",
-      subOptions: ["Nuez", "Cacao"],
-      finalOptions: {
+      "description": "Distintivos sabores y aromas secos",
+      "subOptions": ["Nuez", "Cacao"],
+      "finalOptions": {
         "Nuez": ["Cacahuates", "Avellana", "Almendra"],
         "Cacao": ["Chocolate", "Chocolate amargo"]
       },
-      products: {
+      "products": {
         "Cacahuates": { 
-          name: "Café de Cacahuate", 
-          description: "Un aromático de frijol dulce, de color marrón claro, aceitoso, algo mohoso / polvoriento que puede ser ligeramente astringente.",
-          price: 15000,
-          image: ""
+          "name": "Café de Cacahuate", 
+          "description": "Un aromático de frijol dulce, de color marrón claro, aceitoso, algo mohoso / polvoriento que puede ser ligeramente astringente.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafecacahuate.jpg"
         },
         "Avellana": { 
-          name: "Café de Avellana", 
-          description: "Un aroma amaderado, marrón, dulce, mohoso/terroso, ligeramente de cedro. Puede incluir notas de sabor floral, frijol, aceitoso, astringente y amargo.",
-          price: 15000,
-          image: ""
+          "name": "Café de Avellana", 
+          "description": "Un aroma amaderado, marrón, dulce, mohoso/terroso, ligeramente de cedro. Puede incluir notas de sabor floral, frijol, aceitoso, astringente y amargo.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafeavellana.jpg"
         },
         "Almendra": { 
-          name: "Café de Almendras", 
-          description: "Un aromático dulce, marrón claro, amaderado y mantecoso con notas florales y afrutadas que pueden incluir rosa, cereza y albaricoque. También es astringente y puede ser ligeramente ahumado.",
-          price: 15000,
-          image: ""
+          "name": "Café de Almendras", 
+          "description": "Un aromático dulce, marrón claro, amaderado y mantecoso con notas florales y afrutadas que pueden incluir rosa, cereza y albaricoque. También es astringente y puede ser ligeramente ahumado.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafealmendra.jpg"
         },
         "Chocolate": { 
-          name: "Café de Chocolate", 
-          description: "Una mezcla de cacao, que incluye manteca de cacao y aromáticos tostados oscuros a diferentes intensidades.",
-          price: 15000,
-          image: ""
+          "name": "Café de Chocolate", 
+          "description": "Una mezcla de cacao, que incluye manteca de cacao y aromáticos tostados oscuros a diferentes intensidades.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafechocolate.jpg"
         },
         "Chocolate amargo": { 
-          name: "Café de Chocolate amargo", 
-          description: "Una mezcla de alta intensidad de cacao y manteca de cacao que puede incluir notas tostadas oscuras, picantes, quemadas y mohosas con mayor astringencia y amargor.",
-          price: 15000,
-          image: ""
+          "name": "Café de Chocolate amargo", 
+          "description": "Una mezcla de alta intensidad de cacao y manteca de cacao que puede incluir notas tostadas oscuras, picantes, quemadas y mohosas con mayor astringencia y amargor.",
+          "price": 15000,
+          "image": "imagenes/cafe/cafechocolate.jpg"
         }
       }
     }
@@ -1883,16 +1916,16 @@ function CoffeeWheel() {
 
   // Datos para la ruleta SVG
   const sectores =  [
-  { name: "AFRUTADO", color: "#FC031C" },
-  { name: "ACIDO/FERMENTADO", color: "#FFF94F" },
-  { name: "VERDE/VEGETAL", color: "#65FC26" },
-  { name: "OTROS", color: "#62CCBB" },
-  { name: "TOSTADO", color: "#BD6200" },
-  { name: "ESPECIAS", color: "#A1052E" },
-  { name: "NUECES/CACAO", color: "#8A583B" }, 
-  { name: "DULCE", color: "#FF9999" },
-  { name: "FLORAL", color: "#FF57B2" }
-];
+    { name: "AFRUTADO", color: "#FC031C" },
+    { name: "ACIDO/FERMENTADO", color: "#FFF94F" },
+    { name: "VERDE/VEGETAL", color: "#65FC26" },
+    { name: "OTROS", color: "#62CCBB" },
+    { name: "TOSTADO", color: "#BD6200" },
+    { name: "ESPECIAS", color: "#A1052E" },
+    { name: "NUECES/CACAO", color: "#8A583B" }, 
+    { name: "DULCE", color: "#FF9999" },
+    { name: "FLORAL", color: "#FF57B2" }
+  ];
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
@@ -1911,7 +1944,7 @@ function CoffeeWheel() {
     setSelectedFinalOption(finalOption);
     
     // Buscar el producto correspondiente
-    const product = wheelData[selectedCategory].products[finalOption];
+    const product = wheelData[selectedCategory]?.products[finalOption];
     if (product) {
       setFinalProduct(product);
     }
@@ -1936,6 +1969,7 @@ function CoffeeWheel() {
     }
 
     showToast(`${finalProduct.name} añadido al carrito`, 'success');
+    saveState(AppState);
     
     // Forzar re-render del header para actualizar contador
     ReactDOM.render(<ServicesPage />, document.getElementById('root'));
@@ -2087,10 +2121,10 @@ function CoffeeWheel() {
         ) : !selectedSubOption ? (
           <>
             <h2>{selectedCategory}</h2>
-            <p className="desc">{wheelData[selectedCategory].description}</p>
+            <p className="desc">{wheelData[selectedCategory]?.description}</p>
             <div className="suboptions">
               <h4>Opciones</h4>
-              {wheelData[selectedCategory].subOptions.map(option => (
+              {wheelData[selectedCategory]?.subOptions.map(option => (
                 <button
                   key={option}
                   onClick={() => handleSubOptionSelect(option)}
@@ -2109,7 +2143,7 @@ function CoffeeWheel() {
             <p className="desc">Selecciona una opción específica</p>
             <div className="suboptions">
               <h4>Detalles</h4>
-              {wheelData[selectedCategory].finalOptions[selectedSubOption].map(option => (
+              {wheelData[selectedCategory]?.finalOptions[selectedSubOption]?.map(option => (
                 <button
                   key={option}
                   onClick={() => handleFinalOptionSelect(option)}
@@ -2161,6 +2195,12 @@ function CoffeeWheel() {
 
 // Componente principal de Servicios
 function ServicesPage() {
+  const showToast = useToast();
+
+  const handleServiceRequest = (service) => {
+    showToast(`¡Hemos recibido tu solicitud para ${service}! Te contactaremos pronto.`, 'success');
+  };
+
   return (
     <div className="main-container">
       <Header />
@@ -2190,7 +2230,7 @@ function ServicesPage() {
               <li>Notificaciones por SMS</li>
               <li>Pago contra entrega</li>
             </ul>
-            <button className="info-btn">Solicitar Entrega</button>
+            <button className="info-btn" onClick={() => handleServiceRequest('Entrega Express')}>Solicitar Entrega</button>
           </div>
           
           <div className="delivery-card">
@@ -2205,7 +2245,7 @@ function ServicesPage() {
               <li>Tracking online</li>
               <li>Entrega certificada</li>
             </ul>
-            <button className="info-btn">Solicitar Envío</button>
+            <button className="info-btn" onClick={() => handleServiceRequest('Envío Nacional')}>Solicitar Envío</button>
           </div>
           
           <div className="delivery-card">
@@ -2220,7 +2260,7 @@ function ServicesPage() {
               <li>Horarios flexibles de entrega</li>
               <li>Asesor personalizado</li>
             </ul>
-            <button className="info-btn">Solicitar Info</button>
+            <button className="info-btn" onClick={() => handleServiceRequest('Programa Corporativo')}>Solicitar Info</button>
           </div>
         </div>
       </section>
@@ -2238,7 +2278,7 @@ function ServicesPage() {
               <li>Máquinas de café incluidas</li>
               <li>Capacitación para el personal</li>
             </ul>
-            <button className="info-btn">Solicitar Información</button>
+            <button className="info-btn" onClick={() => handleServiceRequest('Café de Oficina')}>Solicitar Información</button>
           </div>
           
           <div className="business-card">
@@ -2250,7 +2290,7 @@ function ServicesPage() {
               <li>Personalización completa del servicio</li>
               <li>Menú de bebidas especiales</li>
             </ul>
-            <button className="info-btn">Solicitar Información</button>
+            <button className="info-btn" onClick={() => handleServiceRequest('Eventos Especiales')}>Solicitar Información</button>
           </div>
           
           <div className="business-card">
@@ -2262,7 +2302,7 @@ function ServicesPage() {
               <li>Descuentos por cantidad</li>
               <li>Entrega nacional</li>
             </ul>
-            <button className="info-btn">Solicitar Información</button>
+            <button className="info-btn" onClick={() => handleServiceRequest('Regalos Corporativos')}>Solicitar Información</button>
           </div>
         </div>
       </section>
@@ -2327,29 +2367,6 @@ function ServicesPage() {
       </footer>
     </div>
   );
-}
-
-// Función para mostrar notificaciones toast
-function showToast(message, type = 'success') {
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.innerHTML = `
-    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
-    ${message}
-  `;
-  
-  document.body.appendChild(toast);
-  
-  setTimeout(() => {
-    toast.classList.add('show');
-  }, 100);
-  
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => {
-      document.body.removeChild(toast);
-    }, 300);
-  }, 3000);
 }
 
 // Inicializar la aplicación

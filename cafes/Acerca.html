@@ -1084,11 +1084,51 @@ footer {
 
   <script type="text/babel">
     // Estado global de la aplicación
-    const AppState = {
-      cart: [],
-      user: null,
-      currentTeamMember: null
+    const getInitialState = () => {
+      const saved = localStorage.getItem('cafesantander_state');
+      const defaultState = {
+        cart: [],
+        user: null,
+        currentTeamMember: null
+      };
+      return saved ? { ...defaultState, ...JSON.parse(saved) } : defaultState;
     };
+
+    const AppState = getInitialState();
+
+    const saveState = (state) => {
+      localStorage.setItem('cafesantander_state', JSON.stringify({
+        cart: state.cart,
+        user: state.user
+      }));
+    };
+
+    // Hook para notificaciones Toast
+    function useToast() {
+      const showToast = (message, type = 'success') => {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+          <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+          ${message}
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => {
+            document.body.removeChild(toast);
+          }, 300);
+        }, 3000);
+      };
+
+      return showToast;
+    }
 
     // Datos del equipo
     const teamMembers = [
@@ -1163,6 +1203,7 @@ footer {
       const [isNavActive, setIsNavActive] = React.useState(false);
       const [isModalOpen, setIsModalOpen] = React.useState(false);
       const [activeAuthTab, setActiveAuthTab] = React.useState('login');
+      const showToast = useToast();
 
       const toggleNav = () => {
         setIsNavActive(!isNavActive);
@@ -1255,7 +1296,7 @@ footer {
                   </div>
                   <button type="submit" className="submit-btn">Iniciar Sesión</button>
                   <div className="form-footer">
-                    ¿No tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('register')}>Regístrate aquí</a>
+                    ¿No tienes cuenta? <a href="#" onClick={(e) => { e.preventDefault(); setActiveAuthTab('register'); }}>Regístrate aquí</a>
                   </div>
                 </form>
 
@@ -1278,7 +1319,7 @@ footer {
                   </div>
                   <button type="submit" className="submit-btn">Registrarse</button>
                   <div className="form-footer">
-                    ¿Ya tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('login')}>Inicia sesión aquí</a>
+                    ¿Ya tienes cuenta? <a href="#" onClick={(e) => { e.preventDefault(); setActiveAuthTab('login'); }}>Inicia sesión aquí</a>
                   </div>
                 </form>
               </div>
@@ -1539,7 +1580,7 @@ footer {
     }
 
     // Componente principal de la aplicación
-    function App() {
+    function AboutPage() {
       return (
         <div className="main-container">
           <Header />
@@ -1698,31 +1739,8 @@ footer {
       );
     }
 
-    // Función para mostrar notificaciones toast
-    function showToast(message, type = 'success') {
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
-        ${message}
-      `;
-      
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.classList.add('show');
-      }, 100);
-      
-      setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-          document.body.removeChild(toast);
-        }, 300);
-      }, 3000);
-    }
-
     // Inicializar la aplicación
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.render(<AboutPage />, document.getElementById('root'));
   </script>
 </body>
 </html>

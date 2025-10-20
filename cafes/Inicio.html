@@ -1012,60 +1012,101 @@ footer {
 
   <script type="text/babel">
     // Estado global de la aplicación
-    const AppState = {
-      cart: [],
-      user: null,
-      products: [
-        {
-          id: 1,
-          name: "☕ Expreso",
-          description: "Intenso, aromático y lleno de carácter. El café expreso es una bebida concentrada elaborada al pasar agua caliente a presión por café molido fino.",
-          price: 7000,
-          image: "imagenes/expreso.png"
-        },
-        {
-          id: 2,
-          name: "🍫 Mocachino",
-          description: "Deliciosa combinación de café expreso, leche vaporizada y chocolate. Su sabor suave y dulce lo convierte en la opción perfecta.",
-          price: 8000,
-          image: "imagenes/mocachino.png"
-        },
-        {
-          id: 3,
-          name: "🥛 Latte",
-          description: "Suave y cremosa mezcla de café expreso y leche vaporizada, con una ligera capa de espuma en la parte superior.",
-          price: 7000,
-          image: "imagenes/latte.png"
-        },
-        {
-          id: 4,
-          name: "🍵 Chocolate Caliente",
-          description: "Una bebida reconfortante y cremosa elaborada con leche caliente y chocolate derretido.",
-          price: 9000,
-          image: "imagenes/chocolate.png"
-        },
-        {
-          id: 5,
-          name: "🍫 Pastelito de Chocolate",
-          description: "Un pequeño placer irresistible: suave, húmedo y lleno de sabor. Ideal para acompañar tu café.",
-          price: 15000,
-          image: "imagenes/pastelchocolate.png"
-        },
-        {
-          id: 6,
-          name: "🍪 Galletas",
-          description: "Crujientes por fuera, suaves por dentro y llenas de sabor. El acompañante perfecto para tu bebida favorita.",
-          price: 6000,
-          image: "imagenes/galletitas.png"
-        }
-      ]
+    const getInitialState = () => {
+      const saved = localStorage.getItem('cafesantander_state');
+      const defaultState = {
+        cart: [],
+        user: null,
+        products: [
+          {
+            id: 1,
+            name: "☕ Expreso",
+            description: "Intenso, aromático y lleno de carácter. El café expreso es una bebida concentrada elaborada al pasar agua caliente a presión por café molido fino.",
+            price: 7000,
+            image: "imagenes/expreso.png"
+          },
+          {
+            id: 2,
+            name: "🍫 Mocachino",
+            description: "Deliciosa combinación de café expreso, leche vaporizada y chocolate. Su sabor suave y dulce lo convierte en la opción perfecta.",
+            price: 8000,
+            image: "imagenes/mocachino.png"
+          },
+          {
+            id: 3,
+            name: "🥛 Latte",
+            description: "Suave y cremosa mezcla de café expreso y leche vaporizada, con una ligera capa de espuma en la parte superior.",
+            price: 7000,
+            image: "imagenes/latte.png"
+          },
+          {
+            id: 4,
+            name: "🍵 Chocolate Caliente",
+            description: "Una bebida reconfortante y cremosa elaborada con leche caliente y chocolate derretido.",
+            price: 9000,
+            image: "imagenes/chocolate.png"
+          },
+          {
+            id: 5,
+            name: "🍫 Pastelito de Chocolate",
+            description: "Un pequeño placer irresistible: suave, húmedo y lleno de sabor. Ideal para acompañar tu café.",
+            price: 15000,
+            image: "imagenes/pastelchocolate.png"
+          },
+          {
+            id: 6,
+            name: "🍪 Galletas",
+            description: "Crujientes por fuera, suaves por dentro y llenas de sabor. El acompañante perfecto para tu bebida favorita.",
+            price: 6000,
+            image: "imagenes/galletitas.png"
+          }
+        ]
+      };
+      return saved ? { ...defaultState, ...JSON.parse(saved) } : defaultState;
     };
+
+    const AppState = getInitialState();
+
+    const saveState = (state) => {
+      localStorage.setItem('cafesantander_state', JSON.stringify({
+        cart: state.cart,
+        user: state.user
+      }));
+    };
+
+    // Hook para notificaciones Toast
+    function useToast() {
+      const showToast = (message, type = 'success') => {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+          <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+          ${message}
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => {
+            document.body.removeChild(toast);
+          }, 300);
+        }, 3000);
+      };
+
+      return showToast;
+    }
 
     // Componente de Header
     function Header() {
       const [isNavActive, setIsNavActive] = React.useState(false);
       const [isModalOpen, setIsModalOpen] = React.useState(false);
       const [activeAuthTab, setActiveAuthTab] = React.useState('login');
+      const showToast = useToast();
 
       const toggleNav = () => {
         setIsNavActive(!isNavActive);
@@ -1082,7 +1123,6 @@ footer {
 
       const handleAuthSubmit = (e) => {
         e.preventDefault();
-        // Aquí iría la lógica de autenticación
         showToast('¡Bienvenido a CaféSantander!', 'success');
         closeAuthModal();
       };
@@ -1159,7 +1199,7 @@ footer {
                   </div>
                   <button type="submit" className="submit-btn">Iniciar Sesión</button>
                   <div className="form-footer">
-                    ¿No tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('register')}>Regístrate aquí</a>
+                    ¿No tienes cuenta? <a href="#" onClick={(e) => { e.preventDefault(); setActiveAuthTab('register'); }}>Regístrate aquí</a>
                   </div>
                 </form>
 
@@ -1182,7 +1222,7 @@ footer {
                   </div>
                   <button type="submit" className="submit-btn">Registrarse</button>
                   <div className="form-footer">
-                    ¿Ya tienes cuenta? <a href="#" onClick={() => setActiveAuthTab('login')}>Inicia sesión aquí</a>
+                    ¿Ya tienes cuenta? <a href="#" onClick={(e) => { e.preventDefault(); setActiveAuthTab('login'); }}>Inicia sesión aquí</a>
                   </div>
                 </form>
               </div>
@@ -1195,6 +1235,7 @@ footer {
     // Componente de Producto
     function ProductCard({ product }) {
       const [isAdded, setIsAdded] = React.useState(false);
+      const showToast = useToast();
 
       const addToCart = () => {
         const existingItem = AppState.cart.find(item => item.id === product.id);
@@ -1210,6 +1251,7 @@ footer {
 
         setIsAdded(true);
         showToast(`${product.name} añadido al carrito`, 'success');
+        saveState(AppState);
         
         // Forzar re-render del header para actualizar contador
         ReactDOM.render(<App />, document.getElementById('root'));
@@ -1241,6 +1283,49 @@ footer {
 
     // Componente principal de la aplicación
     function App() {
+      const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+
+      const heroImages = [
+        'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80',
+        'https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80',
+        'https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'
+      ];
+
+      React.useEffect(() => {
+        const interval = setInterval(() => {
+          setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
+        }, 5000);
+
+        return () => clearInterval(interval);
+      }, []);
+
+      React.useEffect(() => {
+        // Smooth scroll para enlaces internos
+        const smoothScroll = (e) => {
+          const target = e.target.getAttribute('href');
+          if (target && target.startsWith('#')) {
+            e.preventDefault();
+            const targetElement = document.querySelector(target);
+            if (targetElement) {
+              window.scrollTo({
+                top: targetElement.offsetTop - 140,
+                behavior: 'smooth'
+              });
+            }
+          }
+        };
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener('click', smoothScroll);
+        });
+
+        return () => {
+          document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.removeEventListener('click', smoothScroll);
+          });
+        };
+      }, []);
+
       return (
         <div className="main-container">
           <Header />
@@ -1256,7 +1341,13 @@ footer {
           </nav>
 
           {/* Hero Section */}
-          <section className="hero" id="hero">
+          <section 
+            className="hero" 
+            id="hero"
+            style={{
+              backgroundImage: `url('${heroImages[currentImageIndex]}')`
+            }}
+          >
             <div className="hero-content">
               <h1>Café fresco de nuestra granja a tu taza</h1>
               <p>Descubre los aromas y sabores únicos de nuestro café 100% natural</p>
@@ -1274,7 +1365,6 @@ footer {
             </div>
           </section>
 
-          {/* Resto del contenido existente... */}
           <div className="product-message">
             <h2>¿Estás cerca de nuestras oficinas?</h2>
             <p>No te contengas, pide nuestros productos directamente. ¡Entrega rápida y fresca en tu zona!</p>
@@ -1310,7 +1400,6 @@ footer {
             </div>
           </section>
 
-          {/* Resto de las secciones... */}
           <section className="process" id="proceso">
             <h2 className="section-title">Nuestro Proceso</h2>
             <div className="process-steps">
@@ -1500,114 +1589,8 @@ footer {
       );
     }
 
-    // Función para mostrar notificaciones toast
-    function showToast(message, type = 'success') {
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
-        ${message}
-      `;
-      
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.classList.add('show');
-      }, 100);
-      
-      setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-          document.body.removeChild(toast);
-        }, 300);
-      }, 3000);
-    }
-
     // Inicializar la aplicación
     ReactDOM.render(<App />, document.getElementById('root'));
-
-    // JavaScript existente para funcionalidades adicionales
-    document.addEventListener('DOMContentLoaded', function() {
-      // Cambio de imágenes en el hero
-      const hero = document.getElementById('hero');
-      const images = [
-        'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80',
-        'https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80',
-        'https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'
-      ];
-      let index = 0;
-
-      setInterval(() => {
-        index = (index + 1) % images.length;
-        hero.style.backgroundImage = `url('${images[index]}')`;
-      }, 5000);
-
-      // Navegación por secciones activa
-      const sectionNavLinks = document.querySelectorAll('.section-nav a');
-      const sections = document.querySelectorAll('section[id]');
-      
-      function updateSectionNav() {
-        let currentSection = '';
-        
-        sections.forEach(section => {
-          const sectionTop = section.offsetTop - 150;
-          const sectionHeight = section.clientHeight;
-          if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
-            currentSection = section.getAttribute('id');
-          }
-        });
-        
-        sectionNavLinks.forEach(link => {
-          link.classList.remove('active');
-          if (link.getAttribute('href') === `#${currentSection}`) {
-            link.classList.add('active');
-          }
-        });
-      }
-      
-      window.addEventListener('scroll', updateSectionNav);
-      
-      // Smooth scroll para enlaces internos
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-          e.preventDefault();
-          
-          const targetId = this.getAttribute('href');
-          if(targetId === '#') return;
-          
-          const targetElement = document.querySelector(targetId);
-          if(targetElement) {
-            window.scrollTo({
-              top: targetElement.offsetTop - 140,
-              behavior: 'smooth'
-            });
-          }
-        });
-      });
-
-      // Animación al hacer scroll
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if(entry.isIntersecting) {
-            entry.target.style.opacity = 1;
-            entry.target.style.transform = 'translateY(0)';
-          }
-        });
-      }, observerOptions);
-
-      // Observar elementos para animación
-      document.querySelectorAll('.product-card, .step, .testimonial, .blog-post').forEach(el => {
-        el.style.opacity = 0;
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        observer.observe(el);
-      });
-    });
   </script>
 </body>
 </html>
